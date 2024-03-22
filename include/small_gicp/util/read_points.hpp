@@ -18,6 +18,9 @@ static std::vector<Eigen::Vector4f> read_points(const std::string& filename) {
   ifs.seekg(0, std::ios::beg);
   std::vector<Eigen::Vector4f> points(num_points);
   ifs.read(reinterpret_cast<char*>(points.data()), sizeof(Eigen::Vector4f) * num_points);
+  for (auto& pt : points) {
+    pt(3) = 1.0;
+  }
 
   return points;
 }

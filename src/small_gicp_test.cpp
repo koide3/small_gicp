@@ -1,10 +1,10 @@
 #include <iostream>
 #include <filesystem>
+#include <Eigen/Core>
+#include <Eigen/Geometry>
 
 #include <small_gicp/util/read_points.hpp>
 
-#include <small_gicp/points/pcl_point.hpp>
-#include <small_gicp/points/pcl_point_traits.hpp>
 #include <small_gicp/points/point_cloud.hpp>
 #include <small_gicp/points/gaussian_voxelmap.hpp>
 #include <small_gicp/ann/kdtree.hpp>
@@ -21,7 +21,6 @@
 #include <small_gicp/factors/plane_icp_factor.hpp>
 
 #include <glk/io/ply_io.hpp>
-#include <glk/pointcloud_buffer_pcl.hpp>
 #include <glk/normal_distributions.hpp>
 #include <guik/viewer/light_viewer.hpp>
 
@@ -81,15 +80,17 @@ int main(int argc, char** argv) {
     voxelmap->insert(*points, T);
 
     prof.push("show");
-    viewer->update_points("current", points->points, guik::FlatOrange(T).set_point_scale(2.0f));
+    // viewer->update_points("current", raw_points[0].data(), sizeof(float) * 4, raw_points.size(), guik::FlatOrange(T).set_point_scale(2.0f));
 
-    std::vector<Eigen::Vector4d> means;
-    std::vector<Eigen::Matrix4d> covs;
-    for (const auto& voxel : voxelmap->flat_voxels) {
-      means.emplace_back(voxel.mean);
-      covs.emplace_back(voxel.cov);
-    }
-    viewer->update_normal_dists("target", means, covs, 0.5, guik::Rainbow());
+    // std::vector<Eigen::Vector4d> means;
+    // std::vector<Eigen::Matrix4d> covs;
+    // for (const auto& voxel : voxelmap->flat_voxels) {
+    //   means.emplace_back(voxel.mean);
+    //   covs.emplace_back(voxel.cov);
+    // }
+    // viewer->update_normal_dists("target", means, covs, 0.5, guik::Rainbow());
+
+    std::cout << "--- T ---" << std::endl << T.matrix() << std::endl;
 
     if (!viewer->spin_once()) {
       break;
