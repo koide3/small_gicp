@@ -50,17 +50,32 @@ endif()
 #   ${Iridescence_LIBRARIES}
 # )
 
-add_executable(downsampling_test
-  src/downsampling_test.cpp
+add_library(small_gicp SHARED
+  src/small_gicp/registration/registration.cpp
 )
-target_include_directories(downsampling_test PUBLIC
+target_include_directories(small_gicp PUBLIC
+  include
+  ${PCL_INCLUDE_DIRS}
+  ${TBB_INCLUDE_DIRS}
+  ${EIGEN3_INCLUDE_DIR}
+)
+target_link_libraries(small_gicp
+  ${PCL_LIBRARIES}
+  ${TBB_LIBRARIES}
+)
+
+
+add_executable(odometry_benchmark
+  src/odometry_benchmark.cpp
+)
+target_include_directories(odometry_benchmark PUBLIC
   include
   ${PCL_INCLUDE_DIRS}
   ${TBB_INCLUDE_DIRS}
   ${EIGEN3_INCLUDE_DIR}
   ${Iridescence_INCLUDE_DIRS}
 )
-target_link_libraries(downsampling_test
+target_link_libraries(odometry_benchmark
   fmt::fmt
   ${PCL_LIBRARIES}
   ${TBB_LIBRARIES}

@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <vector>
+#include <numeric>
 #include <algorithm>
 #include <filesystem>
 #include <Eigen/Core>
