@@ -5,6 +5,7 @@
 
 namespace small_gicp {
 
+/// @brief Summation for linearized systems
 template <typename TargetPointCloud, typename SourcePointCloud, typename TargetTree, typename CorrespondenceRejector, typename Factor>
 struct LinearizeSum {
   LinearizeSum(
@@ -77,6 +78,7 @@ struct LinearizeSum {
   double e;
 };
 
+/// @brief Summation for evaluated errors
 template <typename TargetPointCloud, typename SourcePointCloud, typename Factor>
 struct ErrorSum {
   ErrorSum(const TargetPointCloud& target, const SourcePointCloud& source, const Eigen::Isometry3d& T, std::vector<Factor>& factors)
@@ -106,6 +108,7 @@ struct ErrorSum {
   double e;
 };
 
+/// @brief Parallel reduction with TBB backend
 struct ParallelReductionTBB {
   ParallelReductionTBB() {}
 

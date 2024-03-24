@@ -7,12 +7,17 @@
 
 namespace small_gicp {
 
+/// @brief KdTree with voxel-based caching.
+/// @note  This class is usually useless.
 template <typename PointCloud>
 class CachedKdTree {
 public:
   using Ptr = std::shared_ptr<CachedKdTree>;
   using ConstPtr = std::shared_ptr<const CachedKdTree>;
 
+  /// @brief Constructor
+  /// @param points     Input points
+  /// @param leaf_size  Cache voxel resolution
   CachedKdTree(const PointCloud& points, double leaf_size) : inv_leaf_size(1.0 / leaf_size), kdtree(points) {}
 
   size_t knn_search(const Eigen::Vector4d& pt, size_t k, size_t* k_indices, double* k_sq_dists) const {

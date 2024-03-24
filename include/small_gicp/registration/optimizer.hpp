@@ -5,6 +5,7 @@
 
 namespace small_gicp {
 
+/// @brief GaussNewton optimizer
 struct GaussNewtonOptimizer {
   GaussNewtonOptimizer() : verbose(false), max_iterations(20), lambda(1e-6) {}
 
@@ -52,11 +53,12 @@ struct GaussNewtonOptimizer {
     return result;
   }
 
-  bool verbose;
-  int max_iterations;
-  double lambda;
+  bool verbose;        ///< If true, print debug messages
+  int max_iterations;  ///< Max number of optimization iterations
+  double lambda;       ///< Damping factor (Increasing this makes optimization slow but stable)
 };
 
+/// @brief LevenbergMarquardt optimizer
 struct LevenbergMarquardtOptimizer {
   LevenbergMarquardtOptimizer() : verbose(false), max_iterations(20), max_inner_iterations(10), init_lambda(1e-3), lambda_factor(10.0) {}
 
@@ -121,11 +123,11 @@ struct LevenbergMarquardtOptimizer {
     return result;
   }
 
-  bool verbose;
-  int max_iterations;
-  int max_inner_iterations;
-  double init_lambda;
-  double lambda_factor;
+  bool verbose;              ///< If true, print debug messages
+  int max_iterations;        ///< Max number of optimization iterations
+  int max_inner_iterations;  ///< Max  number of inner iterations (lambda-trial)
+  double init_lambda;        ///< Initial lambda (damping factor)
+  double lambda_factor;      ///< Lambda increase factor
 };
 
 }  // namespace small_gicp

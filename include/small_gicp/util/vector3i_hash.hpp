@@ -5,8 +5,8 @@
 namespace small_gicp {
 
 /**
- * @brief Spatial hashing function
- *        Teschner et al., "Optimized Spatial Hashing for Collision Detection of Deformable Objects", VMV2003
+ * @brief Spatial hashing function.
+ *        Teschner et al., "Optimized Spatial Hashing for Collision Detection of Deformable Objects", VMV2003.
  */
 struct XORVector3iHash {
 public:

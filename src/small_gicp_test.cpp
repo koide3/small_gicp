@@ -29,10 +29,10 @@
 int main(int argc, char** argv) {
   using namespace small_gicp;
 
-  const int num_threads = 32;
-  tbb::task_scheduler_init init(num_threads);
+  const int num_threads = 8;
+  // tbb::task_scheduler_init init(num_threads);
 
-  const std::string dataset_path = "/home/koide/datasets/kitti/velodyne_filtered";
+  const std::string dataset_path = "/home/koide/datasets/velodyne";
   std::vector<std::string> filenames;
   for (const auto& path : std::filesystem::directory_iterator(dataset_path)) {
     if (path.path().extension() != ".bin") {
@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
 
   Eigen::Isometry3d T = Eigen::Isometry3d::Identity();
   for (const auto& filename : filenames) {
-    glim::EasyProfiler prof("prof");
+    EasyProfiler prof;
     prof.push("read_points");
     const auto raw_points = read_points(filename);
 
@@ -80,15 +80,15 @@ int main(int argc, char** argv) {
     voxelmap->insert(*points, T);
 
     prof.push("show");
-    // viewer->update_points("current", raw_points[0].data(), sizeof(float) * 4, raw_points.size(), guik::FlatOrange(T).set_point_scale(2.0f));
+    viewer->update_points("current", raw_points[0].data(), sizeof(float) * 4, raw_points.size(), guik::FlatOrange(T).set_point_scale(2.0f));
 
-    // std::vector<Eigen::Vector4d> means;
-    // std::vector<Eigen::Matrix4d> covs;
-    // for (const auto& voxel : voxelmap->flat_voxels) {
-    //   means.emplace_back(voxel.mean);
-    //   covs.emplace_back(voxel.cov);
-    // }
-    // viewer->update_normal_dists("target", means, covs, 0.5, guik::Rainbow());
+    std::vector<Eigen::Vector4d> means;
+    std::vector<Eigen::Matrix4d> covs;
+    for (const auto& voxel : voxelmap->flat_voxels) {
+      means.emplace_back(voxel.mean);
+      covs.emplace_back(voxel.cov);
+    }
+    viewer->update_normal_dists("target", means, covs, 0.5, guik::Rainbow());
 
     std::cout << "--- T ---" << std::endl << T.matrix() << std::endl;
 

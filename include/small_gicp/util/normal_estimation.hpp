@@ -48,7 +48,7 @@ struct NormalCovarianceSetter {
   }
 };
 
-template <typename PointCloud, typename Tree, typename Setter>
+template <typename Setter, typename PointCloud, typename Tree>
 void estimate_local_features(PointCloud& cloud, Tree& kdtree, int num_neighbors, size_t point_index) {
   std::vector<size_t> k_indices(num_neighbors);
   std::vector<double> k_sq_dists(num_neighbors);
@@ -77,29 +77,73 @@ void estimate_local_features(PointCloud& cloud, Tree& kdtree, int num_neighbors,
   Setter::set(cloud, point_index, eig.eigenvectors());
 }
 
-template <typename PointCloud, typename Setter>
+template <typename Setter, typename PointCloud, typename KdTree>
+void estimate_local_features(PointCloud& cloud, const KdTree& kdtree, int num_neighbors) {
+  traits::resize(cloud, traits::size(cloud));
+  for (size_t i = 0; i < traits::size(cloud); i++) {
+    estimate_local_features<Setter>(cloud, kdtree, num_neighbors, i);
+  }
+}
+
+template <typename Setter, typename PointCloud>
 void estimate_local_features(PointCloud& cloud, int num_neighbors) {
   traits::resize(cloud, traits::size(cloud));
 
   KdTree<PointCloud> kdtree(cloud);
   for (size_t i = 0; i < traits::size(cloud); i++) {
-    estimate_local_features<PointCloud, KdTree<PointCloud>, Setter>(cloud, kdtree, num_neighbors, i);
+    estimate_local_features<Setter>(cloud, kdtree, num_neighbors, i);
   }
 }
 
+/// @brief Estimate point normals
+/// @param cloud          [in/out] Point cloud
+/// @param num_neighbors  Number of neighbors used for attribute estimation
 template <typename PointCloud>
 void estimate_normals(PointCloud& cloud, int num_neighbors = 20) {
-  estimate_local_features<PointCloud, NormalSetter<PointCloud>>(cloud, num_neighbors);
+  estimate_local_features<NormalSetter<PointCloud>>(cloud, num_neighbors);
 }
 
+/// @brief Estimate point normals
+/// @param cloud          [in/out] Point cloud
+/// @param kdtree         Nearest neighbor search
+/// @param num_neighbors  Number of neighbors used for attribute estimation
+template <typename PointCloud, typename KdTree>
+void estimate_normals(PointCloud& cloud, KdTree& kdtree, int num_neighbors = 20) {
+  estimate_local_features<NormalSetter<PointCloud>>(cloud, kdtree, num_neighbors);
+}
+
+/// @brief Estimate point covariances
+/// @param cloud          [in/out] Point cloud
+/// @param num_neighbors  Number of neighbors used for attribute estimation
 template <typename PointCloud>
 void estimate_covariances(PointCloud& cloud, int num_neighbors = 20) {
-  estimate_local_features<PointCloud, CovarianceSetter<PointCloud>>(cloud, num_neighbors);
+  estimate_local_features<CovarianceSetter<PointCloud>>(cloud, num_neighbors);
 }
 
+/// @brief Estimate point covariances
+/// @param cloud          [in/out] Point cloud
+/// @param kdtree         Nearest neighbor search
+/// @param num_neighbors  Number of neighbors used for attribute estimation
+template <typename PointCloud, typename KdTree>
+void estimate_covariances(PointCloud& cloud, KdTree& kdtree, int num_neighbors = 20) {
+  estimate_local_features<CovarianceSetter<PointCloud>>(cloud, kdtree, num_neighbors);
+}
+
+/// @brief Estimate point normals and covariances
+/// @param cloud          [in/out] Point cloud
+/// @param num_neighbors  Number of neighbors used for attribute estimation
 template <typename PointCloud>
 void estimate_normals_covariances(PointCloud& cloud, int num_neighbors = 20) {
-  estimate_local_features<PointCloud, NormalCovarianceSetter<PointCloud>>(cloud, num_neighbors);
+  estimate_local_features<NormalCovarianceSetter<PointCloud>>(cloud, num_neighbors);
+}
+
+/// @brief Estimate point normals and covariances
+/// @param cloud          [in/out] Point cloud
+/// @param kdtree         Nearest neighbor search
+/// @param num_neighbors  Number of neighbors used for attribute estimation
+template <typename PointCloud, typename KdTree>
+void estimate_normals_covariances(PointCloud& cloud, KdTree& kdtree, int num_neighbors = 20) {
+  estimate_local_features<NormalCovarianceSetter<PointCloud>>(cloud, kdtree, num_neighbors);
 }
 
 }  // namespace small_gicp

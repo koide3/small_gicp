@@ -4,6 +4,7 @@
 
 namespace small_gicp {
 
+/// @brief Parallel reduction with OpenMP backend
 struct ParallelReductionOMP {
   ParallelReductionOMP() : num_threads(8) {}
 
@@ -55,7 +56,7 @@ struct ParallelReductionOMP {
     return sum_e;
   }
 
-  int num_threads;
+  int num_threads;  ///< Number of threads
 };
 
 }  // namespace small_gicp

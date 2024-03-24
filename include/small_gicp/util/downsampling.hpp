@@ -8,80 +8,57 @@
 
 namespace small_gicp {
 
+/// @brief Voxelgrid downsampling
+/// @param points     Input points
+/// @param leaf_size  Downsampling resolution
+/// @return           Downsampled points
 template <typename InputPointCloud, typename OutputPointCloud = InputPointCloud>
 std::shared_ptr<OutputPointCloud> voxelgrid_sampling(const InputPointCloud& points, double leaf_size) {
-  const double inv_leaf_size = 1.0 / leaf_size;
-
-  std::unordered_map<Eigen::Vector3i, Eigen::Vector4d, XORVector3iHash> voxels;
-  for (size_t i = 0; i < traits::size(points); i++) {
-    const auto& pt = traits::point(points, i);
-
-    const Eigen::Vector3i coord = (pt * inv_leaf_size).array().floor().template cast<int>().template head<3>();
-    auto found = voxels.find(coord);
-    if (found == voxels.end()) {
-      found = voxels.emplace_hint(found, coord, Eigen::Vector4d::Zero());
-    }
-    found->second += pt;
-  }
-
-  auto downsampled = std::make_shared<OutputPointCloud>();
-  traits::resize(*downsampled, voxels.size());
-  size_t i = 0;
-  for (const auto& v : voxels) {
-    traits::set_point(*downsampled, i++, v.second / v.second.w());
-  }
-
-  return downsampled;
-}
-
-template <typename InputPointCloud, typename OutputPointCloud = InputPointCloud>
-std::shared_ptr<OutputPointCloud> randomgrid_sampling(const InputPointCloud& points, double leaf_size, size_t target_num_points, std::mt19937& rng) {
-  if (traits::size(points) <= target_num_points) {
-    auto downsampled = std::make_shared<OutputPointCloud>();
-    traits::resize(*downsampled, traits::size(points));
-    for (size_t i = 0; i < traits::size(points); i++) {
-      traits::set_point(*downsampled, i, traits::point(points, i));
-    }
-    return downsampled;
+  if (traits::size(points) == 0) {
+    std::cerr << "warning: empty input points!!" << std::endl;
+    return std::make_shared<OutputPointCloud>();
   }
 
   const double inv_leaf_size = 1.0 / leaf_size;
 
-  using Indices = std::shared_ptr<std::vector<size_t>>;
-  std::unordered_map<Eigen::Vector3i, Indices, XORVector3iHash> voxels;
+  const int coord_bit_size = 21;                       // Bits to represent each voxel coordinate (pack 21x3=63bits in 64bit int)
+  const size_t coord_bit_mask = (1 << 21) - 1;         // Bit mask
+  const int coord_offset = 1 << (coord_bit_size - 1);  // Coordinate offset to make values positive
+
+  std::vector<std::pair<std::uint64_t, size_t>> coord_pt(points.size());
   for (size_t i = 0; i < traits::size(points); i++) {
+    // TODO: Check if coord in 21bit range
     const auto& pt = traits::point(points, i);
+    const Eigen::Array4i coord = (pt * inv_leaf_size).array().floor().template cast<int>() + coord_offset;
 
-    const Eigen::Vector3i coord = (pt * inv_leaf_size).array().floor().template cast<int>().template head<3>();
-    auto found = voxels.find(coord);
-    if (found == voxels.end()) {
-      found = voxels.emplace_hint(found, coord, std::make_shared<std::vector<size_t>>());
-      found->second->reserve(20);
-    }
-
-    found->second->emplace_back(i);
+    // Compute voxel coord bits (0|1bit, z|21bit, y|21bit, x|21bit)
+    const std::uint64_t bits =                                 //
+      ((coord[0] & coord_bit_mask) << (coord_bit_size * 0)) |  //
+      ((coord[1] & coord_bit_mask) << (coord_bit_size * 1)) |  //
+      ((coord[2] & coord_bit_mask) << (coord_bit_size * 2));
+    coord_pt[i] = {bits, i};
   }
 
-  const size_t points_per_voxel = std::ceil(static_cast<double>(target_num_points) / voxels.size());
-
-  std::vector<size_t> indices;
-  indices.reserve(points_per_voxel * voxels.size());
-
-  for (const auto& voxel : voxels) {
-    const auto& voxel_indices = *voxel.second;
-    if (voxel_indices.size() <= points_per_voxel) {
-      indices.insert(indices.end(), voxel_indices.begin(), voxel_indices.end());
-    } else {
-      std::ranges::sample(voxel_indices, std::back_inserter(indices), points_per_voxel, rng);
-    }
-  }
-  std::ranges::sort(indices);
+  // Sort by voxel coord
+  const auto compare = [](const auto& lhs, const auto& rhs) { return lhs.first < rhs.first; };
+  std::ranges::sort(coord_pt, compare);
 
   auto downsampled = std::make_shared<OutputPointCloud>();
-  traits::resize(*downsampled, indices.size());
-  for (size_t i = 0; i < indices.size(); i++) {
-    traits::set_point(*downsampled, i, traits::point(points, indices[i]));
+  traits::resize(*downsampled, traits::size(points));
+
+  size_t num_points = 0;
+  Eigen::Vector4d sum_pt = traits::point(points, coord_pt.front().second);
+  for (size_t i = 1; i < traits::size(points); i++) {
+    if (coord_pt[i - 1].first != coord_pt[i].first) {
+      traits::set_point(*downsampled, num_points++, sum_pt / sum_pt.w());
+      sum_pt.setZero();
+    }
+
+    sum_pt += traits::point(points, coord_pt[i].second);
   }
+
+  traits::set_point(*downsampled, num_points++, sum_pt / sum_pt.w());
+  traits::resize(*downsampled, num_points);
 
   return downsampled;
 }

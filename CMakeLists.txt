@@ -33,17 +33,33 @@ endif()
 ## Build ##
 ###########
 
-add_executable(small_gicp_test
-  src/small_gicp_test.cpp
+# add_executable(small_gicp_test
+#   src/small_gicp_test.cpp
+# )
+# target_include_directories(small_gicp_test PUBLIC
+#   include
+#   ${PCL_INCLUDE_DIRS}
+#   ${TBB_INCLUDE_DIRS}
+#   ${EIGEN3_INCLUDE_DIR}
+#   ${Iridescence_INCLUDE_DIRS}
+# )
+# target_link_libraries(small_gicp_test
+#   ${PCL_LIBRARIES}
+#   ${TBB_LIBRARIES}
+#   ${Iridescence_LIBRARIES}
+# )
+
+add_executable(downsampling_benchmark
+  src/downsampling_benchmark.cpp
 )
-target_include_directories(small_gicp_test PUBLIC
+target_include_directories(downsampling_benchmark PUBLIC
   include
   ${PCL_INCLUDE_DIRS}
   ${TBB_INCLUDE_DIRS}
   ${EIGEN3_INCLUDE_DIR}
   ${Iridescence_INCLUDE_DIRS}
 )
-target_link_libraries(small_gicp_test
+target_link_libraries(downsampling_benchmark
   ${PCL_LIBRARIES}
   ${TBB_LIBRARIES}
   ${Iridescence_LIBRARIES}

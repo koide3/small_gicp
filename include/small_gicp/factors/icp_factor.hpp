@@ -8,6 +8,7 @@
 
 namespace small_gicp {
 
+/// @brief Point-to-point error factor
 struct ICPFactor {
   ICPFactor() : target_index(std::numeric_limits<size_t>::max()), source_index(std::numeric_limits<size_t>::max()) {}
 
@@ -30,7 +31,7 @@ struct ICPFactor {
 
     size_t k_index;
     double k_sq_dist;
-    if (!traits::knn_search(target_tree, transed_source_pt, 1, &k_index, &k_sq_dist) || rejector(T, k_index, source_index, k_sq_dist)) {
+    if (!traits::nearest_neighbor_search(target_tree, transed_source_pt, &k_index, &k_sq_dist) || rejector(T, k_index, source_index, k_sq_dist)) {
       return false;
     }
 

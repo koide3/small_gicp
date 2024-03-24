@@ -5,14 +5,19 @@
 
 namespace small_gicp {
 
+/**
+ * @brief Point cloud
+ */
 struct PointCloud {
 public:
   using Ptr = std::shared_ptr<PointCloud>;
   using ConstPtr = std::shared_ptr<const PointCloud>;
 
+  /// @brief Constructor
   PointCloud() {}
-  ~PointCloud() {}
 
+  /// @brief Constructor
+  /// @param points  Points to initialize the point cloud
   template <typename T, int D, typename Allocator>
   PointCloud(const std::vector<Eigen::Matrix<T, D, 1>, Allocator>& points) {
     this->resize(points.size());
@@ -21,25 +26,42 @@ public:
     }
   }
 
+  /// @brief Destructor
+  ~PointCloud() {}
+
+  /// @brief Number of points
   size_t size() const { return points.size(); }
 
+  /// @brief Resize point/normal/cov buffers
+  /// @param n  Number of points
   void resize(size_t n) {
     points.resize(n);
     normals.resize(n);
     covs.resize(n);
   }
 
+  /// @brief Get i-th point
   Eigen::Vector4d& point(size_t i) { return points[i]; }
+
+  /// @brief Get i-th normal
   Eigen::Vector4d& normal(size_t i) { return normals[i]; }
+
+  /// @brief Get i-th covariance
   Eigen::Matrix4d& cov(size_t i) { return covs[i]; }
+
+  /// @brief Get i-th point (const)
   const Eigen::Vector4d& point(size_t i) const { return points[i]; }
+
+  /// @brief Get i-th normal (const)
   const Eigen::Vector4d& normal(size_t i) const { return normals[i]; }
+
+  /// @brief Get i-th covariance (const)
   const Eigen::Matrix4d& cov(size_t i) const { return covs[i]; }
 
 public:
-  std::vector<Eigen::Vector4d> points;
-  std::vector<Eigen::Vector4d> normals;
-  std::vector<Eigen::Matrix4d> covs;
+  std::vector<Eigen::Vector4d> points;   ///< Point coordinates
+  std::vector<Eigen::Vector4d> normals;  ///< Point normals
+  std::vector<Eigen::Matrix4d> covs;     ///< Point covariances
 };
 
 namespace traits {

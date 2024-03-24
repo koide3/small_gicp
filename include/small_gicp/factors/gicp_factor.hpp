@@ -8,9 +8,22 @@
 
 namespace small_gicp {
 
+/// @brief GICP (distribution-to-distribution) error factor
 struct GICPFactor {
+  /// @brief Constructor
   GICPFactor() : target_index(std::numeric_limits<size_t>::max()), source_index(std::numeric_limits<size_t>::max()), mahalanobis(Eigen::Matrix4d::Zero()) {}
 
+  /// @brief Linearize the factor
+  /// @param target       Target point cloud
+  /// @param source       Source point cloud
+  /// @param target_tree  Nearest neighbor search for the target point cloud
+  /// @param T            Linearization point
+  /// @param source_index Source point index
+  /// @param rejector     Correspondence rejector
+  /// @param H            Linearized precision matrix
+  /// @param b            Linearized information vector
+  /// @param e            Error at the linearization point
+  /// @return
   template <typename TargetPointCloud, typename SourcePointCloud, typename TargetTree, typename CorrespondenceRejector>
   bool linearize(
     const TargetPointCloud& target,
@@ -30,7 +43,7 @@ struct GICPFactor {
 
     size_t k_index;
     double k_sq_dist;
-    if (!traits::knn_search(target_tree, transed_source_pt, 1, &k_index, &k_sq_dist) || rejector(T, k_index, source_index, k_sq_dist)) {
+    if (!traits::nearest_neighbor_search(target_tree, transed_source_pt, &k_index, &k_sq_dist) || rejector(T, k_index, source_index, k_sq_dist)) {
       return false;
     }
 
@@ -52,6 +65,11 @@ struct GICPFactor {
     return true;
   }
 
+  /// @brief Evaluate error
+  /// @param target   Target point cloud
+  /// @param source   Source point cloud
+  /// @param T        Evaluation point
+  /// @return Error
   template <typename TargetPointCloud, typename SourcePointCloud>
   double error(const TargetPointCloud& target, const SourcePointCloud& source, const Eigen::Isometry3d& T) const {
     if (target_index == std::numeric_limits<size_t>::max()) {
@@ -63,10 +81,11 @@ struct GICPFactor {
     return 0.5 * residual.dot(mahalanobis * residual);
   }
 
+  /// @brief Returns true if this factor is not rejected as an outlier
   bool inlier() const { return target_index != std::numeric_limits<size_t>::max(); }
 
-  size_t target_index;
-  size_t source_index;
-  Eigen::Matrix4d mahalanobis;
+  size_t target_index;          ///< Target point index
+  size_t source_index;          ///< Source point index
+  Eigen::Matrix4d mahalanobis;  ///< Fused precision matrix
 };
 }  // namespace small_gicp

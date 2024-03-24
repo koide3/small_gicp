@@ -1,10 +1,14 @@
 #pragma once
 
 #include <fstream>
+#include <iostream>
 #include <Eigen/Core>
 
 namespace small_gicp {
 
+/// @brief Read points from file (simple float4 array)
+/// @param filename  Filename
+/// @return          Points
 static std::vector<Eigen::Vector4f> read_points(const std::string& filename) {
   std::ifstream ifs(filename, std::ios::binary | std::ios::ate);
   if (!ifs) {

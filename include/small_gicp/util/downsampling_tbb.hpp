@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <memory>
 
 #include <tbb/tbb.h>
@@ -8,59 +9,66 @@
 
 namespace small_gicp {
 
-/**
- * @brief Voxel grid downsampling using TBB.
- * @note  This TBB version brings only a minor speedup compared to the single-thread version (e.g., 32-threads -> 1.4x speedup), and is not worth using usually.
- */
+/// @brief Voxel grid downsampling using TBB.
+/// @param points     Input points
+/// @param leaf_size  Downsampling resolution
+/// @return           Downsampled points
 template <typename InputPointCloud, typename OutputPointCloud = InputPointCloud>
 std::shared_ptr<OutputPointCloud> voxelgrid_sampling_tbb(const InputPointCloud& points, double leaf_size) {
+  if (traits::size(points) == 0) {
+    std::cerr << "warning: empty input points!!" << std::endl;
+    return std::make_shared<OutputPointCloud>();
+  }
+
   const double inv_leaf_size = 1.0 / leaf_size;
+  const int coord_bit_size = 21;                       // Bits to represent each voxel coordinate (pack 21x3 = 63bits in 64bit int)
+  const size_t coord_bit_mask = (1 << 21) - 1;         // Bit mask
+  const int coord_offset = 1 << (coord_bit_size - 1);  // Coordinate offset to make values positive
 
-  typedef tbb::concurrent_hash_map<Eigen::Vector3i, int, XORVector3iHash> VoxelMap;
+  std::vector<std::pair<std::uint64_t, size_t>> coord_pt(points.size());
+  tbb::parallel_for(size_t(0), size_t(traits::size(points)), [&](size_t i) {
+    // TODO: Check if coord in 21bit range
+    const Eigen::Vector4d pt = traits::point(points, i);
+    const Eigen::Array4i coord = (pt * inv_leaf_size).array().floor().template cast<int>() + coord_offset;
 
-  std::atomic_uint64_t num_voxels = 0;
-  VoxelMap voxels;
-  std::vector<Eigen::Vector4d> voxel_values(traits::size(points), Eigen::Vector4d::Zero());
+    // Compute voxel coord bits (0|1bit, z|21bit, y|21bit, x|21bit)
+    const std::uint64_t bits =                                 //
+      ((coord[0] & coord_bit_mask) << (coord_bit_size * 0)) |  //
+      ((coord[1] & coord_bit_mask) << (coord_bit_size * 1)) |  //
+      ((coord[2] & coord_bit_mask) << (coord_bit_size * 2));
+    coord_pt[i] = {bits, i};
+  });
 
-  const int chunk_size = 8;
-  tbb::parallel_for(tbb::blocked_range<size_t>(0, traits::size(points), chunk_size), [&](const tbb::blocked_range<size_t>& range) {
-    std::vector<Eigen::Vector3i> coords;
-    std::vector<Eigen::Vector4d> values;
-    coords.reserve(range.size());
-    values.reserve(range.size());
+  // Sort by voxel coords
+  tbb::parallel_sort(coord_pt, [](const auto& lhs, const auto& rhs) { return lhs.first < rhs.first; });
 
-    for (size_t i = range.begin(); i < range.end(); i++) {
-      const Eigen::Vector4d pt = traits::point(points, i);
-      const Eigen::Vector3i coord = (pt * inv_leaf_size).array().floor().template cast<int>().template head<3>();
+  auto downsampled = std::make_shared<OutputPointCloud>();
+  traits::resize(*downsampled, traits::size(points));
 
-      auto found = std::ranges::find(coords, coord);
-      if (found == coords.end()) {
-        coords.emplace_back(coord);
-        values.emplace_back(pt);
-      } else {
-        values[std::distance(coords.begin(), found)] += pt;
+  // Take block-wise sum
+  const int block_size = 1024;
+  std::atomic_uint64_t num_points = 0;
+  tbb::parallel_for(tbb::blocked_range<size_t>(0, traits::size(points), block_size), [&](const tbb::blocked_range<size_t>& range) {
+    std::vector<Eigen::Vector4d> sub_points;
+    sub_points.reserve(block_size);
+
+    Eigen::Vector4d sum_pt = traits::point(points, coord_pt[range.begin()].second);
+    for (size_t i = range.begin() + 1; i != range.end(); i++) {
+      if (coord_pt[i - 1].first != coord_pt[i].first) {
+        sub_points.emplace_back(sum_pt / sum_pt.w());
+        sum_pt.setZero();
       }
+      sum_pt += traits::point(points, coord_pt[i].second);
     }
+    sub_points.emplace_back(sum_pt / sum_pt.w());
 
-    for (size_t i = 0; i < coords.size(); i++) {
-      VoxelMap::accessor a;
-      if (voxels.insert(a, coords[i])) {
-        a->second = num_voxels++;
-        voxel_values[a->second] = values[i];
-      } else {
-        voxel_values[a->second] += values[i];
-      }
+    const size_t point_index_begin = num_points.fetch_add(sub_points.size());
+    for (size_t i = 0; i < sub_points.size(); i++) {
+      traits::set_point(*downsampled, point_index_begin + i, sub_points[i]);
     }
   });
 
-  const int N = num_voxels;
-  auto downsampled = std::make_shared<OutputPointCloud>();
-  traits::resize(*downsampled, N);
-
-  for (size_t i = 0; i < N; i++) {
-    const Eigen::Vector4d pt = voxel_values[i];
-    traits::set_point(*downsampled, i, pt / pt.w());
-  }
+  traits::resize(*downsampled, num_points);
 
   return downsampled;
 }

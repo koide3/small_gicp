@@ -5,6 +5,9 @@
 
 namespace small_gicp {
 
+/// @brief Create skew symmetric matrix
+/// @param x  Rotation vector
+/// @return   Skew symmetric matrix
 inline Eigen::Matrix3d skew(const Eigen::Vector3d& x) {
   Eigen::Matrix3d skew = Eigen::Matrix3d::Zero();
   skew(0, 1) = -x[2];

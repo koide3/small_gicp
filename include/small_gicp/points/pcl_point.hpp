@@ -7,6 +7,7 @@ namespace pcl {
 using Matrix4fMap = Eigen::Map<Eigen::Matrix4f, Eigen::Aligned>;
 using Matrix4fMapConst = const Eigen::Map<const Eigen::Matrix4f, Eigen::Aligned>;
 
+/// @brief  Point with covariance
 struct PointCovariance {
   PCL_ADD_POINT4D;
   Eigen::Matrix4f cov;
@@ -17,6 +18,7 @@ struct PointCovariance {
   PCL_MAKE_ALIGNED_OPERATOR_NEW
 };
 
+/// @brief  Point with normal and covariance
 struct PointNormalCovariance {
   PCL_ADD_POINT4D;
   PCL_ADD_NORMAL4D

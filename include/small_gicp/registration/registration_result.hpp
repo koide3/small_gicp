@@ -5,6 +5,7 @@
 
 namespace small_gicp {
 
+/// @brief Registration result
 struct RegistrationResult {
   RegistrationResult(const Eigen::Isometry3d& T)
   : T_target_source(T),
@@ -15,15 +16,15 @@ struct RegistrationResult {
     b(Eigen::Matrix<double, 6, 1>::Zero()),
     error(0.0) {}
 
-  Eigen::Isometry3d T_target_source;
+  Eigen::Isometry3d T_target_source;  ///<  Estimated transformation
 
-  bool converged;
-  size_t iterations;
-  size_t num_inliers;
+  bool converged;      ///< If the optimization converged
+  size_t iterations;   ///< Number of optimization iterations
+  size_t num_inliers;  ///< Number of inliear points
 
-  Eigen::Matrix<double, 6, 6> H;
-  Eigen::Matrix<double, 6, 1> b;
-  double error;
+  Eigen::Matrix<double, 6, 6> H;  ///< Final precision matrix
+  Eigen::Matrix<double, 6, 1> b;  ///< Final information vector
+  double error;                   ///< Final error
 };
 
 }  // namespace small_gicp
