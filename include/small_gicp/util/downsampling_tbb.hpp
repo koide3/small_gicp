@@ -5,6 +5,7 @@
 
 #include <tbb/tbb.h>
 #include <small_gicp/points/traits.hpp>
+#include <small_gicp/util/fast_floor.hpp>
 #include <small_gicp/util/vector3i_hash.hpp>
 
 namespace small_gicp {
@@ -28,8 +29,7 @@ std::shared_ptr<OutputPointCloud> voxelgrid_sampling_tbb(const InputPointCloud& 
   std::vector<std::pair<std::uint64_t, size_t>> coord_pt(points.size());
   tbb::parallel_for(size_t(0), size_t(traits::size(points)), [&](size_t i) {
     // TODO: Check if coord in 21bit range
-    const Eigen::Vector4d pt = traits::point(points, i);
-    const Eigen::Array4i coord = (pt * inv_leaf_size).array().floor().template cast<int>() + coord_offset;
+    const Eigen::Array4i coord = fast_floor(traits::point(points, i) * inv_leaf_size) + coord_offset;
 
     // Compute voxel coord bits (0|1bit, z|21bit, y|21bit, x|21bit)
     const std::uint64_t bits =                                 //

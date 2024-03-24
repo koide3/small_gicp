@@ -5,6 +5,7 @@
 #include <memory>
 #include <small_gicp/ann/traits.hpp>
 #include <small_gicp/points/traits.hpp>
+#include <small_gicp/util/fast_floor.hpp>
 #include <small_gicp/util/vector3i_hash.hpp>
 
 namespace small_gicp {
@@ -89,7 +90,7 @@ public:
     v.reserve(k);
     std::priority_queue<IndexDistance> queue(std::less<IndexDistance>(), std::move(v));
 
-    const Eigen::Vector3i center_coord = (pt * inv_leaf_size).array().floor().cast<int>().head<3>();
+    const Eigen::Vector3i center_coord = fast_floor(pt * inv_leaf_size).head<3>();
     for (const auto& offset : offsets) {
       const Eigen::Vector3i coord = center_coord + offset;
       const auto voxel = find_voxel(coord);
@@ -133,7 +134,7 @@ private:
     std::vector<Eigen::Vector3i> coords(traits::size(points));
     tbb::parallel_for(static_cast<size_t>(0), static_cast<size_t>(traits::size(points)), [&](size_t i) {
       const Eigen::Vector4d pt = traits::point(points, i);
-      const Eigen::Vector3i coord = (pt * inv_leaf_size).array().floor().template cast<int>().template head<3>();
+      const Eigen::Vector3i coord = fast_floor(pt * inv_leaf_size).template head<3>();
       coords[i] = coord;
 
       const size_t hash = XORVector3iHash::hash(coord);

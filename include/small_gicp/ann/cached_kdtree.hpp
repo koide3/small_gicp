@@ -3,6 +3,7 @@
 #include <atomic>
 #include <tbb/tbb.h>
 #include <small_gicp/ann/kdtree.hpp>
+#include <small_gicp/util/fast_floor.hpp>
 #include <small_gicp/util/vector3i_hash.hpp>
 
 namespace small_gicp {
@@ -21,7 +22,7 @@ public:
   CachedKdTree(const PointCloud& points, double leaf_size) : inv_leaf_size(1.0 / leaf_size), kdtree(points) {}
 
   size_t knn_search(const Eigen::Vector4d& pt, size_t k, size_t* k_indices, double* k_sq_dists) const {
-    const Eigen::Vector3i coord = (pt * inv_leaf_size).array().floor().cast<int>().head<3>();
+    const Eigen::Vector3i coord = fast_floor(pt * inv_leaf_size).head<3>();
 
     CacheTable::const_accessor ca;
     if (cache.find(ca, coord)) {

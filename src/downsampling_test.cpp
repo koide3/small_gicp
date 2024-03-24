@@ -46,7 +46,7 @@ int main(int argc, char** argv) {
     prof.push("copy");
     auto points = std::make_shared<PointCloud>(raw_points);
     prof.push("downsample");
-    auto downsampled = approx_voxelgrid_sampling_tbb(*points, 0.2);
+    auto downsampled = voxelgrid_sampling_tbb(*points, 0.2);
     prof.push("estimate covs");
     estimate_covariances_omp(*downsampled, 10);
     prof.push("create flat voxels");

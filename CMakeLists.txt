@@ -18,6 +18,7 @@ if(BUILD_WITH_MARCH_NATIVE)
   set(CMAKE_CXX_FLAGS "-march=native ${CMAKE_CXX_FLAGS}")
 endif()
 
+find_package(fmt REQUIRED)
 find_package(PCL REQUIRED)
 find_package(TBB REQUIRED)
 find_package(Eigen3 REQUIRED)
@@ -49,6 +50,23 @@ endif()
 #   ${Iridescence_LIBRARIES}
 # )
 
+add_executable(downsampling_test
+  src/downsampling_test.cpp
+)
+target_include_directories(downsampling_test PUBLIC
+  include
+  ${PCL_INCLUDE_DIRS}
+  ${TBB_INCLUDE_DIRS}
+  ${EIGEN3_INCLUDE_DIR}
+  ${Iridescence_INCLUDE_DIRS}
+)
+target_link_libraries(downsampling_test
+  fmt::fmt
+  ${PCL_LIBRARIES}
+  ${TBB_LIBRARIES}
+  ${Iridescence_LIBRARIES}
+)
+
 add_executable(downsampling_benchmark
   src/downsampling_benchmark.cpp
 )
@@ -57,10 +75,9 @@ target_include_directories(downsampling_benchmark PUBLIC
   ${PCL_INCLUDE_DIRS}
   ${TBB_INCLUDE_DIRS}
   ${EIGEN3_INCLUDE_DIR}
-  ${Iridescence_INCLUDE_DIRS}
 )
 target_link_libraries(downsampling_benchmark
+  fmt::fmt
   ${PCL_LIBRARIES}
   ${TBB_LIBRARIES}
-  ${Iridescence_LIBRARIES}
 )

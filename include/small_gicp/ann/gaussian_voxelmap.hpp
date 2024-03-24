@@ -4,6 +4,7 @@
 
 #include <small_gicp/ann/traits.hpp>
 #include <small_gicp/points/traits.hpp>
+#include <small_gicp/util/fast_floor.hpp>
 #include <small_gicp/util/vector3i_hash.hpp>
 
 namespace small_gicp {
@@ -78,7 +79,7 @@ public:
     // Insert points to the voxelmap
     for (size_t i = 0; i < traits::size(points); i++) {
       const Eigen::Vector4d pt = T * traits::point(points, i);
-      const Eigen::Vector3i coord = (pt * inv_leaf_size).array().floor().cast<int>().head<3>();
+      const Eigen::Vector3i coord = fast_loor(pt * inv_leaf_size).head<3>();
 
       auto found = voxels.find(coord);
       if (found == voxels.end()) {
@@ -110,7 +111,7 @@ public:
 
   /// @brief Find the nearest neighbor
   size_t nearest_neighbor_search(const Eigen::Vector4d& pt, size_t* k_index, double* k_sq_dist) const {
-    const Eigen::Vector3i coord = (pt * inv_leaf_size).array().floor().cast<int>().head<3>();
+    const Eigen::Vector3i coord = fast_floor(pt * inv_leaf_size).head<3>();
     const auto found = voxels.find(coord);
     if (found == voxels.end()) {
       return 0;
