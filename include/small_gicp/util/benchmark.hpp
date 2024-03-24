@@ -1,6 +1,7 @@
 #pragma once
 
 #include <chrono>
+#include <deque>
 #include <vector>
 #include <numeric>
 #include <algorithm>
@@ -31,7 +32,7 @@ public:
 
 struct Summarizer {
 public:
-  Summarizer() { results.reserve(8192); }
+  Summarizer(size_t max_size = std::numeric_limits<size_t>::max()) : max_size(max_size) {}
 
   void push(double x) { results.emplace_back(x); }
 
@@ -51,7 +52,8 @@ public:
   }
 
 private:
-  std::vector<double> results;
+  size_t max_size;
+  std::deque<double> results;
 };
 
 template <typename Container, typename Transform>

@@ -70,6 +70,7 @@ add_executable(odometry_benchmark
 )
 target_include_directories(odometry_benchmark PUBLIC
   include
+  /home/koide/workspace/fast_gicp/include
   ${PCL_INCLUDE_DIRS}
   ${TBB_INCLUDE_DIRS}
   ${EIGEN3_INCLUDE_DIR}
