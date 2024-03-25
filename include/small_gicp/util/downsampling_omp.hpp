@@ -1,33 +1,35 @@
 #pragma once
 
+#include <atomic>
 #include <memory>
-#include <random>
-#include <unordered_map>
+#include <fstream>
+
 #include <small_gicp/points/traits.hpp>
 #include <small_gicp/util/fast_floor.hpp>
 #include <small_gicp/util/vector3i_hash.hpp>
+#include <small_gicp/util/sort_omp.hpp>
 
 namespace small_gicp {
 
-/// @brief Voxelgrid downsampling.
+/// @brief Voxel grid downsampling with OpenMP backend.
 /// @note  Discretized voxel coords must be in 21bit range [-1048576, 1048575].
 /// @param points     Input points
 /// @param leaf_size  Downsampling resolution
 /// @return           Downsampled points
 template <typename InputPointCloud, typename OutputPointCloud = InputPointCloud>
-std::shared_ptr<OutputPointCloud> voxelgrid_sampling(const InputPointCloud& points, double leaf_size) {
+std::shared_ptr<OutputPointCloud> voxelgrid_sampling_omp(const InputPointCloud& points, double leaf_size, int num_threads = 4) {
   if (traits::size(points) == 0) {
     std::cerr << "warning: empty input points!!" << std::endl;
     return std::make_shared<OutputPointCloud>();
   }
 
   const double inv_leaf_size = 1.0 / leaf_size;
-
-  const int coord_bit_size = 21;                       // Bits to represent each voxel coordinate (pack 21x3=63bits in 64bit int)
+  const int coord_bit_size = 21;                       // Bits to represent each voxel coordinate (pack 21x3 = 63bits in 64bit int)
   const size_t coord_bit_mask = (1 << 21) - 1;         // Bit mask
   const int coord_offset = 1 << (coord_bit_size - 1);  // Coordinate offset to make values positive
 
   std::vector<std::pair<std::uint64_t, size_t>> coord_pt(points.size());
+#pragma omp parallel for num_threads(num_threads) schedule(guided, 32)
   for (size_t i = 0; i < traits::size(points); i++) {
     // TODO: Check if coord is within 21bit range
     const Eigen::Array4i coord = fast_floor(traits::point(points, i) * inv_leaf_size) + coord_offset;
@@ -40,25 +42,43 @@ std::shared_ptr<OutputPointCloud> voxelgrid_sampling(const InputPointCloud& poin
     coord_pt[i] = {bits, i};
   }
 
-  // Sort by voxel coord
-  const auto compare = [](const auto& lhs, const auto& rhs) { return lhs.first < rhs.first; };
-  std::ranges::sort(coord_pt, compare);
+  // Sort by voxel coords
+  quick_sort_omp(
+    coord_pt.begin(),
+    coord_pt.end(),
+    [](const auto& lhs, const auto& rhs) { return lhs.first < rhs.first; },
+    num_threads);
 
   auto downsampled = std::make_shared<OutputPointCloud>();
   traits::resize(*downsampled, traits::size(points));
 
-  size_t num_points = 0;
-  Eigen::Vector4d sum_pt = traits::point(points, coord_pt.front().second);
-  for (size_t i = 1; i < traits::size(points); i++) {
-    if (coord_pt[i - 1].first != coord_pt[i].first) {
-      traits::set_point(*downsampled, num_points++, sum_pt / sum_pt.w());
-      sum_pt.setZero();
-    }
+  // Take block-wise sum
+  const int block_size = 1024;
+  std::atomic_uint64_t num_points = 0;
 
-    sum_pt += traits::point(points, coord_pt[i].second);
+#pragma omp parallel for num_threads(num_threads) schedule(guided, 4)
+  for (size_t block_begin = 0; block_begin < traits::size(points); block_begin += block_size) {
+    std::vector<Eigen::Vector4d> sub_points;
+    sub_points.reserve(block_size);
+
+    const size_t block_end = std::min<size_t>(traits::size(points), block_begin + block_size);
+
+    Eigen::Vector4d sum_pt = traits::point(points, coord_pt[block_begin].second);
+    for (size_t i = block_begin + 1; i != block_end; i++) {
+      if (coord_pt[i - 1].first != coord_pt[i].first) {
+        sub_points.emplace_back(sum_pt / sum_pt.w());
+        sum_pt.setZero();
+      }
+      sum_pt += traits::point(points, coord_pt[i].second);
+    }
+    sub_points.emplace_back(sum_pt / sum_pt.w());
+
+    const size_t point_index_begin = num_points.fetch_add(sub_points.size());
+    for (size_t i = 0; i < sub_points.size(); i++) {
+      traits::set_point(*downsampled, point_index_begin + i, sub_points[i]);
+    }
   }
 
-  traits::set_point(*downsampled, num_points++, sum_pt / sum_pt.w());
   traits::resize(*downsampled, num_points);
 
   return downsampled;

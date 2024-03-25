@@ -24,6 +24,8 @@ find_package(TBB REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(Iridescence REQUIRED)
 
+set(FAST_GICP_INCLUDE_DIR /home/koide/workspace/fast_gicp/include)
+
 find_package(OpenMP)
 if (OPENMP_FOUND)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
@@ -70,11 +72,11 @@ add_executable(odometry_benchmark
 )
 target_include_directories(odometry_benchmark PUBLIC
   include
-  /home/koide/workspace/fast_gicp/include
   ${PCL_INCLUDE_DIRS}
   ${TBB_INCLUDE_DIRS}
   ${EIGEN3_INCLUDE_DIR}
   ${Iridescence_INCLUDE_DIRS}
+  ${FAST_GICP_INCLUDE_DIR}
 )
 target_link_libraries(odometry_benchmark
   fmt::fmt
@@ -93,6 +95,21 @@ target_include_directories(downsampling_benchmark PUBLIC
   ${EIGEN3_INCLUDE_DIR}
 )
 target_link_libraries(downsampling_benchmark
+  fmt::fmt
+  ${PCL_LIBRARIES}
+  ${TBB_LIBRARIES}
+)
+
+add_executable(sort_test
+  src/sort_test.cpp
+)
+target_include_directories(sort_test PUBLIC
+  include
+  ${PCL_INCLUDE_DIRS}
+  ${TBB_INCLUDE_DIRS}
+  ${EIGEN3_INCLUDE_DIR}
+)
+target_link_libraries(sort_test
   fmt::fmt
   ${PCL_LIBRARIES}
   ${TBB_LIBRARIES}

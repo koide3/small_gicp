@@ -60,7 +60,7 @@ struct GICPFactor {
 
     *H = J.transpose() * mahalanobis * J;
     *b = J.transpose() * mahalanobis * residual;
-    *e = 0.5 * residual.dot(mahalanobis * residual);
+    *e = 0.5 * residual.transpose() * mahalanobis * residual;
 
     return true;
   }
@@ -78,7 +78,7 @@ struct GICPFactor {
 
     const Eigen::Vector4d transed_source_pt = T * traits::point(source, source_index);
     const Eigen::Vector4d residual = traits::point(target, target_index) - transed_source_pt;
-    return 0.5 * residual.dot(mahalanobis * residual);
+    return 0.5 * residual.transpose() * mahalanobis * residual;
   }
 
   /// @brief Returns true if this factor is not rejected as an outlier

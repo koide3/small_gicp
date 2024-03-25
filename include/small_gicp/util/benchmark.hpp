@@ -32,28 +32,33 @@ public:
 
 struct Summarizer {
 public:
-  Summarizer(size_t max_size = std::numeric_limits<size_t>::max()) : max_size(max_size) {}
+  Summarizer() : num_data(0), sum(0.0), sq_sum(0.0), last_x(0.0) {}
 
-  void push(double x) { results.emplace_back(x); }
+  void push(double x) {
+    num_data++;
+    sum += x;
+    sq_sum += x * x;
+    last_x = x;
+  }
 
   std::pair<double, double> mean_std() const {
-    const double sum = std::accumulate(results.begin(), results.end(), 0.0);
-    const double sum_sq = std::accumulate(results.begin(), results.end(), 0.0, [](double sum, double x) { return sum + x * x; });
-
-    const double mean = sum / results.size();
-    const double var = (sum_sq - mean * sum) / results.size();
-
+    const double mean = sum / num_data;
+    const double var = (sq_sum - mean * sum) / num_data;
     return {mean, std::sqrt(var)};
   }
 
+  double last() const { return last_x; }
+
   std::string str() const {
     const auto [mean, std] = mean_std();
-    return fmt::format("{:.3f} +- {:.3f}", mean, std);
+    return fmt::format("{:.3f} +- {:.3f} (last={:.3f})", mean, std, last_x);
   }
 
 private:
-  size_t max_size;
-  std::deque<double> results;
+  size_t num_data;
+  double sum;
+  double sq_sum;
+  double last_x;
 };
 
 template <typename Container, typename Transform>
@@ -87,16 +92,27 @@ public:
   }
 
   template <typename PointCloud>
-  std::vector<std::shared_ptr<PointCloud>> convert() const {
+  std::vector<std::shared_ptr<PointCloud>> convert(bool release = false) {
     std::vector<std::shared_ptr<PointCloud>> converted(points.size());
-    std::ranges::transform(points, converted.begin(), [](const auto& raw_points) {
+    std::ranges::transform(points, converted.begin(), [=](auto& raw_points) {
       auto points = std::make_shared<PointCloud>();
       traits::resize(*points, raw_points.size());
       for (size_t i = 0; i < raw_points.size(); i++) {
         traits::set_point(*points, i, raw_points[i].template cast<double>());
       }
+
+      if (release) {
+        raw_points.clear();
+        raw_points.shrink_to_fit();
+      }
       return points;
     });
+
+    if (release) {
+      points.clear();
+      points.shrink_to_fit();
+    }
+
     return converted;
   }
 

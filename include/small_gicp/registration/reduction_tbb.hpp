@@ -123,7 +123,7 @@ struct ParallelReductionTBB {
     //
     LinearizeSum<TargetPointCloud, SourcePointCloud, TargetTree, CorrespondenceRejector, Factor> sum(target, source, target_tree, rejector, T, factors);
 
-    tbb::parallel_reduce(tbb::blocked_range<size_t>(0, factors.size()), sum);
+    tbb::parallel_reduce(tbb::blocked_range<size_t>(0, factors.size(), 8), sum);
 
     return {sum.H, sum.b, sum.e};
   }
@@ -131,7 +131,7 @@ struct ParallelReductionTBB {
   template <typename TargetPointCloud, typename SourcePointCloud, typename Factor>
   double error(const TargetPointCloud& target, const SourcePointCloud& source, const Eigen::Isometry3d& T, std::vector<Factor>& factors) {
     ErrorSum<TargetPointCloud, SourcePointCloud, Factor> sum(target, source, T, factors);
-    tbb::parallel_reduce(tbb::blocked_range<size_t>(0, factors.size()), sum);
+    tbb::parallel_reduce(tbb::blocked_range<size_t>(0, factors.size(), 16), sum);
     return sum.e;
   }
 };

@@ -2,6 +2,7 @@
 
 #include <atomic>
 #include <memory>
+#include <fstream>
 
 #include <tbb/tbb.h>
 #include <small_gicp/points/traits.hpp>
@@ -10,7 +11,8 @@
 
 namespace small_gicp {
 
-/// @brief Voxel grid downsampling using TBB.
+/// @brief Voxel grid downsampling with TBB backend.
+/// @note  Discretized voxel coords must be in 21bit range [-1048576, 1048575].
 /// @param points     Input points
 /// @param leaf_size  Downsampling resolution
 /// @return           Downsampled points
@@ -27,16 +29,18 @@ std::shared_ptr<OutputPointCloud> voxelgrid_sampling_tbb(const InputPointCloud& 
   const int coord_offset = 1 << (coord_bit_size - 1);  // Coordinate offset to make values positive
 
   std::vector<std::pair<std::uint64_t, size_t>> coord_pt(points.size());
-  tbb::parallel_for(size_t(0), size_t(traits::size(points)), [&](size_t i) {
-    // TODO: Check if coord in 21bit range
-    const Eigen::Array4i coord = fast_floor(traits::point(points, i) * inv_leaf_size) + coord_offset;
+  tbb::parallel_for(tbb::blocked_range<size_t>(0, traits::size(points), 64), [&](const tbb::blocked_range<size_t>& range) {
+    for (size_t i = range.begin(); i != range.end(); i++) {
+      // TODO: Check if coord is within 21bit range
+      const Eigen::Array4i coord = fast_floor(traits::point(points, i) * inv_leaf_size) + coord_offset;
 
-    // Compute voxel coord bits (0|1bit, z|21bit, y|21bit, x|21bit)
-    const std::uint64_t bits =                                 //
-      ((coord[0] & coord_bit_mask) << (coord_bit_size * 0)) |  //
-      ((coord[1] & coord_bit_mask) << (coord_bit_size * 1)) |  //
-      ((coord[2] & coord_bit_mask) << (coord_bit_size * 2));
-    coord_pt[i] = {bits, i};
+      // Compute voxel coord bits (0|1bit, z|21bit, y|21bit, x|21bit)
+      const std::uint64_t bits =                                 //
+        ((coord[0] & coord_bit_mask) << (coord_bit_size * 0)) |  //
+        ((coord[1] & coord_bit_mask) << (coord_bit_size * 1)) |  //
+        ((coord[2] & coord_bit_mask) << (coord_bit_size * 2));
+      coord_pt[i] = {bits, i};
+    }
   });
 
   // Sort by voxel coords
