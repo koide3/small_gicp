@@ -31,7 +31,7 @@
  *************************************************************************/
 
 /**
- * This nanoflann_mt.hpp is derived from nanoflann.hpp to parallelize the tree construction with OpenMP and TBB
+ * This nanoflann_mt.hpp is derived from nanoflann.hpp to parallelize the tree construction with OpenMP.
  */
 
 /** \mainpage nanoflann C++ API documentation
@@ -48,10 +48,10 @@
  * documentation</a>
  */
 
-#ifndef NANOFLANN_MT_HPP_
-#define NANOFLANN_MT_HPP_
+#ifndef NANOFLANN_OMP_HPP_
+#define NANOFLANN_OMP_HPP_
 
-#include <tbb/tbb.h>
+#include <atomic>
 #include <small_gicp/ann/nanoflann.hpp>
 
 namespace nanoflann {
@@ -69,7 +69,7 @@ namespace nanoflann {
  */
 
 template <class Derived, typename Distance, class DatasetAdaptor, int DIM = -1, typename IndexType = size_t>
-class KDTreeBaseClassMT {
+class KDTreeBaseClassOMP {
 public:
   /** Frees the previously-built index. Automatically called within
    * buildIndex(). */
@@ -136,8 +136,8 @@ public:
    * than allocating memory directly when there is a large
    * number small of memory allocations.
    */
-  // NOTE: Should remove TBB to minimize the dependencies
-  tbb::concurrent_vector<Node> pool;
+  std::atomic_uint64_t pool_count;
+  std::vector<Node> pool;
 
   /** Returns number of points in dataset  */
   size_t size(const Derived& obj) const { return obj.m_size; }
@@ -166,7 +166,12 @@ public:
    * @param right index of the last vector
    */
   NodePtr divideTree(Derived& obj, const IndexType left, const IndexType right, BoundingBox& bbox) {
-    NodePtr node = &(*pool.emplace_back());
+    const size_t pool_loc = pool_count++;
+    if (pool_loc >= pool.size()) {
+      std::cerr << "error: pool_loc=" << pool_loc << " >= pool.size()=" << pool.size() << std::endl;
+      abort();
+    }
+    NodePtr node = pool.data() + pool_loc;
 
     /* If too few exemplars remain, then make this a leaf node. */
     if ((right - left) <= static_cast<IndexType>(obj.m_leaf_max_size)) {
@@ -206,6 +211,7 @@ public:
       } else {
         // I did my best to check that the following parallelization does not cause race conditions.
         // But, still not 100% sure if it is correct.
+
 #pragma omp task shared(obj, left_bbox)
         node->child1 = divideTree(obj, left, left + idx, left_bbox);
 #pragma omp task shared(obj, right_bbox)
@@ -367,10 +373,10 @@ public:
  * be typically size_t or int
  */
 template <typename Distance, class DatasetAdaptor, int DIM = -1, typename IndexType = size_t>
-class KDTreeSingleIndexAdaptorMT : public KDTreeBaseClassMT<KDTreeSingleIndexAdaptorMT<Distance, DatasetAdaptor, DIM, IndexType>, Distance, DatasetAdaptor, DIM, IndexType> {
+class KDTreeSingleIndexAdaptorOMP : public KDTreeBaseClassOMP<KDTreeSingleIndexAdaptorOMP<Distance, DatasetAdaptor, DIM, IndexType>, Distance, DatasetAdaptor, DIM, IndexType> {
 public:
   /** Deleted copy constructor*/
-  KDTreeSingleIndexAdaptorMT(const KDTreeSingleIndexAdaptorMT<Distance, DatasetAdaptor, DIM, IndexType>&) = delete;
+  KDTreeSingleIndexAdaptorOMP(const KDTreeSingleIndexAdaptorOMP<Distance, DatasetAdaptor, DIM, IndexType>&) = delete;
 
   /**
    * The dataset used by this index
@@ -381,7 +387,7 @@ public:
 
   Distance distance;
 
-  typedef typename nanoflann::KDTreeBaseClassMT<nanoflann::KDTreeSingleIndexAdaptorMT<Distance, DatasetAdaptor, DIM, IndexType>, Distance, DatasetAdaptor, DIM, IndexType>
+  typedef typename nanoflann::KDTreeBaseClassOMP<nanoflann::KDTreeSingleIndexAdaptorOMP<Distance, DatasetAdaptor, DIM, IndexType>, Distance, DatasetAdaptor, DIM, IndexType>
     BaseClassRef;
 
   typedef typename BaseClassRef::ElementType ElementType;
@@ -413,7 +419,7 @@ public:
    * @param inputData Dataset with the input features
    * @param params Basically, the maximum leaf node size
    */
-  KDTreeSingleIndexAdaptorMT(const int dimensionality, const DatasetAdaptor& inputData, const KDTreeSingleIndexAdaptorParams& params = KDTreeSingleIndexAdaptorParams())
+  KDTreeSingleIndexAdaptorOMP(const int dimensionality, const DatasetAdaptor& inputData, const KDTreeSingleIndexAdaptorParams& params = KDTreeSingleIndexAdaptorParams())
   : dataset(inputData),
     index_params(params),
     distance(inputData) {
@@ -440,7 +446,8 @@ public:
     if (BaseClassRef::m_size == 0) return;
     computeBoundingBox(BaseClassRef::root_bbox);
 
-    BaseClassRef::pool.reserve(BaseClassRef::m_size);
+    BaseClassRef::pool_count = 0;
+    BaseClassRef::pool.resize(BaseClassRef::m_size);
 
 #pragma omp parallel num_threads(num_threads)
     {

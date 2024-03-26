@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <random>
+#include <iostream>
 #include <unordered_map>
 #include <small_gicp/points/traits.hpp>
 #include <small_gicp/util/fast_floor.hpp>

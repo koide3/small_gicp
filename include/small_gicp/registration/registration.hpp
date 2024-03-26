@@ -11,7 +11,7 @@
 namespace small_gicp {
 
 /// @brief Point cloud registration
-template <typename Factor, typename CorrespondenceRejector, typename Reduction, typename Optimizer>
+template <typename Factor, typename Reduction, typename CorrespondenceRejector = DistanceRejector, typename Optimizer = LevenbergMarquardtOptimizer>
 struct Registration {
 public:
   /// @brief Align point clouds
@@ -21,7 +21,8 @@ public:
   /// @param init_T       Initial guess
   /// @return             Registration result
   template <typename TargetPointCloud, typename SourcePointCloud, typename TargetTree>
-  RegistrationResult align(const TargetPointCloud& target, const SourcePointCloud& source, const TargetTree& target_tree, const Eigen::Isometry3d& init_T) {
+  RegistrationResult
+  align(const TargetPointCloud& target, const SourcePointCloud& source, const TargetTree& target_tree, const Eigen::Isometry3d& init_T = Eigen::Isometry3d::Identity()) {
     std::vector<Factor> factors(traits::size(source));
     return optimizer.optimize(target, source, target_tree, rejector, criteria, reduction, init_T, factors);
   }

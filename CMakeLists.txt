@@ -68,6 +68,15 @@ target_link_libraries(small_gicp
 
 
 add_executable(odometry_benchmark
+  src/small_gicp/util/benchmark_odom.cpp
+  src/odometry_benchmark_pcl.cpp
+  src/odometry_benchmark_fast_gicp.cpp
+  src/odometry_benchmark_fast_vgicp.cpp
+  src/odometry_benchmark_small_gicp.cpp
+  src/odometry_benchmark_small_gicp_omp.cpp
+  src/odometry_benchmark_small_gicp_tbb.cpp
+  src/odometry_benchmark_small_vgicp_tbb.cpp
+  src/odometry_benchmark_small_gicp_tbb_batch.cpp
   src/odometry_benchmark.cpp
 )
 target_include_directories(odometry_benchmark PUBLIC
@@ -100,17 +109,37 @@ target_link_libraries(downsampling_benchmark
   ${TBB_LIBRARIES}
 )
 
-add_executable(sort_test
-  src/sort_test.cpp
-)
-target_include_directories(sort_test PUBLIC
-  include
-  ${PCL_INCLUDE_DIRS}
-  ${TBB_INCLUDE_DIRS}
-  ${EIGEN3_INCLUDE_DIR}
-)
-target_link_libraries(sort_test
-  fmt::fmt
-  ${PCL_LIBRARIES}
-  ${TBB_LIBRARIES}
-)
+
+
+##########
+## Test ##
+##########
+option(BUILD_TESTS "Build test" ON)
+if(BUILD_TESTS)
+  include(FetchContent)
+  FetchContent_Declare(googletest URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip)
+  FetchContent_MakeAvailable(googletest)
+  include(GoogleTest)
+
+  enable_testing()
+  file(GLOB TEST_SOURCES "src/test/*.cpp")
+  # Generate test target for each test source file
+  foreach(TEST_SOURCE ${TEST_SOURCES})
+    get_filename_component(TEST_NAME ${TEST_SOURCE} NAME_WE)
+    add_executable(${TEST_NAME} ${TEST_SOURCE})
+    target_include_directories(${TEST_NAME} PUBLIC
+      include
+      ${PCL_INCLUDE_DIRS}
+      ${TBB_INCLUDE_DIRS}
+      ${EIGEN3_INCLUDE_DIR}
+    )
+    target_link_libraries(${TEST_NAME}
+      fmt::fmt
+      GTest::gtest_main
+      ${PCL_LIBRARIES}
+      ${TBB_LIBRARIES}
+    )
+
+    gtest_discover_tests(${TEST_NAME})
+  endforeach()
+endif()

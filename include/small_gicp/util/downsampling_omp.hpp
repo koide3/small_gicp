@@ -2,7 +2,7 @@
 
 #include <atomic>
 #include <memory>
-#include <fstream>
+#include <iostream>
 
 #include <small_gicp/points/traits.hpp>
 #include <small_gicp/util/fast_floor.hpp>

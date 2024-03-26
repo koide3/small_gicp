@@ -3,6 +3,7 @@
 #include <tbb/tbb.h>
 
 #include <memory>
+#include <iostream>
 #include <small_gicp/ann/traits.hpp>
 #include <small_gicp/points/traits.hpp>
 #include <small_gicp/util/fast_floor.hpp>
@@ -26,15 +27,13 @@ struct IndexDistance {
   double distance;
 };
 
+template <typename PointCloud>
 struct FlatVoxelMap {
 public:
   using Ptr = std::shared_ptr<FlatVoxelMap>;
   using ConstPtr = std::shared_ptr<const FlatVoxelMap>;
 
-  template <typename PointCloud>
-  FlatVoxelMap(double leaf_size, const PointCloud& points) : inv_leaf_size(1.0 / leaf_size),
-                                                             seek_count(2),
-                                                             points(points) {
+  FlatVoxelMap(double leaf_size, const PointCloud& points) : inv_leaf_size(1.0 / leaf_size), seek_count(2), points(points) {
     set_offset_pattern(7);
     create_table(points);
   }
@@ -123,7 +122,6 @@ public:
   }
 
 private:
-  template <typename PointCloud>
   void create_table(const PointCloud& points) {
     const double min_sq_dist_in_cell = 0.05 * 0.05;
     const int max_points_per_cell = 10;
@@ -206,16 +204,16 @@ public:
   const int seek_count;
   std::vector<Eigen::Vector3i> offsets;
 
-  const PointCloud points;
+  const PointCloud& points;
   std::vector<FlatVoxelInfo> voxels;
   std::vector<size_t> indices;
 };
 
 namespace traits {
 
-template <>
-struct Traits<FlatVoxelMap> {
-  static size_t knn_search(const FlatVoxelMap& voxelmap, const Eigen::Vector4d& point, size_t k, size_t* k_indices, double* k_sq_dists) {
+template <typename PointCloud>
+struct Traits<FlatVoxelMap<PointCloud>> {
+  static size_t knn_search(const FlatVoxelMap<PointCloud>& voxelmap, const Eigen::Vector4d& point, size_t k, size_t* k_indices, double* k_sq_dists) {
     return voxelmap.knn_search(point, k, k_indices, k_sq_dists);
   }
 };

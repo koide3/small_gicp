@@ -2,7 +2,7 @@
 
 #include <atomic>
 #include <memory>
-#include <fstream>
+#include <iostream>
 
 #include <tbb/tbb.h>
 #include <small_gicp/points/traits.hpp>

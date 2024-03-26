@@ -1,7 +1,6 @@
 #pragma once
 
 #include <chrono>
-#include <deque>
 #include <vector>
 #include <numeric>
 #include <algorithm>
@@ -9,7 +8,7 @@
 #include <Eigen/Core>
 #include <fmt/format.h>
 #include <small_gicp/points/traits.hpp>
-#include <small_gicp/util/read_points.hpp>
+#include <small_gicp/benchmark/read_points.hpp>
 
 namespace small_gicp {
 

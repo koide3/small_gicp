@@ -1,6 +1,8 @@
 #pragma once
 
 #include <unordered_map>
+#include <Eigen/Core>
+#include <Eigen/Geometry>
 
 #include <small_gicp/ann/traits.hpp>
 #include <small_gicp/points/traits.hpp>
@@ -79,7 +81,7 @@ public:
     // Insert points to the voxelmap
     for (size_t i = 0; i < traits::size(points); i++) {
       const Eigen::Vector4d pt = T * traits::point(points, i);
-      const Eigen::Vector3i coord = fast_loor(pt * inv_leaf_size).head<3>();
+      const Eigen::Vector3i coord = fast_floor(pt * inv_leaf_size).head<3>();
 
       auto found = voxels.find(coord);
       if (found == voxels.end()) {

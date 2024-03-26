@@ -89,7 +89,7 @@ template <typename Setter, typename PointCloud>
 void estimate_local_features(PointCloud& cloud, int num_neighbors) {
   traits::resize(cloud, traits::size(cloud));
 
-  KdTree<PointCloud> kdtree(cloud);
+  UnsafeKdTree<PointCloud> kdtree(cloud);
   for (size_t i = 0; i < traits::size(cloud); i++) {
     estimate_local_features<Setter>(cloud, kdtree, num_neighbors, i);
   }

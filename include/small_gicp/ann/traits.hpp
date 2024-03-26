@@ -22,7 +22,7 @@ size_t knn_search(const T& tree, const Eigen::Vector4d& point, size_t k, size_t*
 }
 
 template <typename T>
-concept HasNearestNeighborSearch = requires { Traits<T>::nearest_neighbor_search(T(), Eigen::Vector4d(), 1, nullptr, nullptr); };
+concept HasNearestNeighborSearch = requires(const T& tree) { Traits<T>::nearest_neighbor_search(tree, Eigen::Vector4d(), nullptr, nullptr); };
 
 /// @brief Find the nearest neighbor
 /// @param tree       Nearest neighbor search (e.g., KdTree)
