@@ -74,6 +74,7 @@ add_executable(odometry_benchmark
   src/odometry_benchmark_fast_vgicp.cpp
   src/odometry_benchmark_small_gicp.cpp
   src/odometry_benchmark_small_gicp_omp.cpp
+  src/odometry_benchmark_small_vgicp_omp.cpp
   src/odometry_benchmark_small_gicp_tbb.cpp
   src/odometry_benchmark_small_vgicp_tbb.cpp
   src/odometry_benchmark_small_gicp_tbb_batch.cpp
