@@ -14,7 +14,8 @@ int main(int argc, char** argv) {
     std::cout << "USAGE: odometry_benchmark <dataset_path> <output_path> [options]" << std::endl;
     std::cout << "OPTIONS:" << std::endl;
     std::cout << "  --num_threads <value> (default: 4)" << std::endl;
-    std::cout << "  --resolution <value> (default: 0.25)" << std::endl;
+    std::cout << "  --downsample_resolution <value> (default: 0.25)" << std::endl;
+    std::cout << "  --voxel_resolution <value> (default: 2.0)" << std::endl;
 
     const auto odom_names = odometry_names();
     std::stringstream sst;
@@ -34,13 +35,16 @@ int main(int argc, char** argv) {
 
   int num_threads = 4;
   double downsampling_resolution = 0.25;
+  double voxel_resolution = 2.0;
   std::string engine = "small_gicp";
 
   for (auto arg = argv + 3; arg != argv + argc; arg++) {
     if (std::string(*arg) == "--num_threads") {
       num_threads = std::stoi(*(arg + 1));
-    } else if (std::string(*arg) == "--resolution") {
+    } else if (std::string(*arg) == "--downsampling_resolution") {
       downsampling_resolution = std::stod(*(arg + 1));
+    } else if (std::string(*arg) == "--voxel_resolution") {
+      voxel_resolution = std::stod(*(arg + 1));
     } else if (std::string(*arg) == "--engine") {
       engine = *(arg + 1);
     }
@@ -51,8 +55,9 @@ int main(int argc, char** argv) {
   std::cout << "registration_engine=" << engine << std::endl;
   std::cout << "num_threads=" << num_threads << std::endl;
   std::cout << "downsampling_resolution=" << downsampling_resolution << std::endl;
+  std::cout << "voxel_resolution=" << voxel_resolution << std::endl;
 
-  OdometryEstimationParams params{num_threads, downsampling_resolution};
+  OdometryEstimationParams params{num_threads, downsampling_resolution, voxel_resolution};
   std::shared_ptr<OdometryEstimation> odom = create_odometry(engine, params);
   if (odom == nullptr) {
     return 1;

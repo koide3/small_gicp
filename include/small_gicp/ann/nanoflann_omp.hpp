@@ -437,7 +437,7 @@ public:
   /**
    * Builds the index
    */
-  void buildIndex(int num_threads = 4) {
+  void buildIndex(int num_threads) {
     BaseClassRef::m_size = dataset.kdtree_get_point_count();
     BaseClassRef::m_size_at_index_build = BaseClassRef::m_size;
     init_vind();

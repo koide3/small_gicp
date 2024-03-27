@@ -73,6 +73,20 @@ public:
   /// @brief Number of voxels
   size_t size() const { return flat_voxels.size(); }
 
+  /// @brief Get voxel means
+  std::vector<Eigen::Vector4d> voxel_means() const {
+    std::vector<Eigen::Vector4d> means(flat_voxels.size());
+    std::ranges::transform(flat_voxels, means.begin(), [](const GaussianVoxel& voxel) { return voxel.mean; });
+    return means;
+  }
+
+  /// @brief Get voxel covariances
+  std::vector<Eigen::Matrix4d> voxel_covs() const {
+    std::vector<Eigen::Matrix4d> covs(flat_voxels.size());
+    std::ranges::transform(flat_voxels, covs.begin(), [](const GaussianVoxel& voxel) { return voxel.cov; });
+    return covs;
+  }
+
   /// @brief Insert points to the voxelmap
   /// @param points  Input points
   /// @param T       Transformation

@@ -77,7 +77,8 @@ add_executable(odometry_benchmark
   src/odometry_benchmark_small_vgicp_omp.cpp
   src/odometry_benchmark_small_gicp_tbb.cpp
   src/odometry_benchmark_small_vgicp_tbb.cpp
-  src/odometry_benchmark_small_gicp_tbb_batch.cpp
+  src/odometry_benchmark_small_vgicp_model_tbb.cpp
+  src/odometry_benchmark_small_gicp_tbb_flow.cpp
   src/odometry_benchmark.cpp
 )
 target_include_directories(odometry_benchmark PUBLIC

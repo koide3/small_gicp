@@ -37,7 +37,7 @@ protected:
 
 class OnlineOdometryEstimation : public OdometryEstimation {
 public:
-  OnlineOdometryEstimation(const OdometryEstimationParams& params) : OdometryEstimation(params) {}
+  OnlineOdometryEstimation(const OdometryEstimationParams& params) : OdometryEstimation(params), z_range(-5.0f, 5.0f) {}
   ~OnlineOdometryEstimation() { guik::async_destroy(); }
 
   std::vector<Eigen::Isometry3d> estimate(std::vector<PointCloud::Ptr>& points) override {
@@ -55,8 +55,12 @@ public:
       traj.emplace_back(T);
 
       auto async_viewer = guik::async_viewer();
+      z_range[0] = std::min<double>(z_range[0], T.translation().z() - 5.0f);
+      z_range[1] = std::max<double>(z_range[1], T.translation().z() + 5.0f);
+      async_viewer->invoke([=] { guik::viewer()->shader_setting().add("z_range", z_range); });
       async_viewer->update_points("current", downsampled->points, guik::FlatOrange(T).set_point_scale(2.0f));
       async_viewer->update_points(guik::anon(), voxelgrid_sampling(*downsampled, 1.0)->points, guik::Rainbow(T));
+      async_viewer->lookat(T.translation().cast<float>());
 
       points[i].reset();
 
@@ -70,6 +74,7 @@ public:
   virtual Eigen::Isometry3d estimate(const PointCloud::Ptr& points) = 0;
 
 protected:
+  Eigen::Vector2f z_range;
   Summarizer total_times;
 };
 

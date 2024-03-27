@@ -9,7 +9,7 @@
 
 namespace small_gicp {
 
-class BatchedSmallGICPOnlineOdometryEstimationTBB : public OdometryEstimation {
+class SmallGICPFlowEstimationTBB : public OdometryEstimation {
 public:
   struct InputFrame {
     using Ptr = std::shared_ptr<InputFrame>;
@@ -25,12 +25,12 @@ public:
     InputFrame::Ptr source;
   };
 
-  BatchedSmallGICPOnlineOdometryEstimationTBB(const OdometryEstimationParams& params)
+  SmallGICPFlowEstimationTBB(const OdometryEstimationParams& params)
   : OdometryEstimation(params),
     control(tbb::global_control::max_allowed_parallelism, params.num_threads),
     throughput(0.0) {}
 
-  ~BatchedSmallGICPOnlineOdometryEstimationTBB() { guik::async_destroy(); }
+  ~SmallGICPFlowEstimationTBB() { guik::async_destroy(); }
 
   std::vector<Eigen::Isometry3d> estimate(std::vector<PointCloud::Ptr>& points) override {
     auto async_viewer = guik::async_viewer();
@@ -126,7 +126,7 @@ private:
   Summarizer reg_times;
 };
 
-static auto small_gicp_tbb_batch_registry =
-  register_odometry("small_gicp_tbb_batch", [](const OdometryEstimationParams& params) { return std::make_shared<BatchedSmallGICPOnlineOdometryEstimationTBB>(params); });
+static auto small_gicp_tbb_flow_registry =
+  register_odometry("small_gicp_tbb_flow", [](const OdometryEstimationParams& params) { return std::make_shared<SmallGICPFlowEstimationTBB>(params); });
 
 }  // namespace small_gicp
