@@ -54,6 +54,7 @@ endif()
 
 add_library(small_gicp SHARED
   src/small_gicp/registration/registration.cpp
+  src/small_gicp/registration/registration_helper.cpp
 )
 target_include_directories(small_gicp PUBLIC
   include

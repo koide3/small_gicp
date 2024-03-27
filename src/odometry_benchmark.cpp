@@ -37,7 +37,7 @@ int main(int argc, char** argv) {
   OdometryEstimationParams params;
   std::string engine = "small_gicp";
 
-  for (auto arg = argv + 3; arg != argv + argc; arg++) {
+  for (auto arg = argv + 1; arg != argv + argc; arg++) {
     if (std::string(*arg) == "--visualize") {
       params.visualize = true;
     } else if (std::string(*arg) == "--num_threads") {

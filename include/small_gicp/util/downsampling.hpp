@@ -65,4 +65,36 @@ std::shared_ptr<OutputPointCloud> voxelgrid_sampling(const InputPointCloud& poin
   return downsampled;
 }
 
+/// @brief Random downsampling.
+/// @param points      Input points
+/// @param num_samples Number of samples to be drawn
+/// @return            Downsampled points
+template <typename InputPointCloud, typename OutputPointCloud = InputPointCloud, typename RNG = std::mt19937>
+std::shared_ptr<OutputPointCloud> random_sampling(const InputPointCloud& points, size_t num_samples, RNG& rng) {
+  if (traits::size(points) == 0) {
+    std::cerr << "warning: empty input points!!" << std::endl;
+    return std::make_shared<OutputPointCloud>();
+  }
+
+  std::vector<size_t> indices(traits::size(points));
+  std::iota(indices.begin(), indices.end(), 0);
+
+  if (num_samples >= indices.size()) {
+    std::cerr << "warning: num_samples >= points.size()!! (" << num_samples << " vs " << traits::size(points) << ")" << std::endl;
+    num_samples = indices.size();
+  }
+
+  std::vector<size_t> samples(num_samples);
+  std::sample(indices.begin(), indices.end(), samples.begin(), num_samples, rng);
+
+  auto downsampled = std::make_shared<OutputPointCloud>();
+  traits::resize(*downsampled, num_samples);
+
+  for (size_t i = 0; i < num_samples; i++) {
+    traits::set_point(*downsampled, i, traits::point(points, samples[i]));
+  }
+
+  return downsampled;
+}
+
 }  // namespace small_gicp

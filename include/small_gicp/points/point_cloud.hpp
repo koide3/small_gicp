@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <Eigen/Core>
 #include <small_gicp/points/traits.hpp>
 
