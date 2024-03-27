@@ -33,8 +33,6 @@ public:
   ~SmallGICPFlowEstimationTBB() { guik::async_destroy(); }
 
   std::vector<Eigen::Isometry3d> estimate(std::vector<PointCloud::Ptr>& points) override {
-    auto async_viewer = guik::async_viewer();
-
     std::vector<Eigen::Isometry3d> traj;
     traj.reserve(points.size());
 
@@ -67,7 +65,7 @@ public:
       return pair.source;
     });
     tbb::flow::sequencer_node<InputFrame::Ptr> postreg_sequencer_node(graph, [](const InputFrame::Ptr& input) { return input->id; });
-    tbb::flow::function_node<InputFrame::Ptr> viewer_node(graph, 1, [&](const InputFrame::Ptr& input) {
+    tbb::flow::function_node<InputFrame::Ptr> output_node(graph, 1, [&](const InputFrame::Ptr& input) {
       if (traj.empty()) {
         traj.emplace_back(input->T_last_current);
       } else {
@@ -82,12 +80,20 @@ public:
       const double elapsed_msec = std::chrono::duration_cast<std::chrono::nanoseconds>(input->sw.t2 - t0).count() / 1e6;
       throughput = elapsed_msec / (input->id + 1);
 
-      if (input->id && input->id % 1024 == 0) {
+      if (input->id && input->id % 256 == 0) {
         report();
       }
 
-      async_viewer->update_points(guik::anon(), input->points->points, guik::Rainbow(T));
-      async_viewer->update_points("points", input->points->points, guik::FlatOrange(T).set_point_scale(2.0f));
+      if (params.visualize) {
+        static Eigen::Vector2f z_range(0.0f, 0.0f);
+        z_range[0] = std::min<double>(z_range[0], T.translation().z() - 5.0f);
+        z_range[1] = std::max<double>(z_range[1], T.translation().z() + 5.0f);
+
+        auto async_viewer = guik::async_viewer();
+        async_viewer->invoke([=] { guik::viewer()->shader_setting().add("z_range", z_range); });
+        async_viewer->update_points(guik::anon(), input->points->points, guik::Rainbow(T));
+        async_viewer->update_points("points", input->points->points, guik::FlatOrange(T).set_point_scale(2.0f));
+      }
     });
 
     tbb::flow::make_edge(input_node, preprocess_node);
@@ -95,7 +101,7 @@ public:
     tbb::flow::make_edge(postpre_sequencer_node, pairing_node);
     tbb::flow::make_edge(pairing_node, registration_node);
     tbb::flow::make_edge(registration_node, postreg_sequencer_node);
-    tbb::flow::make_edge(postreg_sequencer_node, viewer_node);
+    tbb::flow::make_edge(postreg_sequencer_node, output_node);
 
     Stopwatch sw;
     sw.start();

@@ -14,6 +14,7 @@ namespace small_gicp {
 
 struct OdometryEstimationParams {
 public:
+  bool visualize = false;
   int num_threads = 4;
   double downsample_resolution = 0.25;
   double voxel_resolution = 1.0;
@@ -38,7 +39,7 @@ protected:
 class OnlineOdometryEstimation : public OdometryEstimation {
 public:
   OnlineOdometryEstimation(const OdometryEstimationParams& params) : OdometryEstimation(params), z_range(-5.0f, 5.0f) {}
-  ~OnlineOdometryEstimation() { guik::async_destroy(); }
+  ~OnlineOdometryEstimation() {}
 
   std::vector<Eigen::Isometry3d> estimate(std::vector<PointCloud::Ptr>& points) override {
     std::vector<Eigen::Isometry3d> traj;
@@ -54,13 +55,15 @@ public:
       const Eigen::Isometry3d T = estimate(downsampled);
       traj.emplace_back(T);
 
-      auto async_viewer = guik::async_viewer();
-      z_range[0] = std::min<double>(z_range[0], T.translation().z() - 5.0f);
-      z_range[1] = std::max<double>(z_range[1], T.translation().z() + 5.0f);
-      async_viewer->invoke([=] { guik::viewer()->shader_setting().add("z_range", z_range); });
-      async_viewer->update_points("current", downsampled->points, guik::FlatOrange(T).set_point_scale(2.0f));
-      async_viewer->update_points(guik::anon(), voxelgrid_sampling(*downsampled, 1.0)->points, guik::Rainbow(T));
-      async_viewer->lookat(T.translation().cast<float>());
+      if (params.visualize) {
+        auto async_viewer = guik::async_viewer();
+        z_range[0] = std::min<double>(z_range[0], T.translation().z() - 5.0f);
+        z_range[1] = std::max<double>(z_range[1], T.translation().z() + 5.0f);
+        async_viewer->invoke([=] { guik::viewer()->shader_setting().add("z_range", z_range); });
+        async_viewer->update_points("current", downsampled->points, guik::FlatOrange(T).set_point_scale(2.0f));
+        async_viewer->update_points(guik::anon(), voxelgrid_sampling(*downsampled, 1.0)->points, guik::Rainbow(T));
+        async_viewer->lookat(T.translation().cast<float>());
+      }
 
       points[i].reset();
 

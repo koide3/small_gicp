@@ -8,8 +8,6 @@
 #include <small_gicp/registration/reduction_tbb.hpp>
 #include <small_gicp/registration/registration.hpp>
 
-#include <guik/viewer/async_light_viewer.hpp>
-
 namespace small_gicp {
 
 class SmallVGICPModelOnlineOdometryEstimationTBB : public OnlineOdometryEstimation {
@@ -17,9 +15,7 @@ public:
   SmallVGICPModelOnlineOdometryEstimationTBB(const OdometryEstimationParams& params)
   : OnlineOdometryEstimation(params),
     control(tbb::global_control::max_allowed_parallelism, params.num_threads),
-    T(Eigen::Isometry3d::Identity()) {
-    sub_viewer = guik::async_viewer()->async_sub_viewer("model points");
-  }
+    T(Eigen::Isometry3d::Identity()) {}
 
   Eigen::Isometry3d estimate(const PointCloud::Ptr& points) override {
     Stopwatch sw;
@@ -39,10 +35,6 @@ public:
     T = result.T_target_source;
     voxelmap->insert(*points, T);
 
-    sub_viewer.update_points("current", points->points, guik::FlatOrange(T).set_point_scale(2.0f));
-    sub_viewer.update_normal_dists("voxelmap", voxelmap->voxel_means(), voxelmap->voxel_covs(), 1.0, guik::Rainbow());
-    sub_viewer.lookat(T.translation().cast<float>());
-
     sw.stop();
     reg_times.push(sw.msec());
 
@@ -54,8 +46,6 @@ public:
   }
 
 private:
-  guik::AsyncLightViewerContext sub_viewer;
-
   tbb::global_control control;
 
   Summarizer reg_times;

@@ -1,3 +1,5 @@
 .vscode/*
 build/*
 imgui.ini
+
+scripts/results/*
