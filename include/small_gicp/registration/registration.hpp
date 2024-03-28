@@ -22,7 +22,7 @@ public:
   /// @return             Registration result
   template <typename TargetPointCloud, typename SourcePointCloud, typename TargetTree>
   RegistrationResult
-  align(const TargetPointCloud& target, const SourcePointCloud& source, const TargetTree& target_tree, const Eigen::Isometry3d& init_T = Eigen::Isometry3d::Identity()) {
+  align(const TargetPointCloud& target, const SourcePointCloud& source, const TargetTree& target_tree, const Eigen::Isometry3d& init_T = Eigen::Isometry3d::Identity()) const {
     std::vector<Factor> factors(traits::size(source));
     return optimizer.optimize(target, source, target_tree, rejector, criteria, reduction, init_T, factors);
   }

@@ -134,12 +134,15 @@ if(BUILD_TESTS)
       ${PCL_INCLUDE_DIRS}
       ${TBB_INCLUDE_DIRS}
       ${EIGEN3_INCLUDE_DIR}
+      ${Iridescence_INCLUDE_DIRS}
     )
     target_link_libraries(${TEST_NAME}
+      small_gicp
       fmt::fmt
       GTest::gtest_main
       ${PCL_LIBRARIES}
       ${TBB_LIBRARIES}
+      ${Iridescence_LIBRARIES}
     )
 
     gtest_discover_tests(${TEST_NAME} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})

@@ -15,7 +15,7 @@ struct ParallelReductionOMP {
     const TargetTree& target_tree,
     const CorrespondenceRejector& rejector,
     const Eigen::Isometry3d& T,
-    std::vector<Factor>& factors) {
+    std::vector<Factor>& factors) const {
     std::vector<Eigen::Matrix<double, 6, 6>> Hs(num_threads, Eigen::Matrix<double, 6, 6>::Zero());
     std::vector<Eigen::Matrix<double, 6, 1>> bs(num_threads, Eigen::Matrix<double, 6, 1>::Zero());
     std::vector<double> es(num_threads, 0.0);
@@ -46,7 +46,7 @@ struct ParallelReductionOMP {
   }
 
   template <typename TargetPointCloud, typename SourcePointCloud, typename Factor>
-  double error(const TargetPointCloud& target, const SourcePointCloud& source, const Eigen::Isometry3d& T, std::vector<Factor>& factors) {
+  double error(const TargetPointCloud& target, const SourcePointCloud& source, const Eigen::Isometry3d& T, std::vector<Factor>& factors) const {
     double sum_e = 0.0;
 
 #pragma omp parallel for num_threads(num_threads) schedule(guided, 8) reduction(+ : sum_e)

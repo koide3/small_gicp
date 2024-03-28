@@ -26,7 +26,7 @@ struct GaussNewtonOptimizer {
     const TerminationCriteria& criteria,
     Reduction& reduction,
     const Eigen::Isometry3d& init_T,
-    std::vector<Factor>& factors) {
+    std::vector<Factor>& factors) const {
     //
     if (verbose) {
       std::cout << "--- GN optimization ---" << std::endl;
@@ -79,7 +79,7 @@ struct LevenbergMarquardtOptimizer {
     const TerminationCriteria& criteria,
     Reduction& reduction,
     const Eigen::Isometry3d& init_T,
-    std::vector<Factor>& factors) {
+    std::vector<Factor>& factors) const {
     //
     if (verbose) {
       std::cout << "--- LM optimization ---" << std::endl;

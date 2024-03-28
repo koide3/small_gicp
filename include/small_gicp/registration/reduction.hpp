@@ -21,7 +21,7 @@ struct SerialReduction {
     const TargetTree& target_tree,
     const CorrespondenceRejector& rejector,
     const Eigen::Isometry3d& T,
-    std::vector<Factor>& factors) {
+    std::vector<Factor>& factors) const {
     Eigen::Matrix<double, 6, 6> sum_H = Eigen::Matrix<double, 6, 6>::Zero();
     Eigen::Matrix<double, 6, 1> sum_b = Eigen::Matrix<double, 6, 1>::Zero();
     double sum_e = 0.0;
@@ -50,7 +50,7 @@ struct SerialReduction {
   /// @param factors      Factors to be evaluated
   /// @return Sum of the evaluated errors
   template <typename TargetPointCloud, typename SourcePointCloud, typename Factor>
-  double error(const TargetPointCloud& target, const SourcePointCloud& source, const Eigen::Isometry3d& T, std::vector<Factor>& factors) {
+  double error(const TargetPointCloud& target, const SourcePointCloud& source, const Eigen::Isometry3d& T, std::vector<Factor>& factors) const {
     double sum_e = 0.0;
     for (size_t i = 0; i < factors.size(); i++) {
       sum_e += factors[i].error(target, source, T);
