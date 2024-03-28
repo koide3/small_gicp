@@ -15,7 +15,8 @@ int main(int argc, char** argv) {
     std::cout << "OPTIONS:" << std::endl;
     std::cout << "  --visualize" << std::endl;
     std::cout << "  --num_threads <value> (default: 4)" << std::endl;
-    std::cout << "  --downsample_resolution <value> (default: 0.25)" << std::endl;
+    std::cout << "  --num_neighbors <value> (default: 20)" << std::endl;
+    std::cout << "  --downsampling_resolution <value> (default: 0.25)" << std::endl;
     std::cout << "  --voxel_resolution <value> (default: 2.0)" << std::endl;
 
     const auto odom_names = odometry_names();
@@ -37,17 +38,23 @@ int main(int argc, char** argv) {
   OdometryEstimationParams params;
   std::string engine = "small_gicp";
 
-  for (auto arg = argv + 1; arg != argv + argc; arg++) {
-    if (std::string(*arg) == "--visualize") {
+  for (int i = 0; i < argc; i++) {
+    const std::string arg = argv[i];
+    if (arg == "--visualize") {
       params.visualize = true;
-    } else if (std::string(*arg) == "--num_threads") {
-      params.num_threads = std::stoi(*(arg + 1));
-    } else if (std::string(*arg) == "--downsampling_resolution") {
-      params.downsample_resolution = std::stod(*(arg + 1));
-    } else if (std::string(*arg) == "--voxel_resolution") {
-      params.voxel_resolution = std::stod(*(arg + 1));
-    } else if (std::string(*arg) == "--engine") {
-      engine = *(arg + 1);
+    } else if (arg == "--num_threads") {
+      params.num_threads = std::stoi(argv[i + 1]);
+    } else if (arg == "--num_neighbors") {
+      params.num_neighbors = std::stoi(argv[i + 1]);
+    } else if (arg == "--downsampling_resolution") {
+      params.downsample_resolution = std::stod(argv[i + 1]);
+    } else if (arg == "--voxel_resolution") {
+      params.voxel_resolution = std::stod(argv[i + 1]);
+    } else if (arg == "--engine") {
+      engine = argv[i + 1];
+    } else if (arg.size() >= 2 && arg.substr(0, 2) == "--") {
+      std::cerr << "unknown option: " << arg << std::endl;
+      return 1;
     }
   }
 
@@ -55,6 +62,7 @@ int main(int argc, char** argv) {
   std::cout << "output_path=" << output_path << std::endl;
   std::cout << "registration_engine=" << engine << std::endl;
   std::cout << "num_threads=" << params.num_threads << std::endl;
+  std::cout << "num_neighbors=" << params.num_neighbors << std::endl;
   std::cout << "downsampling_resolution=" << params.downsample_resolution << std::endl;
   std::cout << "voxel_resolution=" << params.voxel_resolution << std::endl;
   std::cout << "visualize=" << params.visualize << std::endl;

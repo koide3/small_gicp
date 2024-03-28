@@ -59,11 +59,15 @@ int main(int argc, char** argv) {
   int num_threads = 4;
   size_t max_num_frames = 1000;
 
-  for (auto arg = argv + 2; arg != argv + argc; arg++) {
-    if (std::string(*arg) == "--num_threads") {
-      num_threads = std::stoi(*(arg + 1));
-    } else if (std::string(*arg) == "--max_num_frames") {
-      max_num_frames = std::stoul(*(arg + 1));
+  for (int i = 1; i < argc; i++) {
+    const std::string arg(argv[i]);
+    if (arg == "--num_threads") {
+      num_threads = std::stoi(argv[i + 1]);
+    } else if (arg == "--max_num_frames") {
+      max_num_frames = std::stoul(argv[i + 1]);
+    } else if (arg.size() >= 2 && arg.substr(0, 2) == "--") {
+      std::cerr << "unknown option: " << arg << std::endl;
+      return 1;
     }
   }
 

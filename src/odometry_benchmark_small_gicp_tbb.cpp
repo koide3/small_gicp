@@ -22,7 +22,7 @@ public:
     sw.start();
 
     auto tree = std::make_shared<KdTreeTBB<PointCloud>>(points);
-    estimate_covariances_tbb(*points, *tree, 10);
+    estimate_covariances_tbb(*points, *tree, params.num_neighbors);
 
     if (target_points == nullptr) {
       target_points = points;

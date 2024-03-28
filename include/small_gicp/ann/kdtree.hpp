@@ -11,7 +11,7 @@ namespace small_gicp {
 template <typename Distance, class DatasetAdaptor, int DIM = -1, typename IndexType = size_t>
 class KDTreeSingleIndexAdaptor;
 
-/// @brief Unsafe KdTree with arbitrary nanoflann Adaptor
+/// @brief Unsafe KdTree with arbitrary nanoflann Adaptor.
 /// @note  This class does not hold the ownership of the input points.
 ///        You must keep the input points along with this class.
 template <class PointCloud, template <typename, typename, int, typename> class Adaptor>

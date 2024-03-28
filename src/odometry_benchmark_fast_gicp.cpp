@@ -13,7 +13,7 @@ namespace small_gicp {
 class FastGICPOdometryEstimation : public OnlineOdometryEstimation {
 public:
   FastGICPOdometryEstimation(const OdometryEstimationParams& params) : OnlineOdometryEstimation(params), T(Eigen::Isometry3d::Identity()) {
-    gicp.setCorrespondenceRandomness(10);
+    gicp.setCorrespondenceRandomness(params.num_neighbors);
     gicp.setMaxCorrespondenceDistance(params.max_correspondence_distance);
     gicp.setNumThreads(params.num_threads);
   }

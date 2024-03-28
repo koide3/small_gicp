@@ -42,7 +42,7 @@ public:
       input->sw.start();
       input->points = voxelgrid_sampling(*input->points, params.downsample_resolution);
       input->kdtree = std::make_shared<KdTree<PointCloud>>(input->points);
-      estimate_covariances(*input->points, *input->kdtree, 10);
+      estimate_covariances(*input->points, *input->kdtree, params.num_neighbors);
       return input;
     });
     tbb::flow::sequencer_node<InputFrame::Ptr> postpre_sequencer_node(graph, [](const InputFrame::Ptr& input) { return input->id; });

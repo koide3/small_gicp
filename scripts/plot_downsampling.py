@@ -83,8 +83,8 @@ def main():
     
     baseline = results['pcl_voxelgrid'].time_mean[leaf_size_index]
     axes[i].plot([num_threads[0], num_threads[-1]], [baseline, baseline], label='pcl_voxelgrid', linestyle='--')
-    axes[i].scatter(num_threads, time_tbb, label='small_voxelgrid_tbb')
-    axes[i].scatter(num_threads, time_omp, label='small_voxelgrid_omp')
+    axes[i].scatter(num_threads, time_tbb, label='small_voxelgrid_tbb', marker='^')
+    axes[i].scatter(num_threads, time_omp, label='small_voxelgrid_omp', marker='^')
     
     axes[i].grid()
     axes[i].set_xscale('log')
@@ -98,11 +98,14 @@ def main():
   fig, axes = pyplot.subplots(1, 2)
   fig.set_size_inches(18, 3)
 
-  methods = ['pcl_voxelgrid', 'pcl_approx_voxelgrid', 'small_voxelgrid', 'small_voxelgrid_tbb (2 threads)', 'small_voxelgrid_tbb (3 threads)', 'small_voxelgrid_tbb (4 threads)', 'small_voxelgrid_tbb (6 threads)']
-  labels = ['pcl_voxelgrid', 'pcl_approx_voxelgrid', 'small_voxelgrid', 'small_voxelgrid_tbb (2 threads)', 'small_voxelgrid_tbb (3 threads)', 'small_voxelgrid_tbb (4 threads)', 'small_voxelgrid_tbb (6 threads)']
-  for method, label in zip(methods, labels):
-    axes[0].plot(leaf_sizes, results[method].time_mean, label=label, linestyle='--' if 'pcl' in method else '-')
-    axes[1].plot(leaf_sizes, results[method].points_mean / results['pcl_voxelgrid'].points_mean, label=label, linestyle='--' if 'pcl' in method else '-')
+  methods = ['small_voxelgrid', 'small_voxelgrid_tbb (2 threads)', 'small_voxelgrid_tbb (3 threads)', 'small_voxelgrid_tbb (4 threads)', 'small_voxelgrid_tbb (6 threads)', 'pcl_voxelgrid', 'pcl_approx_voxelgrid']
+  labels = ['small_voxelgrid', 'small_voxelgrid_tbb (2 threads)', 'small_voxelgrid_tbb (3 threads)', 'small_voxelgrid_tbb (4 threads)', 'small_voxelgrid_tbb (6 threads)', 'pcl_voxelgrid', 'pcl_approx_voxelgrid']
+  markers = ['^', '^', '^', '^', '^', 'o', 'o']
+  for method, label, marker in zip(methods, labels, markers):
+    axes[0].plot(leaf_sizes, results[method].time_mean, label=label, linestyle='--' if 'pcl' in method else '-', marker=marker)
+    
+    if 'threads' not in method or '2 threads' in method:
+      axes[1].plot(leaf_sizes, results[method].points_mean / results['pcl_voxelgrid'].points_mean, label=label, linestyle='--' if 'pcl' in method else '-', marker=marker)
   
   axes[0].set_xlabel('Leaf size [m]')
   axes[0].set_ylabel('Processing time [msec/scan]')

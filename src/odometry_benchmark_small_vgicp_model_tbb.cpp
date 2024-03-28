@@ -21,7 +21,7 @@ public:
     Stopwatch sw;
     sw.start();
 
-    estimate_covariances_tbb(*points, 10);
+    estimate_covariances_tbb(*points, params.num_neighbors);
 
     if (voxelmap == nullptr) {
       voxelmap = std::make_shared<GaussianVoxelMap>(params.voxel_resolution);

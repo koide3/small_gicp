@@ -15,8 +15,9 @@ namespace small_gicp {
 class FastVGICPOdometryEstimation : public OnlineOdometryEstimation {
 public:
   FastVGICPOdometryEstimation(const OdometryEstimationParams& params) : OnlineOdometryEstimation(params), T(Eigen::Isometry3d::Identity()) {
-    vgicp.setCorrespondenceRandomness(10);
+    vgicp.setCorrespondenceRandomness(params.num_neighbors);
     vgicp.setResolution(params.voxel_resolution);
+    vgicp.setMaxCorrespondenceDistance(params.max_correspondence_distance);
     vgicp.setNumThreads(params.num_threads);
   }
 

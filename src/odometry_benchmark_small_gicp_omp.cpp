@@ -18,7 +18,7 @@ public:
     sw.start();
 
     auto tree = std::make_shared<KdTreeOMP<PointCloud>>(points, params.num_threads);
-    estimate_covariances_omp(*points, *tree, 10, params.num_threads);
+    estimate_covariances_omp(*points, *tree, params.num_neighbors, params.num_threads);
 
     if (target_points == nullptr) {
       target_points = points;
