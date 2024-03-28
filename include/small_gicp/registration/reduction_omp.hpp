@@ -4,6 +4,12 @@
 
 namespace small_gicp {
 
+#ifdef _OPENMP
+inline int omp_get_thread_num() {
+  return 0;
+}
+#endif
+
 /// @brief Parallel reduction with OpenMP backend
 struct ParallelReductionOMP {
   ParallelReductionOMP() : num_threads(8) {}

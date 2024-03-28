@@ -1,3 +1,5 @@
+#ifdef BUILD_WITH_FAST_GICP
+
 #include <small_gicp/benchmark/benchmark_odom.hpp>
 
 #include <pcl/point_types.h>
@@ -63,3 +65,5 @@ private:
 static auto fast_vgicp_registry = register_odometry("fast_vgicp", [](const OdometryEstimationParams& params) { return std::make_shared<FastVGICPOdometryEstimation>(params); });
 
 }  // namespace small_gicp
+
+#endif

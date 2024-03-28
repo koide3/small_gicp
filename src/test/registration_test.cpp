@@ -1,4 +1,3 @@
-#include <fmt/format.h>
 #include <gtest/gtest.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
@@ -180,7 +179,11 @@ INSTANTIATE_TEST_SUITE_P(
   RegistrationTest,
   RegistrationTest,
   testing::Combine(testing::Values("ICP", "PLANE_ICP", "GICP", "VGICP"), testing::Values("SERIAL", "TBB", "OMP")),
-  [](const auto& info) { return fmt::format("{}_{}", std::get<0>(info.param), std::get<1>(info.param)); });
+  [](const auto& info) {
+    std::stringstream sst;
+    sst << std::get<0>(info.param) << "_" << std::get<1>(info.param);
+    return sst.str();
+  });
 
 TEST_P(RegistrationTest, EmptyTest) {
   const std::string factor = std::get<0>(GetParam());

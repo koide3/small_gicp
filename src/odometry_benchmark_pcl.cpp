@@ -1,3 +1,5 @@
+#ifdef BUILD_WITH_PCL
+
 #include <small_gicp/benchmark/benchmark_odom.hpp>
 
 #include <pcl/point_types.h>
@@ -56,4 +58,6 @@ private:
 
 static auto pcl_odom_registry = register_odometry("pcl", [](const OdometryEstimationParams& params) { return std::make_shared<PCLOnlineOdometryEstimation>(params); });
 
-}
+}  // namespace small_gicp
+
+#endif

@@ -54,7 +54,7 @@ private:
   Eigen::Isometry3d T;
 };
 
-static auto small_gicp_tbb_registry =
+static auto small_gicp_registry =
   register_odometry("small_gicp", [](const OdometryEstimationParams& params) { return std::make_shared<SmallGICPOnlineOdometryEstimation>(params); });
 
 }  // namespace small_gicp

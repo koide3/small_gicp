@@ -1,7 +1,7 @@
 #include <small_gicp/registration/registration_helper.hpp>
 
 #include <small_gicp/ann/kdtree.hpp>
-#include <small_gicp/ann/kdtree_tbb.hpp>
+#include <small_gicp/ann/kdtree_omp.hpp>
 #include <small_gicp/ann/gaussian_voxelmap.hpp>
 #include <small_gicp/util/downsampling.hpp>
 #include <small_gicp/util/downsampling_omp.hpp>

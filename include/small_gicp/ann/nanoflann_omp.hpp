@@ -52,6 +52,7 @@
 #define NANOFLANN_OMP_HPP_
 
 #include <atomic>
+#include <iostream>
 #include <small_gicp/ann/nanoflann.hpp>
 
 namespace nanoflann {

@@ -3,10 +3,6 @@
 #include <small_gicp/benchmark/benchmark.hpp>
 #include <small_gicp/benchmark/benchmark_odom.hpp>
 
-#include <small_gicp/ann/kdtree.hpp>
-#include <small_gicp/ann/kdtree_omp.hpp>
-#include <small_gicp/ann/kdtree_tbb.hpp>
-
 int main(int argc, char** argv) {
   using namespace small_gicp;
 

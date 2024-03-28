@@ -1,3 +1,5 @@
+#ifdef BUILD_WITH_TBB
+
 #include <small_gicp/benchmark/benchmark_odom.hpp>
 
 #include <tbb/tbb.h>
@@ -67,3 +69,5 @@ static auto small_gicp_tbb_registry =
   register_odometry("small_vgicp_tbb", [](const OdometryEstimationParams& params) { return std::make_shared<SmallVGICPOnlineOdometryEstimationTBB>(params); });
 
 }  // namespace small_gicp
+
+#endif

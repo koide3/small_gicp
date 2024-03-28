@@ -1,3 +1,5 @@
+#ifdef BUILD_WITH_TBB
+
 #include <small_gicp/benchmark/benchmark_odom.hpp>
 
 #include <tbb/tbb.h>
@@ -30,7 +32,11 @@ public:
     control(tbb::global_control::max_allowed_parallelism, params.num_threads),
     throughput(0.0) {}
 
-  ~SmallGICPFlowEstimationTBB() { guik::async_destroy(); }
+  ~SmallGICPFlowEstimationTBB() {
+#ifdef BUILD_WITH_IRIDESCENCE
+    guik::async_destroy();
+#endif
+  }
 
   std::vector<Eigen::Isometry3d> estimate(std::vector<PointCloud::Ptr>& points) override {
     std::vector<Eigen::Isometry3d> traj;
@@ -84,6 +90,7 @@ public:
         report();
       }
 
+#ifdef BUILD_WITH_IRIDESCENCE
       if (params.visualize) {
         static Eigen::Vector2f z_range(0.0f, 0.0f);
         z_range[0] = std::min<double>(z_range[0], T.translation().z() - 5.0f);
@@ -94,6 +101,7 @@ public:
         async_viewer->update_points(guik::anon(), input->points->points, guik::Rainbow(T));
         async_viewer->update_points("points", input->points->points, guik::FlatOrange(T).set_point_scale(2.0f));
       }
+#endif
     });
 
     tbb::flow::make_edge(input_node, preprocess_node);
@@ -136,3 +144,5 @@ static auto small_gicp_tbb_flow_registry =
   register_odometry("small_gicp_tbb_flow", [](const OdometryEstimationParams& params) { return std::make_shared<SmallGICPFlowEstimationTBB>(params); });
 
 }  // namespace small_gicp
+
+#endif

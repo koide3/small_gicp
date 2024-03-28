@@ -7,7 +7,9 @@
 
 #include <small_gicp/util/downsampling.hpp>
 #include <small_gicp/util/downsampling_omp.hpp>
+#ifdef BUILD_WITH_TBB
 #include <small_gicp/util/downsampling_tbb.hpp>
+#endif
 #include <small_gicp/points/point_cloud.hpp>
 #include <small_gicp/points/pcl_point.hpp>
 #include <small_gicp/points/pcl_point_traits.hpp>
@@ -75,7 +77,9 @@ int main(int argc, char** argv) {
   std::cout << "max_num_frames=" << max_num_frames << std::endl;
   std::cout << "num_threads=" << num_threads << std::endl;
 
+#ifdef BUILD_WITH_TBB
   tbb::global_control control(tbb::global_control::max_allowed_parallelism, num_threads);
+#endif
 
   KittiDataset kitti(dataset_path, max_num_frames);
   std::cout << "num_frames=" << kitti.points.size() << std::endl;
@@ -91,8 +95,10 @@ int main(int argc, char** argv) {
   benchmark(points_pcl, 0.5, [](const auto& points, double leaf_size) { return downsample_pcl<pcl::ApproximateVoxelGrid<pcl::PointXYZ>>(points, leaf_size); });
   std::cout << fmt::format("{:25}: ", "small_voxelgrid") << std::flush;
   benchmark(points_pcl, 0.5, [](const auto& points, double leaf_size) { return voxelgrid_sampling(*points, leaf_size); });
+#ifdef BUILD_WITH_TBB
   std::cout << fmt::format("{:25}: ", "small_voxelgrid_tbb") << std::flush;
   benchmark(points_pcl, 0.5, [](const auto& points, double leaf_size) { return voxelgrid_sampling_tbb(*points, leaf_size); });
+#endif
   std::cout << fmt::format("{:25}: ", "small_voxelgrid_omp") << std::flush;
   benchmark(points_pcl, 0.5, [=](const auto& points, double leaf_size) { return voxelgrid_sampling_omp(*points, leaf_size, num_threads); });
 
@@ -105,8 +111,10 @@ int main(int argc, char** argv) {
     benchmark(points_pcl, leaf_size, [](const auto& points, double leaf_size) { return downsample_pcl<pcl::ApproximateVoxelGrid<pcl::PointXYZ>>(points, leaf_size); });
     std::cout << fmt::format("{:25}: ", "small_voxelgrid") << std::flush;
     benchmark(points_pcl, leaf_size, [](const auto& points, double leaf_size) { return voxelgrid_sampling(*points, leaf_size); });
+#ifdef BUILD_WITH_TBB
     std::cout << fmt::format("{:25}: ", "small_voxelgrid_tbb") << std::flush;
     benchmark(points_pcl, leaf_size, [](const auto& points, double leaf_size) { return voxelgrid_sampling_tbb(*points, leaf_size); });
+#endif
     std::cout << fmt::format("{:25}: ", "small_voxelgrid_omp") << std::flush;
     benchmark(points_pcl, leaf_size, [=](const auto& points, double leaf_size) { return voxelgrid_sampling_omp(*points, leaf_size, num_threads); });
   }

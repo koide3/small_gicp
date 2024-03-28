@@ -8,7 +8,9 @@
 #include <small_gicp/util/downsampling.hpp>
 #include <small_gicp/benchmark/benchmark.hpp>
 
+#ifdef BUILD_WITH_IRIDESCENCE
 #include <guik/viewer/async_light_viewer.hpp>
+#endif
 
 namespace small_gicp {
 
@@ -56,6 +58,7 @@ public:
       const Eigen::Isometry3d T = estimate(downsampled);
       traj.emplace_back(T);
 
+#ifdef BUILD_WITH_IRIDESCENCE
       if (params.visualize) {
         auto async_viewer = guik::async_viewer();
         z_range[0] = std::min<double>(z_range[0], T.translation().z() - 5.0f);
@@ -65,6 +68,7 @@ public:
         async_viewer->update_points(guik::anon(), voxelgrid_sampling(*downsampled, 1.0)->points, guik::Rainbow(T));
         async_viewer->lookat(T.translation().cast<float>());
       }
+#endif
 
       points[i].reset();
 
