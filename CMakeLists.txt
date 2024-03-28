@@ -15,6 +15,7 @@ find_package(OpenMP)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 
+option(BUILD_HELPER "Build helper library" ON)
 option(BUILD_TESTS "Build test" OFF)
 option(BUILD_BENCHMARKS "Build benchmarks" OFF)
 option(BUILD_WITH_TBB "Build with TBB" ON)
@@ -29,21 +30,28 @@ if(BUILD_WITH_MARCH_NATIVE)
   set(CMAKE_CXX_FLAGS "-march=native ${CMAKE_CXX_FLAGS}")
 endif()
 
+
+#############
+## Install ##
+#############
+install(DIRECTORY include/ DESTINATION include)
+
 ###########
 ## Build ##
 ###########
 
 # Helper library
-add_library(small_gicp SHARED
-  src/small_gicp/registration/registration.cpp
-  src/small_gicp/registration/registration_helper.cpp
-)
-target_include_directories(small_gicp PUBLIC
-  include
-  ${EIGEN3_INCLUDE_DIR}
-)
-install(DIRECTORY include/ DESTINATION include)
-install(TARGETS small_gicp DESTINATION lib)
+if(BUILD_HELPER)
+  add_library(small_gicp SHARED
+    src/small_gicp/registration/registration.cpp
+    src/small_gicp/registration/registration_helper.cpp
+  )
+  target_include_directories(small_gicp PUBLIC
+    include
+    ${EIGEN3_INCLUDE_DIR}
+  )
+  install(TARGETS small_gicp DESTINATION lib)
+endif()
 
 ###############
 ## Benchmark ##
@@ -121,6 +129,7 @@ endif()
 ## Test ##
 ##########
 if(BUILD_TESTS)
+  find_package(fmt REQUIRED)
   find_package(PCL REQUIRED)
   find_package(TBB REQUIRED)
 
@@ -140,7 +149,6 @@ if(BUILD_TESTS)
       ${PCL_INCLUDE_DIRS}
       ${TBB_INCLUDE_DIRS}
       ${EIGEN3_INCLUDE_DIR}
-      ${Iridescence_INCLUDE_DIRS}
     )
     target_link_libraries(${TEST_NAME}
       small_gicp
@@ -148,7 +156,6 @@ if(BUILD_TESTS)
       GTest::gtest_main
       ${PCL_LIBRARIES}
       ${TBB_LIBRARIES}
-      ${Iridescence_LIBRARIES}
     )
 
     gtest_discover_tests(${TEST_NAME} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})

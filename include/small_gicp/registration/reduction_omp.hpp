@@ -4,7 +4,7 @@
 
 namespace small_gicp {
 
-#ifdef _OPENMP
+#ifndef _OPENMP
 inline int omp_get_thread_num() {
   return 0;
 }

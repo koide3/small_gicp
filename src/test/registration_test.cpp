@@ -17,8 +17,6 @@
 #include <small_gicp/benchmark/read_points.hpp>
 #include <small_gicp/registration/registration_helper.hpp>
 
-#include <guik/viewer/light_viewer.hpp>
-
 using namespace small_gicp;
 
 class RegistrationTest : public testing::Test, public testing::WithParamInterface<std::tuple<const char*, const char*>> {
@@ -185,7 +183,7 @@ INSTANTIATE_TEST_SUITE_P(
     return sst.str();
   });
 
-TEST_P(RegistrationTest, EmptyTest) {
+TEST_P(RegistrationTest, RegistrationTest) {
   const std::string factor = std::get<0>(GetParam());
   const std::string reduction = std::get<1>(GetParam());
 
