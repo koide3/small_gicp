@@ -19,7 +19,6 @@ namespace small_gicp {
 template <typename InputPointCloud, typename OutputPointCloud = InputPointCloud>
 std::shared_ptr<OutputPointCloud> voxelgrid_sampling_omp(const InputPointCloud& points, double leaf_size, int num_threads = 4) {
   if (traits::size(points) == 0) {
-    std::cerr << "warning: empty input points!!" << std::endl;
     return std::make_shared<OutputPointCloud>();
   }
 

@@ -19,7 +19,6 @@ namespace small_gicp {
 template <typename InputPointCloud, typename OutputPointCloud = InputPointCloud>
 std::shared_ptr<OutputPointCloud> voxelgrid_sampling_tbb(const InputPointCloud& points, double leaf_size) {
   if (traits::size(points) == 0) {
-    std::cerr << "warning: empty input points!!" << std::endl;
     return std::make_shared<OutputPointCloud>();
   }
 
@@ -50,7 +49,7 @@ std::shared_ptr<OutputPointCloud> voxelgrid_sampling_tbb(const InputPointCloud& 
   traits::resize(*downsampled, traits::size(points));
 
   // Take block-wise sum
-  const int block_size = 1024;
+  const int block_size = 2048;
   std::atomic_uint64_t num_points = 0;
   tbb::parallel_for(tbb::blocked_range<size_t>(0, traits::size(points), block_size), [&](const tbb::blocked_range<size_t>& range) {
     std::vector<Eigen::Vector4d> sub_points;

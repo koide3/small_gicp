@@ -33,6 +33,9 @@ public:
   /// @brief Number of points
   size_t size() const { return points.size(); }
 
+  /// @brief Check if the point cloud is empty
+  bool empty() const { return points.empty(); }
+
   /// @brief Resize point/normal/cov buffers
   /// @param n  Number of points
   void resize(size_t n) {

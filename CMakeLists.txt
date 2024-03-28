@@ -113,7 +113,6 @@ target_link_libraries(downsampling_benchmark
 )
 
 
-
 ##########
 ## Test ##
 ##########
@@ -143,6 +142,6 @@ if(BUILD_TESTS)
       ${TBB_LIBRARIES}
     )
 
-    gtest_discover_tests(${TEST_NAME})
+    gtest_discover_tests(${TEST_NAME} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
   endforeach()
 endif()
