@@ -34,6 +34,6 @@ jobs:
       - name: Docker build
         uses: docker/build-push-action@v2
         with:
-          file: ${{github.workspace}}/docker/Dockerfile${{ matrix.TOOLCHAIN }}
+          file: ${{github.workspace}}/docker/Dockerfile.${{ matrix.TOOLCHAIN }}
           context: .
           push: false
