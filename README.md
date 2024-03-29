@@ -1,21 +1,25 @@
 # small_gicp (fast_gicp2)
 
-**small_gicp** is a header-only C++ library that provides efficient and parallelized fine point cloud registration algorithms (ICP, Point-to-Plane ICP, GICP, VGICP, etc.). It is essentially an optimized and refined version of its predecessor, [fast_gicp](https://github.com/SMRT-AIST/fast_gicp), with the following features. 
+**small_gicp** is a header-only C++ library that provides efficient and parallelized fine point cloud registration algorithms (ICP, Point-to-Plane ICP, GICP, VGICP, etc.). It is a regined and optimized version of its predecessor, [fast_gicp](https://github.com/SMRT-AIST/fast_gicp), with the following features. 
 
 - **Highly optimized** : The implementation of the core registration algorithm is further optimized from that in fast_gicp. It can provide up to 2x speed up compared to fast_gicp.
 - **All parallerized** : small_gicp provides parallelized implementations of several algorithms in the point cloud registration process (Downsampling, KdTree construction, Normal/covariance estimation). As a parallelism backend, either (or both) of [OpenMP](https://www.openmp.org/) and [Intel TBB](https://github.com/oneapi-src/oneTBB) can be used. 
-- **Minimum dependency** : small_gicp is a header-only library and requires only [Eigen](https://eigen.tuxfamily.org/) (and bundled [nanoflann](https://github.com/jlblancoc/nanoflann) and [Sophus](https://github.com/strasdat/Sophus)) at a minimum. Optionally, it provides the [PCL](https://pointclouds.org/) registration interface so that it can be used as a drop-in replacement in many systems.
-- **Customizable** : small_gicp is implemented with the trait mechanism that allows feeding any custom point cloud class to the registration algorithm. Furthermore, the template-based implementation allows customizing the regisration process with your custom correspondence estimator and registration factors.
+- **Minimum dependency** : Only [Eigen](https://eigen.tuxfamily.org/) (and bundled [nanoflann](https://github.com/jlblancoc/nanoflann) and [Sophus](https://github.com/strasdat/Sophus)) are required at a minimum. Optionally, it provides the [PCL](https://pointclouds.org/) registration interface so that it can be used as a drop-in replacement in many systems.
+- **Customizable** : small_gicp is implemented with the trait mechanism that allows feeding any custom point cloud class to the registration algorithm. Furthermore, the template-based implementation allows customizing the regisration process with your original correspondence estimator and registration factors.
 
 [![Build](https://github.com/koide3/small_gicp/actions/workflows/build.yml/badge.svg)](https://github.com/koide3/small_gicp/actions/workflows/build.yml)
 
+## Requirements
+
+This library uses some C++20 features. While porting it to older environments should be easy, we have no plan to support environments older than Ubuntu 22.04.
+
 ## Installation
 
-This is a header-only library. You can just download and put it in your project directory to use all capabilities.
+small_gicp is a header-only library. You can just download and drop it in your project directory to use it.
 
-Meanwhile, if you just want to perform basic point cloud registration without fine customization, you can build and install the helper library (see `small_gicp/registration/registration_helper.hpp` for details) as follows.
+Meanwhile, if you need only basic point cloud registration, you can build and install the helper library as follows.
 
-```cpp
+```bash
 sudo apt-get install libeigen3-dev libomp-dev
 
 cd small_gicp
@@ -26,11 +30,12 @@ sudo make install
 
 ## Usage
 
-The following examples assume `using namespace small_gicp`.
+The following examples assume `using namespace small_gicp` is placed somewhere.
 
 ### Using helper library ([01_basic_resigtration.cpp](https://github.com/koide3/small_gicp/blob/master/src/example/01_basic_registration.cpp))
 
-<details><summary>The helper library (`registration_helper.hpp`) enables processing point clouds represented as `std::vector<Eigen::Vector(3|4)(f|d)>` easily. </summary>
+The helper library (`registration_helper.hpp`) enables processing point clouds represented as `std::vector<Eigen::Vector(3|4)(f|d)>` easily.
+<details><summary>Expand</summary>
 
 `small_gicp::align` takes two point clouds (`std::vectors` of `Eigen::Vector(3|4)(f|d)`) and returns a registration result (estimated transformation and some information on the optimization result). This is the easiest way to use **small_gicp** but causes an overhead for duplicated preprocessing.
 
@@ -85,7 +90,9 @@ Eigen::Matrix<double, 6, 6> H = result.H;      // Final Hessian matrix (6x6)
 
 ### Using with PCL interface ([02_basic_resigtration_pcl.cpp](https://github.com/koide3/small_gicp/blob/master/src/example/02_basic_resigtration_pcl.cpp))
 
-<details><summary>The PCL interface allows using small_gicp as a drop-in replacement for `pcl::GeneralizedIterativeClosestPoint`. It is also possible to directly feed `pcl::PointCloud` to `small_gicp::Registration`.</summary>
+The PCL interface allows using small_gicp as a drop-in replacement for `pcl::GeneralizedIterativeClosestPoint`. It is also possible to directly feed `pcl::PointCloud` to algorithms implemented in small_gicp.
+
+<details><summary>Expand</summary>
 
 ```cpp
 #include <small_gicp/pcl/pcl_registration.hpp>
@@ -153,7 +160,8 @@ auto result = registration.align(*target, *source, *target_tree, Eigen::Isometry
 
 ### Using `small_gicp::Registration` template (`registration.hpp`)
 
-<details><summary>If you want to fine-control and customize the registration process, use `small_gicp::Registration` template that allows changing the inner algorithms and parameters.</summary>
+If you want to fine-control and customize the registration process, use `small_gicp::Registration` template that allows modifying the inner algorithms and parameters.
+<details><summary>Expand</summary>
 
 ```cpp
 #include <small_gicp/ann/kdtree_omp.hpp>
@@ -222,8 +230,8 @@ registration.optimizer.init_lambda = 1e-3;                                      
 
 ### Downsampling
 
-- Single-threaded `small_gicp::voxelgrid_sampling` is about 1.3x faster than `pcl::VoxelGrid`.
-- Multi-threaded `small_gicp::voxelgrid_sampling_tbb` (6 threads) is about 3.2x faster than `pcl::VoxelGrid`.
+- Single-thread `small_gicp::voxelgrid_sampling` is about 1.3x faster than `pcl::VoxelGrid`.
+- Multi-thread `small_gicp::voxelgrid_sampling_tbb` (6 threads) is about 3.2x faster than `pcl::VoxelGrid`.
 - `small_gicp::voxelgrid_sampling` gives accurate downsampling results (almost identical to those of `pcl::VoxelGrid`) while `pcl::ApproximateVoxelGrid` yields spurious points (up to 2x points).
 - `small_gicp::voxelgrid_sampling` can process a larger point cloud with a fine voxel resolution compared to `pcl::VoxelGrid`.
 
@@ -231,11 +239,14 @@ registration.optimizer.init_lambda = 1e-3;                                      
 
 ### Odometry estimation
 
-- Single-threaded `small_gicp::GICP` is about 2.4x and 1.9x faster than `pcl::GICP` and `fast_gicp::GICP`, respectively.
-- `small_gicp` shows a better scalability to many-threads situations compared to `fast_gicp`.
-- `small_gicp::GICP` with TBB flow graph shows an excellent multi-thread scalablity but with a latency degradation.
+- Single-thread `small_gicp::GICP` is about 2.4x and 1.9x faster than `pcl::GICP` and `fast_gicp::GICP`, respectively.
+- `small_gicp::(GICP|VGICP)` shows a better multi-thread scalability compared to `fast_gicp::(GICP|VGICP)`.
+- `small_gicp::GICP` parallelized with [TBB flow graph](https://github.com/koide3/small_gicp/blob/master/src/odometry_benchmark_small_gicp_tbb_flow.cpp) shows an excellent scalablity to many-threads situations (~128 threads) but with a latency degradation.
 
 ![odometry_time](docs/assets/odometry_time.png)
+
+## License
+This package is released under the MIT license.
 
 ## Papers
 - Kenji Koide, Masashi Yokozuka, Shuji Oishi, and Atsuhiko Banno, Voxelized GICP for Fast and Accurate 3D Point Cloud Registration, ICRA2021

@@ -26,7 +26,7 @@ RUN rm -rf ./*
 RUN cmake .. -DBUILD_WITH_TBB=ON
 RUN cmake --build . -j$(nproc)
 
-RUN cmake .. -DBUILD_TESTS=ON -DBUILD_WITH_TBB=ON -DBUILD_BENCHMARKS=ON -DBUILD_WITH_PCL=ON
+RUN cmake .. -DBUILD_TESTS=ON -DBUILD_EXAMPLES=ON -DBUILD_BENCHMARKS=ON -DBUILD_WITH_TBB=ON -DBUILD_WITH_PCL=ON
 RUN cmake --build . -j$(nproc)
 RUN ctest -j$(nproc)
 
