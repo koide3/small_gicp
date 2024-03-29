@@ -43,7 +43,7 @@ int main(int argc, char** argv) {
     } else if (arg == "--num_neighbors") {
       params.num_neighbors = std::stoi(argv[i + 1]);
     } else if (arg == "--downsampling_resolution") {
-      params.downsample_resolution = std::stod(argv[i + 1]);
+      params.downsampling_resolution = std::stod(argv[i + 1]);
     } else if (arg == "--voxel_resolution") {
       params.voxel_resolution = std::stod(argv[i + 1]);
     } else if (arg == "--engine") {
@@ -59,7 +59,7 @@ int main(int argc, char** argv) {
   std::cout << "registration_engine=" << engine << std::endl;
   std::cout << "num_threads=" << params.num_threads << std::endl;
   std::cout << "num_neighbors=" << params.num_neighbors << std::endl;
-  std::cout << "downsampling_resolution=" << params.downsample_resolution << std::endl;
+  std::cout << "downsampling_resolution=" << params.downsampling_resolution << std::endl;
   std::cout << "voxel_resolution=" << params.voxel_resolution << std::endl;
   std::cout << "visualize=" << params.visualize << std::endl;
 

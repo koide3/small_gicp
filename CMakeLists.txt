@@ -16,7 +16,8 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 
 option(BUILD_HELPER "Build helper library" ON)
-option(BUILD_TESTS "Build test" OFF)
+option(BUILD_TESTS "Build tests" OFF)
+option(BUILD_EXAMPLES "Build examples" OFF)
 option(BUILD_BENCHMARKS "Build benchmarks" OFF)
 option(BUILD_WITH_TBB "Build with TBB" ON)
 option(BUILD_WITH_PCL "Build with PCL (required for benchmark and test only)" OFF)
@@ -124,6 +125,37 @@ if(BUILD_BENCHMARKS)
   endif()
 endif()
 
+#############
+## Example ##
+#############
+if(BUILD_EXAMPLES)
+find_package(fmt REQUIRED)
+find_package(PCL REQUIRED)
+find_package(TBB REQUIRED)
+find_package(Iridescence REQUIRED)
+
+file(GLOB EXAMPLE_SOURCES "src/example/*.cpp")
+foreach(EXAMPLE_SOURCE ${EXAMPLE_SOURCES})
+  get_filename_component(EXAMPLE_NAME ${EXAMPLE_SOURCE} NAME_WE)
+  add_executable(${EXAMPLE_NAME} ${EXAMPLE_SOURCE})
+  target_include_directories(${EXAMPLE_NAME} PUBLIC
+    include
+    ${PCL_INCLUDE_DIRS}
+    ${TBB_INCLUDE_DIRS}
+    ${EIGEN3_INCLUDE_DIR}
+    ${Iridescence_INCLUDE_DIRS}
+  )
+  target_link_libraries(${EXAMPLE_NAME}
+    small_gicp
+    fmt::fmt
+    ${PCL_LIBRARIES}
+    ${TBB_LIBRARIES}
+    ${Iridescence_LIBRARIES}
+  )
+endforeach()
+
+
+endif()
 
 ##########
 ## Test ##
