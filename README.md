@@ -6,6 +6,7 @@
 - **All parallerized** : small_gicp provides parallelized implementations of several algorithms in the point cloud registration process (Downsampling, KdTree construction, Normal/covariance estimation). As a parallelism backend, either (or both) of [OpenMP](https://www.openmp.org/) and [Intel TBB](https://github.com/oneapi-src/oneTBB) can be used. 
 - **Minimum dependency** : Only [Eigen](https://eigen.tuxfamily.org/) (and bundled [nanoflann](https://github.com/jlblancoc/nanoflann) and [Sophus](https://github.com/strasdat/Sophus)) are required at a minimum. Optionally, it provides the [PCL](https://pointclouds.org/) registration interface so that it can be used as a drop-in replacement in many systems.
 - **Customizable** : small_gicp is implemented with the trait mechanism that allows feeding any custom point cloud class to the registration algorithm. Furthermore, the template-based implementation allows customizing the regisration process with your original correspondence estimator and registration factors.
+- **Python bindinds** (coming soon) : The isolation from PCL makes the small_gicp's python bindinds more portable and connectable to other libraries seamlessly. 
 
 [![Build](https://github.com/koide3/small_gicp/actions/workflows/build.yml/badge.svg)](https://github.com/koide3/small_gicp/actions/workflows/build.yml)
 
@@ -14,6 +15,8 @@
 This library uses some C++20 features. While porting it to older environments should be easy, we have no plan to support environments older than Ubuntu 22.04.
 
 ## Installation
+
+### C++
 
 small_gicp is a header-only library. You can just download and drop it in your project directory to use it.
 
@@ -28,13 +31,17 @@ cmake .. -DCMAKE_BUILD_TYPE=Release && make -j
 sudo make install
 ```
 
-## Usage
+### Python
+
+Coming soon.
+
+## Usage (C++)
 
 The following examples assume `using namespace small_gicp` is placed somewhere.
 
 ### Using helper library ([01_basic_resigtration.cpp](https://github.com/koide3/small_gicp/blob/master/src/example/01_basic_registration.cpp))
 
-The helper library (`registration_helper.hpp`) enables processing point clouds represented as `std::vector<Eigen::Vector(3|4)(f|d)>` easily.
+The helper library (`registration_helper.hpp`) enables easily processing point clouds represented as `std::vector<Eigen::Vector(3|4)(f|d)>`.
 <details><summary>Expand</summary>
 
 `small_gicp::align` takes two point clouds (`std::vectors` of `Eigen::Vector(3|4)(f|d)`) and returns a registration result (estimated transformation and some information on the optimization result). This is the easiest way to use **small_gicp** but causes an overhead for duplicated preprocessing.
@@ -225,6 +232,10 @@ registration.optimizer.init_lambda = 1e-3;                                      
 ```
 
 </details>
+
+## Usage (Python)
+
+Coming soon.
 
 ## Benchmark
 
