@@ -79,6 +79,9 @@ align(const std::vector<Eigen::Matrix<double, 4, 1>>&, const std::vector<Eigen::
 RegistrationResult
 align(const PointCloud& target, const PointCloud& source, const KdTree<PointCloud>& target_tree, const Eigen::Isometry3d& init_T, const RegistrationSetting& setting) {
   switch (setting.type) {
+    default:
+      std::cerr << "invalid registration type" << std::endl;
+      abort();
     case RegistrationSetting::ICP: {
       Registration<ICPFactor, ParallelReductionOMP> registration;
       registration.reduction.num_threads = setting.num_threads;
