@@ -16,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        DISTRO: [jammy]
         TOOLCHAIN: [gcc, llvm]
 
     steps:
@@ -35,5 +36,6 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           file: ${{github.workspace}}/docker/Dockerfile.${{ matrix.TOOLCHAIN }}
+          build-args: BASE_IMAGE=ubuntu:${{ matrix.DISTRO }}
           context: .
           push: false
