@@ -11,8 +11,8 @@
 #include <small_gicp/util/downsampling_tbb.hpp>
 #endif
 #include <small_gicp/points/point_cloud.hpp>
-#include <small_gicp/points/pcl_point.hpp>
-#include <small_gicp/points/pcl_point_traits.hpp>
+#include <small_gicp/pcl/pcl_point.hpp>
+#include <small_gicp/pcl/pcl_point_traits.hpp>
 #include <small_gicp/benchmark/benchmark.hpp>
 
 namespace small_gicp {

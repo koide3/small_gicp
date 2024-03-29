@@ -5,6 +5,7 @@
 namespace small_gicp {
 
 #ifndef _OPENMP
+#warning "OpenMP is not available. Parallel reduction will be disabled."
 inline int omp_get_thread_num() {
   return 0;
 }

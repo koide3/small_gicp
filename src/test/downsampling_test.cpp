@@ -4,8 +4,8 @@
 #include <pcl/filters/voxel_grid.h>
 
 #include <small_gicp/points/point_cloud.hpp>
-#include <small_gicp/points/pcl_point.hpp>
-#include <small_gicp/points/pcl_point_traits.hpp>
+#include <small_gicp/pcl/pcl_point.hpp>
+#include <small_gicp/pcl/pcl_point_traits.hpp>
 #include <small_gicp/util/downsampling.hpp>
 #include <small_gicp/util/downsampling_omp.hpp>
 #include <small_gicp/util/downsampling_tbb.hpp>

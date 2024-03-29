@@ -8,7 +8,7 @@
 
 namespace small_gicp {
 
-/// @brief Point-to-point error factor
+/// @brief Point-to-point per-point error factor.
 struct ICPFactor {
   ICPFactor() : target_index(std::numeric_limits<size_t>::max()), source_index(std::numeric_limits<size_t>::max()) {}
 

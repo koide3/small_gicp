@@ -30,7 +30,7 @@ public:
       return T;
     }
 
-    Registration<GICPFactor, ParallelReductionOMP, DistanceRejector, LevenbergMarquardtOptimizer> registration;
+    Registration<GICPFactor, ParallelReductionOMP> registration;
     registration.rejector.max_dist_sq = params.max_correspondence_distance * params.max_correspondence_distance;
 
     auto result = registration.align(*target_voxelmap, *points, *target_voxelmap, Eigen::Isometry3d::Identity());

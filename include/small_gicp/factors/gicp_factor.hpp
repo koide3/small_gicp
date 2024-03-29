@@ -8,7 +8,7 @@
 
 namespace small_gicp {
 
-/// @brief GICP (distribution-to-distribution) error factor
+/// @brief GICP (distribution-to-distribution) per-point error factor.
 struct GICPFactor {
   /// @brief Constructor
   GICPFactor() : target_index(std::numeric_limits<size_t>::max()), source_index(std::numeric_limits<size_t>::max()), mahalanobis(Eigen::Matrix4d::Zero()) {}

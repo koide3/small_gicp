@@ -3,8 +3,8 @@
 #include <random>
 #include <ranges>
 #include <small_gicp/points/point_cloud.hpp>
-#include <small_gicp/points/pcl_point.hpp>
-#include <small_gicp/points/pcl_point_traits.hpp>
+#include <small_gicp/pcl/pcl_point.hpp>
+#include <small_gicp/pcl/pcl_point_traits.hpp>
 
 using namespace small_gicp;
 

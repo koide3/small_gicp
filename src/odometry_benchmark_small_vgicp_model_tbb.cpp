@@ -31,7 +31,7 @@ public:
       return T;
     }
 
-    Registration<GICPFactor, ParallelReductionTBB, DistanceRejector, LevenbergMarquardtOptimizer> registration;
+    Registration<GICPFactor, ParallelReductionTBB> registration;
     auto result = registration.align(*voxelmap, *points, *voxelmap, T);
 
     T = result.T_target_source;

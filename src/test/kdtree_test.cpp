@@ -10,7 +10,7 @@
 #include <small_gicp/ann/kdtree_tbb.hpp>
 #include <small_gicp/util/downsampling.hpp>
 #include <small_gicp/points/point_cloud.hpp>
-#include <small_gicp/points/pcl_point_traits.hpp>
+#include <small_gicp/pcl/pcl_point_traits.hpp>
 #include <small_gicp/benchmark/read_points.hpp>
 
 using namespace small_gicp;

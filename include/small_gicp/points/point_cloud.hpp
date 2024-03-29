@@ -30,13 +30,13 @@ public:
   /// @brief Destructor
   ~PointCloud() {}
 
-  /// @brief Number of points
+  /// @brief Number of points.
   size_t size() const { return points.size(); }
 
-  /// @brief Check if the point cloud is empty
+  /// @brief Check if the point cloud is empty.
   bool empty() const { return points.empty(); }
 
-  /// @brief Resize point/normal/cov buffers
+  /// @brief Resize point/normal/cov buffers.
   /// @param n  Number of points
   void resize(size_t n) {
     points.resize(n);
@@ -44,28 +44,28 @@ public:
     covs.resize(n);
   }
 
-  /// @brief Get i-th point
+  /// @brief Get i-th point.
   Eigen::Vector4d& point(size_t i) { return points[i]; }
 
-  /// @brief Get i-th normal
+  /// @brief Get i-th normal.
   Eigen::Vector4d& normal(size_t i) { return normals[i]; }
 
-  /// @brief Get i-th covariance
+  /// @brief Get i-th covariance.
   Eigen::Matrix4d& cov(size_t i) { return covs[i]; }
 
-  /// @brief Get i-th point (const)
+  /// @brief Get i-th point (const).
   const Eigen::Vector4d& point(size_t i) const { return points[i]; }
 
-  /// @brief Get i-th normal (const)
+  /// @brief Get i-th normal (const).
   const Eigen::Vector4d& normal(size_t i) const { return normals[i]; }
 
-  /// @brief Get i-th covariance (const)
+  /// @brief Get i-th covariance (const).
   const Eigen::Matrix4d& cov(size_t i) const { return covs[i]; }
 
 public:
-  std::vector<Eigen::Vector4d> points;   ///< Point coordinates
-  std::vector<Eigen::Vector4d> normals;  ///< Point normals
-  std::vector<Eigen::Matrix4d> covs;     ///< Point covariances
+  std::vector<Eigen::Vector4d> points;   ///< Point coordinates (x, y, z, 1)
+  std::vector<Eigen::Vector4d> normals;  ///< Point normals (nx, ny, nz, 0)
+  std::vector<Eigen::Matrix4d> covs;     ///< Point covariances (3x3 matrix) + zero padding
 };
 
 namespace traits {

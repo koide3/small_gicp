@@ -2,6 +2,7 @@
 
 #include <small_gicp/ann/traits.hpp>
 #include <small_gicp/points/traits.hpp>
+#include <small_gicp/factors/general_factor.hpp>
 #include <small_gicp/registration/rejector.hpp>
 #include <small_gicp/registration/reduction.hpp>
 #include <small_gicp/registration/optimizer.hpp>
@@ -10,11 +11,16 @@
 
 namespace small_gicp {
 
-/// @brief Point cloud registration
-template <typename Factor, typename Reduction, typename CorrespondenceRejector = DistanceRejector, typename Optimizer = LevenbergMarquardtOptimizer>
+/// @brief Point cloud registration.
+template <
+  typename Factor,
+  typename Reduction,
+  typename GeneralFactor = NullFactor,
+  typename CorrespondenceRejector = DistanceRejector,
+  typename Optimizer = LevenbergMarquardtOptimizer>
 struct Registration {
 public:
-  /// @brief Align point clouds
+  /// @brief Align point clouds.
   /// @param target       Target point cloud
   /// @param source       Source point cloud
   /// @param target_tree  Nearest neighbor search for the target point cloud
@@ -24,12 +30,13 @@ public:
   RegistrationResult
   align(const TargetPointCloud& target, const SourcePointCloud& source, const TargetTree& target_tree, const Eigen::Isometry3d& init_T = Eigen::Isometry3d::Identity()) const {
     std::vector<Factor> factors(traits::size(source));
-    return optimizer.optimize(target, source, target_tree, rejector, criteria, reduction, init_T, factors);
+    return optimizer.optimize(target, source, target_tree, rejector, criteria, reduction, init_T, factors, general_factor);
   }
 
 public:
   TerminationCriteria criteria;     ///< Termination criteria
   CorrespondenceRejector rejector;  ///< Correspondence rejector
+  GeneralFactor general_factor;     ///< General factor
   Reduction reduction;              ///< Reduction
   Optimizer optimizer;              ///< Optimizer
 };

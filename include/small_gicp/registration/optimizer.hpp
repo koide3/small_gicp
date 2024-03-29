@@ -17,7 +17,8 @@ struct GaussNewtonOptimizer {
     typename CorrespondenceRejector,
     typename TerminationCriteria,
     typename Reduction,
-    typename Factor>
+    typename Factor,
+    typename GeneralFactor>
   RegistrationResult optimize(
     const TargetPointCloud& target,
     const SourcePointCloud& source,
@@ -26,7 +27,8 @@ struct GaussNewtonOptimizer {
     const TerminationCriteria& criteria,
     Reduction& reduction,
     const Eigen::Isometry3d& init_T,
-    std::vector<Factor>& factors) const {
+    std::vector<Factor>& factors,
+    GeneralFactor& general_factor) const {
     //
     if (verbose) {
       std::cout << "--- GN optimization ---" << std::endl;
@@ -34,7 +36,8 @@ struct GaussNewtonOptimizer {
 
     RegistrationResult result(init_T);
     for (int i = 0; i < max_iterations && !result.converged; i++) {
-      const auto [H, b, e] = reduction.linearize(target, source, target_tree, rejector, result.T_target_source, factors);
+      auto [H, b, e] = reduction.linearize(target, source, target_tree, rejector, result.T_target_source, factors);
+      general_factor.update_linearized_system(target, source, target_tree, result.T_target_source, &H, &b, &e);
       const Eigen::Matrix<double, 6, 1> delta = (H + lambda * Eigen ::Matrix<double, 6, 6>::Identity()).ldlt().solve(-b);
 
       if (verbose) {
@@ -70,7 +73,8 @@ struct LevenbergMarquardtOptimizer {
     typename CorrespondenceRejector,
     typename TerminationCriteria,
     typename Reduction,
-    typename Factor>
+    typename Factor,
+    typename GeneralFactor>
   RegistrationResult optimize(
     const TargetPointCloud& target,
     const SourcePointCloud& source,
@@ -79,7 +83,8 @@ struct LevenbergMarquardtOptimizer {
     const TerminationCriteria& criteria,
     Reduction& reduction,
     const Eigen::Isometry3d& init_T,
-    std::vector<Factor>& factors) const {
+    std::vector<Factor>& factors,
+    GeneralFactor& general_factor) const {
     //
     if (verbose) {
       std::cout << "--- LM optimization ---" << std::endl;
@@ -88,13 +93,15 @@ struct LevenbergMarquardtOptimizer {
     double lambda = init_lambda;
     RegistrationResult result(init_T);
     for (int i = 0; i < max_iterations && !result.converged; i++) {
-      const auto [H, b, e] = reduction.linearize(target, source, target_tree, rejector, result.T_target_source, factors);
+      auto [H, b, e] = reduction.linearize(target, source, target_tree, rejector, result.T_target_source, factors);
+      general_factor.update_linearized_system(target, source, target_tree, result.T_target_source, &H, &b, &e);
 
       bool success = false;
       for (int j = 0; j < max_inner_iterations; j++) {
         const Eigen::Matrix<double, 6, 1> delta = (H + lambda * Eigen ::Matrix<double, 6, 6>::Identity()).ldlt().solve(-b);
         const Eigen::Isometry3d new_T = result.T_target_source * se3_exp(delta);
-        const double new_e = reduction.error(target, source, new_T, factors);
+        double new_e = reduction.error(target, source, new_T, factors);
+        general_factor.update_error(target, source, new_T, &e);
 
         if (verbose) {
           std::cout << "iter=" << i << " inner=" << j << " e=" << e << " new_e=" << new_e << " lambda=" << lambda << " dt=" << delta.tail<3>().norm()
