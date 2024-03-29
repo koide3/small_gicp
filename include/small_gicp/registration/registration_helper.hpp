@@ -9,17 +9,17 @@ namespace small_gicp {
 
 /// @brief Preprocess point cloud (downsampling, kdtree creation, and normal and covariance estimation)
 /// @param points                Input points
-/// @param downsample_resolution Downsample resolution
+/// @param downsampling_resolution Downsample resolution
 /// @param num_neighbors         Number of neighbors for normal/covariance estimation
 /// @param num_threads           Number of threads
 std::pair<PointCloud::Ptr, std::shared_ptr<KdTree<PointCloud>>>
-preprocess_points(const PointCloud& points, double downsample_resolution, int num_neighbors = 10, int num_threads = 4);
+preprocess_points(const PointCloud& points, double downsampling_resolution, int num_neighbors = 10, int num_threads = 4);
 
 /// @brief Preprocess point cloud (downsampling, kdtree creation, and normal and covariance estimation)
 /// @note  This function only accepts Eigen::Vector(3|4)(f|d) as input
 template <typename T, int D>
 std::pair<PointCloud::Ptr, std::shared_ptr<KdTree<PointCloud>>>
-preprocess_points(const std::vector<Eigen::Matrix<T, D, 1>>& points, double downsample_resolution, int num_neighbors = 10, int num_threads = 4);
+preprocess_points(const std::vector<Eigen::Matrix<T, D, 1>>& points, double downsampling_resolution, int num_neighbors = 10, int num_threads = 4);
 
 /// @brief Create Gaussian voxel map
 /// @param points            Input points
@@ -32,7 +32,7 @@ struct RegistrationSetting {
 
   RegistrationType type = GICP;              ///< Registration type
   double voxel_resolution = 1.0;             ///< Voxel resolution for VGICP
-  double downsample_resolution = 0.25;       ///< Downsample resolution (this will be used only in the Eigen-based interface)
+  double downsampling_resolution = 0.25;     ///< Downsample resolution (this will be used only in the Eigen-based interface)
   double max_correspondence_distance = 1.0;  ///< Maximum correspondence distance
   int num_threads = 4;                       ///< Number of threads
 };

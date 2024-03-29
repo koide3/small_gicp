@@ -17,14 +17,14 @@
 namespace small_gicp {
 
 // Preprocess points
-std::pair<PointCloud::Ptr, std::shared_ptr<KdTree<PointCloud>>> preprocess_points(const PointCloud& points, double downsample_resolution, int num_neighbors, int num_threads) {
+std::pair<PointCloud::Ptr, std::shared_ptr<KdTree<PointCloud>>> preprocess_points(const PointCloud& points, double downsampling_resolution, int num_neighbors, int num_threads) {
   if (num_threads == 1) {
-    auto downsampled = voxelgrid_sampling(points, downsample_resolution);
+    auto downsampled = voxelgrid_sampling(points, downsampling_resolution);
     auto kdtree = std::make_shared<KdTree<PointCloud>>(downsampled);
     estimate_normals_covariances(*downsampled, *kdtree, num_neighbors);
     return {downsampled, kdtree};
   } else {
-    auto downsampled = voxelgrid_sampling_omp(points, downsample_resolution);
+    auto downsampled = voxelgrid_sampling_omp(points, downsampling_resolution);
     auto kdtree = std::make_shared<KdTree<PointCloud>>(downsampled);
     estimate_normals_covariances_omp(*downsampled, *kdtree, num_neighbors, num_threads);
     return {downsampled, kdtree};
@@ -34,8 +34,8 @@ std::pair<PointCloud::Ptr, std::shared_ptr<KdTree<PointCloud>>> preprocess_point
 // Preprocess points with Eigen input
 template <typename T, int D>
 std::pair<PointCloud::Ptr, std::shared_ptr<KdTree<PointCloud>>>
-preprocess_points(const std::vector<Eigen::Matrix<T, D, 1>>& points, double downsample_resolution, int num_neighbors, int num_threads) {
-  return preprocess_points(*std::make_shared<PointCloud>(points), downsample_resolution, num_neighbors, num_threads);
+preprocess_points(const std::vector<Eigen::Matrix<T, D, 1>>& points, double downsampling_resolution, int num_neighbors, int num_threads) {
+  return preprocess_points(*std::make_shared<PointCloud>(points), downsampling_resolution, num_neighbors, num_threads);
 }
 
 // Explicit instantiation
@@ -55,8 +55,8 @@ GaussianVoxelMap::Ptr create_gaussian_voxelmap(const PointCloud& points, double 
 template <typename T, int D>
 RegistrationResult
 align(const std::vector<Eigen::Matrix<T, D, 1>>& target, const std::vector<Eigen::Matrix<T, D, 1>>& source, const Eigen::Isometry3d& init_T, const RegistrationSetting& setting) {
-  auto [target_points, target_tree] = preprocess_points(*std::make_shared<PointCloud>(target), setting.downsample_resolution, 10, setting.num_threads);
-  auto [source_points, source_tree] = preprocess_points(*std::make_shared<PointCloud>(source), setting.downsample_resolution, 10, setting.num_threads);
+  auto [target_points, target_tree] = preprocess_points(*std::make_shared<PointCloud>(target), setting.downsampling_resolution, 10, setting.num_threads);
+  auto [source_points, source_tree] = preprocess_points(*std::make_shared<PointCloud>(source), setting.downsampling_resolution, 10, setting.num_threads);
 
   if (setting.type == RegistrationSetting::VGICP) {
     auto target_voxelmap = create_gaussian_voxelmap(*target_points, setting.voxel_resolution);

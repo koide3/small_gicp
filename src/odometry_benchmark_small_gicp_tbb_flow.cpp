@@ -46,7 +46,7 @@ public:
     tbb::flow::broadcast_node<InputFrame::Ptr> input_node(graph);
     tbb::flow::function_node<InputFrame::Ptr, InputFrame::Ptr> preprocess_node(graph, tbb::flow::unlimited, [&](const InputFrame::Ptr& input) {
       input->sw.start();
-      input->points = voxelgrid_sampling(*input->points, params.downsample_resolution);
+      input->points = voxelgrid_sampling(*input->points, params.downsampling_resolution);
       input->kdtree = std::make_shared<KdTree<PointCloud>>(input->points);
       estimate_covariances(*input->points, *input->kdtree, params.num_neighbors);
       return input;

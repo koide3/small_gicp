@@ -82,6 +82,7 @@ def main():
       axes[i, j].legend()
       axes[i, j].grid()
   
+  fig.savefig('odometry_time.svg')
   pyplot.show()
 
 if __name__ == "__main__":

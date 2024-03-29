@@ -19,7 +19,7 @@ public:
   bool visualize = false;
   int num_threads = 4;
   int num_neighbors = 20;
-  double downsample_resolution = 0.25;
+  double downsampling_resolution = 0.25;
   double voxel_resolution = 1.0;
   double max_correspondence_distance = 1.0;
 };
@@ -54,7 +54,7 @@ public:
         report();
       }
 
-      auto downsampled = voxelgrid_sampling(*points[i], params.downsample_resolution);
+      auto downsampled = voxelgrid_sampling(*points[i], params.downsampling_resolution);
       const Eigen::Isometry3d T = estimate(downsampled);
       traj.emplace_back(T);
 

@@ -94,6 +94,8 @@ def main():
   axes[0].set_ylabel('Processing time [msec/scan]')
   axes[2].legend(loc='upper center', bbox_to_anchor=(0.5, -0.11), ncol=3)
 
+  fig.savefig('downsampling_threads.svg')
+
   
   fig, axes = pyplot.subplots(1, 2)
   fig.set_size_inches(18, 3)
@@ -115,6 +117,8 @@ def main():
   axes[1].legend()
   axes[0].grid()
   axes[1].grid()
+  
+  fig.savefig('downsampling_comp.svg')
   
   pyplot.show()
 
