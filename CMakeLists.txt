@@ -24,6 +24,7 @@ option(BUILD_WITH_PCL "Build with PCL (required for benchmark and test only)" OF
 option(BUILD_WITH_FAST_GICP "Build with fast_gicp (required for benchmark and test only)" OFF)
 option(BUILD_WITH_IRIDESCENCE "Build with Iridescence (required for benchmark)" OFF)
 option(BUILD_WITH_MARCH_NATIVE "Build with -march=native" OFF)
+option(ENABLE_COVERAGE "Enable coverage" OFF)
 
 if(BUILD_WITH_MARCH_NATIVE)
   add_compile_options(-march=native)
@@ -31,6 +32,22 @@ if(BUILD_WITH_MARCH_NATIVE)
   set(CMAKE_CXX_FLAGS "-march=native ${CMAKE_CXX_FLAGS}")
 endif()
 
+##############
+## Coverage ##
+##############
+if(ENABLE_COVERAGE)
+  # https://danielsieger.com/blog/2022/03/06/code-coverage-for-cpp.html
+  set(CMAKE_CXX_FLAGS "-O0 -coverage")
+
+  find_program(LCOV lcov REQUIRED)
+  find_program(GENHTML genhtml REQUIRED)
+
+  add_custom_target(coverage
+    COMMAND ${LCOV} --directory . --capture --output-file coverage.info
+    COMMAND ${LCOV} --remove coverage.info -o filtered_coverage.info '/usr/*'
+    COMMAND ${GENHTML} --demangle-cpp -o coverage filtered_coverage.info
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+endif()
 
 #############
 ## Install ##
@@ -51,6 +68,10 @@ if(BUILD_HELPER)
     include
     ${EIGEN3_INCLUDE_DIR}
   )
+  target_link_libraries(small_gicp
+    OpenMP::OpenMP_CXX
+  )
+
   install(TARGETS small_gicp DESTINATION lib)
 endif()
 
@@ -101,6 +122,7 @@ if(BUILD_BENCHMARKS)
   )
   target_link_libraries(odometry_benchmark
     fmt::fmt
+    OpenMP::OpenMP_CXX
     ${PCL_LIBRARIES}
     ${TBB_LIBRARIES}
     ${Iridescence_LIBRARIES}
@@ -117,6 +139,7 @@ if(BUILD_BENCHMARKS)
   )
   target_link_libraries(kdtree_benchmark
     fmt::fmt
+    OpenMP::OpenMP_CXX
     ${TBB_LIBRARIES}
   )
 
@@ -133,6 +156,7 @@ if(BUILD_BENCHMARKS)
     )
     target_link_libraries(downsampling_benchmark
       fmt::fmt
+      OpenMP::OpenMP_CXX
       ${PCL_LIBRARIES}
       ${TBB_LIBRARIES}
     )
@@ -160,6 +184,7 @@ if(BUILD_EXAMPLES)
     target_link_libraries(${EXAMPLE_NAME}
       small_gicp
       fmt::fmt
+      OpenMP::OpenMP_CXX
       ${PCL_LIBRARIES}
       ${TBB_LIBRARIES}
     )
@@ -173,11 +198,7 @@ if(BUILD_TESTS)
   find_package(fmt REQUIRED)
   find_package(PCL REQUIRED)
   find_package(TBB REQUIRED)
-
-  include(FetchContent)
-  FetchContent_Declare(googletest URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip)
-  FetchContent_MakeAvailable(googletest)
-  include(GoogleTest)
+  find_package(GTest REQUIRED)
 
   enable_testing()
   file(GLOB TEST_SOURCES "src/test/*.cpp")
@@ -194,6 +215,7 @@ if(BUILD_TESTS)
     target_link_libraries(${TEST_NAME}
       small_gicp
       fmt::fmt
+      OpenMP::OpenMP_CXX
       GTest::gtest_main
       ${PCL_LIBRARIES}
       ${TBB_LIBRARIES}

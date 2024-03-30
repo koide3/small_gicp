@@ -5,7 +5,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install --no-install-recommends -y \
   && apt-get install --no-install-recommends -y \
   wget nano build-essential git cmake \
-  libeigen3-dev libfmt-dev libtbb-dev libomp-dev libpcl-dev \
+  libeigen3-dev libfmt-dev libtbb-dev libomp-dev libpcl-dev libgtest-dev \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
