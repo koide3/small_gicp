@@ -208,6 +208,36 @@ TEST_F(RegistrationTest, PCLInterfaceTest) {
 
   EXPECT_EQ(aligned.size(), source_pcl->size());
   EXPECT_TRUE(compare_transformation(T_target_source, Eigen::Isometry3d(registration.getFinalTransformation().cast<double>())));
+
+  registration.setRegistrationType("VGICP");
+  registration.setVoxelResolution(1.0);
+
+  // Forward align
+  registration.setInputTarget(target_pcl);
+  registration.setInputSource(source_pcl);
+
+  registration.align(aligned);
+
+  EXPECT_EQ(aligned.size(), source_pcl->size());
+  EXPECT_TRUE(compare_transformation(T_target_source, Eigen::Isometry3d(registration.getFinalTransformation().cast<double>())));
+
+  // Swap and backward align
+  registration.swapSourceAndTarget();
+  registration.align(aligned);
+
+  EXPECT_EQ(aligned.size(), target_pcl->size());
+  EXPECT_TRUE(compare_transformation(T_target_source.inverse(), Eigen::Isometry3d(registration.getFinalTransformation().cast<double>())));
+
+  // Clear and forward align
+  registration.clearTarget();
+  registration.clearSource();
+
+  registration.setInputTarget(target_pcl);
+  registration.setInputSource(source_pcl);
+  registration.align(aligned);
+
+  EXPECT_EQ(aligned.size(), source_pcl->size());
+  EXPECT_TRUE(compare_transformation(T_target_source, Eigen::Isometry3d(registration.getFinalTransformation().cast<double>())));
 }
 
 INSTANTIATE_TEST_SUITE_P(
