@@ -1,5 +1,11 @@
 #pragma once
 
+#include <pcl/impl/pcl_base.hpp>
+#include <pcl/search/impl/search.hpp>
+#include <pcl/search/impl/kdtree.hpp>
+#include <pcl/search/impl/flann_search.hpp>
+#include <pcl/registration/impl/registration.hpp>
+
 #include <small_gicp/pcl/pcl_registration.hpp>
 
 #include <small_gicp/pcl/pcl_proxy.hpp>

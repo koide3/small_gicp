@@ -5,6 +5,8 @@
 #include <small_gicp/util/normal_estimation_omp.hpp>
 #include <small_gicp/pcl/pcl_point.hpp>
 #include <small_gicp/pcl/pcl_point_traits.hpp>
+#include <small_gicp/pcl/pcl_registration.hpp>
+#include <small_gicp/pcl/pcl_registration_impl.hpp>
 #include <small_gicp/points/point_cloud.hpp>
 
 #include <small_gicp/factors/icp_factor.hpp>
@@ -171,6 +173,41 @@ TEST_F(RegistrationTest, LoadCheck) {
   EXPECT_FALSE(source->empty());
   EXPECT_FALSE(target_pcl->empty());
   EXPECT_FALSE(source_pcl->empty());
+}
+
+// PCL interface test
+TEST_F(RegistrationTest, PCLInterfaceTest) {
+  RegistrationPCL<pcl::PointNormalCovariance, pcl::PointNormalCovariance> registration;
+  registration.setRegistrationType("GICP");
+  registration.setMaxCorrespondenceDistance(1.0);
+
+  // Forward align
+  registration.setInputTarget(target_pcl);
+  registration.setInputSource(source_pcl);
+
+  pcl::PointCloud<pcl::PointNormalCovariance> aligned;
+  registration.align(aligned);
+
+  EXPECT_EQ(aligned.size(), source_pcl->size());
+  EXPECT_TRUE(compare_transformation(T_target_source, Eigen::Isometry3d(registration.getFinalTransformation().cast<double>())));
+
+  // Swap and backward align
+  registration.swapSourceAndTarget();
+  registration.align(aligned);
+
+  EXPECT_EQ(aligned.size(), target_pcl->size());
+  EXPECT_TRUE(compare_transformation(T_target_source.inverse(), Eigen::Isometry3d(registration.getFinalTransformation().cast<double>())));
+
+  // Clear and forward align
+  registration.clearTarget();
+  registration.clearSource();
+
+  registration.setInputTarget(target_pcl);
+  registration.setInputSource(source_pcl);
+  registration.align(aligned);
+
+  EXPECT_EQ(aligned.size(), source_pcl->size());
+  EXPECT_TRUE(compare_transformation(T_target_source, Eigen::Isometry3d(registration.getFinalTransformation().cast<double>())));
 }
 
 INSTANTIATE_TEST_SUITE_P(
