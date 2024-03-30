@@ -1,12 +1,14 @@
 # small_gicp (fast_gicp2)
 
-**small_gicp** is a header-only C++ library that provides efficient and parallelized fine point cloud registration algorithms (ICP, Point-to-Plane ICP, GICP, VGICP, etc.). It is a refined and optimized version of its predecessor, [fast_gicp](https://github.com/SMRT-AIST/fast_gicp), with the following features. Note that GPU-based implementations are NOT included in this package.
+**small_gicp** is a header-only C++ library that provides efficient and parallelized fine point cloud registration algorithms (ICP, Point-to-Plane ICP, GICP, VGICP, etc.). It is a refined and optimized version of its predecessor, [fast_gicp](https://github.com/SMRT-AIST/fast_gicp), with the following features.
 
-- **Highly ptimized** : The implementation of the core registration algorithm is further optimized from that in fast_gicp. It offers up to 2x speed up compared to fast_gicp.
+- **Highly Optimized** : The implementation of the core registration algorithm is further optimized from that in fast_gicp. It offers up to 2x speed up compared to fast_gicp.
 - **All parallerized** : small_gicp offers parallelized implementations of several algorithms in the point cloud registration process (Downsampling, KdTree construction, Normal/covariance estimation). As a parallelism backend, either (or both) of [OpenMP](https://www.openmp.org/) and [Intel TBB](https://github.com/oneapi-src/oneTBB) can be used. 
 - **Minimum dependency** : Only [Eigen](https://eigen.tuxfamily.org/) (and bundled [nanoflann](https://github.com/jlblancoc/nanoflann) and [Sophus](https://github.com/strasdat/Sophus)) are required at a minimum. Optionally, it provides the [PCL](https://pointclouds.org/) registration interface so that it can be used as a drop-in replacement in many systems.
 - **Customizable** : small_gicp is implemented with the trait mechanism that allows feeding any custom point cloud class to the registration algorithm. Furthermore, the template-based implementation allows customizing the regisration process with your original correspondence estimator and registration factors.
 - **Python bindinds** (coming soon) : The isolation from PCL makes the small_gicp's python bindinds more portable and connectable to other libraries seamlessly. 
+
+Note that GPU-based implementations are NOT included in this package.
 
 [![Build](https://github.com/koide3/small_gicp/actions/workflows/build.yml/badge.svg)](https://github.com/koide3/small_gicp/actions/workflows/build.yml)
 
@@ -244,7 +246,7 @@ Coming soon.
 - Single-threaded `small_gicp::voxelgrid_sampling` is about **1.3x faster** than `pcl::VoxelGrid`.
 - Multi-threaded `small_gicp::voxelgrid_sampling_tbb` (6 threads) is about **3.2x faster** than `pcl::VoxelGrid`.
 - `small_gicp::voxelgrid_sampling` gives accurate downsampling results (almost identical to those of `pcl::VoxelGrid`) while `pcl::ApproximateVoxelGrid` yields spurious points (up to 2x points).
-- `small_gicp::voxelgrid_sampling` can process a larger point cloud with a fine voxel resolution compared to `pcl::VoxelGrid` (for a point cloud of 150m width, minimum voxel resolution can be 0.07 mm).
+- `small_gicp::voxelgrid_sampling` can process a larger point cloud with a fine voxel resolution compared to `pcl::VoxelGrid` (for a point cloud of 1000m width, minimum voxel resolution can be 0.5 mm).
 
 ![downsampling_comp](docs/assets/downsampling_comp.png)
 
