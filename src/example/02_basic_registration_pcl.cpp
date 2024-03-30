@@ -5,9 +5,6 @@
 #include <small_gicp/util/downsampling_omp.hpp>
 #include <small_gicp/benchmark/read_points.hpp>
 
-#include <glk/pointcloud_buffer_pcl.hpp>
-#include <guik/viewer/light_viewer.hpp>
-
 using namespace small_gicp;
 
 /// @brief Example of using RegistrationPCL that can be used as a drop-in replacement for pcl::GeneralizedIterativeClosestPoint.

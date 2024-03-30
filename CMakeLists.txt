@@ -143,32 +143,27 @@ endif()
 ## Example ##
 #############
 if(BUILD_EXAMPLES)
-find_package(fmt REQUIRED)
-find_package(PCL REQUIRED)
-find_package(TBB REQUIRED)
-find_package(Iridescence REQUIRED)
+  find_package(fmt REQUIRED)
+  find_package(PCL REQUIRED)
+  find_package(TBB REQUIRED)
 
-file(GLOB EXAMPLE_SOURCES "src/example/*.cpp")
-foreach(EXAMPLE_SOURCE ${EXAMPLE_SOURCES})
-  get_filename_component(EXAMPLE_NAME ${EXAMPLE_SOURCE} NAME_WE)
-  add_executable(${EXAMPLE_NAME} ${EXAMPLE_SOURCE})
-  target_include_directories(${EXAMPLE_NAME} PUBLIC
-    include
-    ${PCL_INCLUDE_DIRS}
-    ${TBB_INCLUDE_DIRS}
-    ${EIGEN3_INCLUDE_DIR}
-    ${Iridescence_INCLUDE_DIRS}
-  )
-  target_link_libraries(${EXAMPLE_NAME}
-    small_gicp
-    fmt::fmt
-    ${PCL_LIBRARIES}
-    ${TBB_LIBRARIES}
-    ${Iridescence_LIBRARIES}
-  )
-endforeach()
-
-
+  file(GLOB EXAMPLE_SOURCES "src/example/*.cpp")
+  foreach(EXAMPLE_SOURCE ${EXAMPLE_SOURCES})
+    get_filename_component(EXAMPLE_NAME ${EXAMPLE_SOURCE} NAME_WE)
+    add_executable(${EXAMPLE_NAME} ${EXAMPLE_SOURCE})
+    target_include_directories(${EXAMPLE_NAME} PUBLIC
+      include
+      ${PCL_INCLUDE_DIRS}
+      ${TBB_INCLUDE_DIRS}
+      ${EIGEN3_INCLUDE_DIR}
+    )
+    target_link_libraries(${EXAMPLE_NAME}
+      small_gicp
+      fmt::fmt
+      ${PCL_LIBRARIES}
+      ${TBB_LIBRARIES}
+    )
+  endforeach()
 endif()
 
 ##########
