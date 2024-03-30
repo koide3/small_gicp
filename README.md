@@ -1,8 +1,8 @@
 # small_gicp (fast_gicp2)
 
-**small_gicp** is a header-only C++ library that provides efficient and parallelized fine point cloud registration algorithms (ICP, Point-to-Plane ICP, GICP, VGICP, etc.). It is a regined and optimized version of its predecessor, [fast_gicp](https://github.com/SMRT-AIST/fast_gicp), with the following features. 
+**small_gicp** is a header-only C++ library that provides efficient and parallelized fine point cloud registration algorithms (ICP, Point-to-Plane ICP, GICP, VGICP, etc.). It is a refined and optimized version of its predecessor, [fast_gicp](https://github.com/SMRT-AIST/fast_gicp), with the following features. 
 
-- **Highly optimized** : The implementation of the core registration algorithm is further optimized from that in fast_gicp. It can provide up to 2x speed up compared to fast_gicp.
+- **Highly ptimized** : The implementation of the core registration algorithm is further optimized from that in fast_gicp. It can provide up to 2x speed up compared to fast_gicp.
 - **All parallerized** : small_gicp provides parallelized implementations of several algorithms in the point cloud registration process (Downsampling, KdTree construction, Normal/covariance estimation). As a parallelism backend, either (or both) of [OpenMP](https://www.openmp.org/) and [Intel TBB](https://github.com/oneapi-src/oneTBB) can be used. 
 - **Minimum dependency** : Only [Eigen](https://eigen.tuxfamily.org/) (and bundled [nanoflann](https://github.com/jlblancoc/nanoflann) and [Sophus](https://github.com/strasdat/Sophus)) are required at a minimum. Optionally, it provides the [PCL](https://pointclouds.org/) registration interface so that it can be used as a drop-in replacement in many systems.
 - **Customizable** : small_gicp is implemented with the trait mechanism that allows feeding any custom point cloud class to the registration algorithm. Furthermore, the template-based implementation allows customizing the regisration process with your original correspondence estimator and registration factors.
@@ -241,12 +241,20 @@ Coming soon.
 
 ### Downsampling
 
-- Single-thread `small_gicp::voxelgrid_sampling` is about 1.3x faster than `pcl::VoxelGrid`.
-- Multi-thread `small_gicp::voxelgrid_sampling_tbb` (6 threads) is about 3.2x faster than `pcl::VoxelGrid`.
+- Single-threaded `small_gicp::voxelgrid_sampling` is about 1.3x faster than `pcl::VoxelGrid`.
+- Multi-threaded `small_gicp::voxelgrid_sampling_tbb` (6 threads) is about 3.2x faster than `pcl::VoxelGrid`.
 - `small_gicp::voxelgrid_sampling` gives accurate downsampling results (almost identical to those of `pcl::VoxelGrid`) while `pcl::ApproximateVoxelGrid` yields spurious points (up to 2x points).
-- `small_gicp::voxelgrid_sampling` can process a larger point cloud with a fine voxel resolution compared to `pcl::VoxelGrid`.
+- `small_gicp::voxelgrid_sampling` can process a larger point cloud with a fine voxel resolution compared to `pcl::VoxelGrid` (for a point cloud of 150m width, minimum voxel resolution can be 0.07 mm).
 
 ![downsampling_comp](docs/assets/downsampling_comp.png)
+
+### KdTree construction
+
+- Multi-threaded implementation (TBB and OMP) can be up to 4x faster than the single-threaded one (All the implementations are based on nanoflann).
+- Basically the processing speed get faster as the number of threads increases, but the speed gain is not monotonic sometimes (because of the scheduling algorithm or some CPU(AMD 5995WX)-specific issues?).
+- This benchmark only compares the construction time (query time is not included). 
+
+![kdtree_time](docs/assets/kdtree_time.png)
 
 ### Odometry estimation
 
@@ -258,6 +266,8 @@ Coming soon.
 
 ## License
 This package is released under the MIT license.
+
+If you find this package useful for your project, please consider leaving a comment here. It would help the author gain internal recognition in his organization and keep working on this project.
 
 ## Papers
 - Kenji Koide, Masashi Yokozuka, Shuji Oishi, and Atsuhiko Banno, Voxelized GICP for Fast and Accurate 3D Point Cloud Registration, ICRA2021

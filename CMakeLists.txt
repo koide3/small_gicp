@@ -106,6 +106,20 @@ if(BUILD_BENCHMARKS)
     ${Iridescence_LIBRARIES}
   )
 
+  # KdTree construction benchmark
+  add_executable(kdtree_benchmark
+    src/kdtree_benchmark.cpp
+  )
+  target_include_directories(kdtree_benchmark PUBLIC
+    include
+    ${TBB_INCLUDE_DIRS}
+    ${EIGEN3_INCLUDE_DIR}
+  )
+  target_link_libraries(kdtree_benchmark
+    fmt::fmt
+    ${TBB_LIBRARIES}
+  )
+
   if(BUILD_WITH_PCL)
     # Downsampling benchmark
     add_executable(downsampling_benchmark

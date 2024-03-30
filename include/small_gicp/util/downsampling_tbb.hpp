@@ -30,8 +30,12 @@ std::shared_ptr<OutputPointCloud> voxelgrid_sampling_tbb(const InputPointCloud& 
   std::vector<std::pair<std::uint64_t, size_t>> coord_pt(points.size());
   tbb::parallel_for(tbb::blocked_range<size_t>(0, traits::size(points), 64), [&](const tbb::blocked_range<size_t>& range) {
     for (size_t i = range.begin(); i != range.end(); i++) {
-      // TODO: Check if coord is within 21bit range
       const Eigen::Array4i coord = fast_floor(traits::point(points, i) * inv_leaf_size) + coord_offset;
+      if ((coord < 0).any() || (coord > coord_bit_mask).any()) {
+        std::cerr << "warning: voxel coord is out of range!!" << std::endl;
+        coord_pt[i] = {0, i};
+        continue;
+      }
 
       // Compute voxel coord bits (0|1bit, z|21bit, y|21bit, x|21bit)
       const std::uint64_t bits =                                 //
