@@ -31,7 +31,7 @@ struct ICPFactor {
 
     size_t k_index;
     double k_sq_dist;
-    if (!traits::nearest_neighbor_search(target_tree, transed_source_pt, &k_index, &k_sq_dist) || rejector(T, k_index, source_index, k_sq_dist)) {
+    if (!traits::nearest_neighbor_search(target_tree, transed_source_pt, &k_index, &k_sq_dist) || rejector(target, source, T, k_index, source_index, k_sq_dist)) {
       return false;
     }
 

@@ -138,7 +138,8 @@ reg.align(*aligned);
 It is also possible to directly feed `pcl::PointCloud` to `small_gicp::Registration`. Because all preprocessed data are exposed in this way, you can easily re-use them to obtain the best efficiency.
 
 ```cpp
-#include <small_gicp/pcl/pcl_registration.hpp>
+#include <small_gicp/pcl/pcl_point.hpp>
+#include <small_gicp/pcl/pcl_point_traits.hpp>
 
 pcl::PointCloud<pcl::PointXYZ>::Ptr raw_target = ...;
 pcl::PointCloud<pcl::PointXYZ>::Ptr raw_source = ...;
@@ -167,7 +168,7 @@ auto result = registration.align(*target, *source, *target_tree, Eigen::Isometry
 
 </details>
 
-### Using `small_gicp::Registration` template (`registration.hpp`)
+### Using `Registration` template ([03_registration_template.cpp](https://github.com/koide3/small_gicp/blob/master/src/example/03_registration_template.cpp))
 
 If you want to fine-control and customize the registration process, use `small_gicp::Registration` template that allows modifying the inner algorithms and parameters.
 <details><summary>Expand</summary>
@@ -193,8 +194,8 @@ auto target = std::make_shared<PointCloud>(target_points);
 auto source = std::make_shared<PointCloud>(source_points);
 
 // Downsampling
-target = voxelgrid_downsampling_omp(*target, downsampling_resolution, num_threads);
-source = voxelgrid_downsampling_omp(*source, downsampling_resolution, num_threads);
+target = voxelgrid_sampling_omp(*target, downsampling_resolution, num_threads);
+source = voxelgrid_sampling_omp(*source, downsampling_resolution, num_threads);
 
 // Create KdTree
 auto target_tree = std::make_shared<KdTreeOMP<PointCloud>>(target, num_threads);
@@ -218,20 +219,7 @@ size_t num_inliers = result.num_inliers;       // Number of inlier source points
 Eigen::Matrix<double, 6, 6> H = result.H;      // Final Hessian matrix (6x6)
 ```
 
-Custom registration example:
-
-```cpp
-using PerPointFactor = PointToPlaneICPFactor;       // Point-to-plane ICP
-using GeneralFactor = RestrictDoFFactor;            // DoF restriction
-using Reduction = ParallelReductionTBB;             // TBB-based parallel reduction
-using CorrespondenceRejector = DistanceRejector;    // Distance-based correspondence rejection
-using Optimizer = LevenbergMarquardtOptimizer;      // Levenberg marquardt optimizer
-
-Registration<PerPointFactor, Reduction, GeneralFactor, CorrespondenceRejector, Optimizer> registration;
-registration.general_factor.set_translation_mask(Eigen::Vector3d(1.0, 1.0, 0.0));   // XY-translation only
-registration.general_factor.set_ratation_mask(Eigen::Vector3d(0.0, 0.0, 1.0));      // Z-rotation only
-registration.optimizer.init_lambda = 1e-3;                                          // Initial damping scale
-```
+See [03_registration_template.cpp](https://github.com/koide3/small_gicp/blob/master/src/example/03_registration_template.cpp)  for more detailed customization example.
 
 </details>
 
