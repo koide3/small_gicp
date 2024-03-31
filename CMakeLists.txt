@@ -60,20 +60,34 @@ install(DIRECTORY include/ DESTINATION include)
 
 # Helper library
 if(BUILD_HELPER)
-  add_library(small_gicp SHARED
+  add_library(small_gicp_helper SHARED
     src/small_gicp/registration/registration.cpp
     src/small_gicp/registration/registration_helper.cpp
   )
-  target_include_directories(small_gicp PUBLIC
+  target_include_directories(small_gicp_helper PUBLIC
     include
     ${EIGEN3_INCLUDE_DIR}
   )
-  target_link_libraries(small_gicp
+  target_link_libraries(small_gicp_helper
     OpenMP::OpenMP_CXX
   )
 
-  install(TARGETS small_gicp DESTINATION lib)
+  install(TARGETS small_gicp_helper DESTINATION lib)
 endif()
+
+find_package(Python COMPONENTS Interpreter Development)
+find_package(pybind11 CONFIG)
+
+# Python binding
+pybind11_add_module(small_gicp src/python/python.cpp)
+target_include_directories(small_gicp PUBLIC
+  include
+  ${EIGEN3_INCLUDE_DIR}
+)
+target_link_libraries(small_gicp PRIVATE
+  small_gicp_helper
+  OpenMP::OpenMP_CXX
+)
 
 ###############
 ## Benchmark ##
@@ -182,7 +196,7 @@ if(BUILD_EXAMPLES)
       ${EIGEN3_INCLUDE_DIR}
     )
     target_link_libraries(${EXAMPLE_NAME}
-      small_gicp
+      small_gicp_helper
       fmt::fmt
       OpenMP::OpenMP_CXX
       ${PCL_LIBRARIES}
@@ -213,7 +227,7 @@ if(BUILD_TESTS)
       ${EIGEN3_INCLUDE_DIR}
     )
     target_link_libraries(${TEST_NAME}
-      small_gicp
+      small_gicp_helper
       fmt::fmt
       OpenMP::OpenMP_CXX
       GTest::gtest_main
