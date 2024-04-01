@@ -4,7 +4,7 @@
 
 - **Highly Optimized** : The implementation of the core registration algorithm is further optimized from that in fast_gicp. It enables up to **2x speed gain** compared to fast_gicp.
 - **All parallerized** : small_gicp offers parallelized implementations of several preprocessing algorithms to make the entire registration process parallelized (Downsampling, KdTree construction, Normal/covariance estimation). As a parallelism backend, either (or both) of [OpenMP](https://www.openmp.org/) and [Intel TBB](https://github.com/oneapi-src/oneTBB) can be used. 
-- **Minimum dependency** : Only [Eigen](https://eigen.tuxfamily.org/) (and bundled [nanoflann](https://github.com/jlblancoc/nanoflann) and [Sophus](https://github.com/strasdat/Sophus)) are required at a minimum. Optionally, it provides the [PCL](https://pointclouds.org/) registration interface so that it can be used as a drop-in replacement for registration algorithms in PCL.
+- **Minimum dependency** : Only [Eigen](https://eigen.tuxfamily.org/) (and bundled [nanoflann](https://github.com/jlblancoc/nanoflann) and [Sophus](https://github.com/strasdat/Sophus)) are required at a minimum. Optionally, it provides the [PCL](https://pointclouds.org/) registration interface so that it can be used as a drop-in replacement in many systems.
 - **Customizable** : small_gicp is implemented with the trait mechanism that enables feeding any custom point cloud class to the registration algorithm. Furthermore, the template-based implementation allows customizing the regisration process with your original correspondence estimator and registration factors.
 - **Python bindinds** : The isolation from PCL makes small_gicp's python bindinds more portable and connectable to other libraries seamlessly. 
 
@@ -232,9 +232,7 @@ See [03_registration_template.cpp](src/example/03_registration_template.cpp)  fo
 
 </details>
 
-## Usage (Python)
-
-[basic_registration.py](src/example/basic_registration.py)
+## Usage (Python) [basic_registration.py](src/example/basic_registration.py)
 
 <details><summary>Expand</summary>
 
