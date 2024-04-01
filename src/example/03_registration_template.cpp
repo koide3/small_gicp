@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: Copyright 2024 Kenji Koide
+// SPDX-License-Identifier: MIT
+
 /// @brief Basic point cloud registration example with small_gicp::align()
 #include <iostream>
 #include <small_gicp/benchmark/read_points.hpp>

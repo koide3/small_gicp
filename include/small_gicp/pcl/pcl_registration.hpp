@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: Copyright 2024 Kenji Koide
+// SPDX-License-Identifier: MIT
 #pragma once
 
 #include <pcl/point_cloud.h>

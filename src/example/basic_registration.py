@@ -1,4 +1,6 @@
 #!/usr/bin/python3
+# SPDX-FileCopyrightText: Copyright 2024 Kenji Koide
+# SPDX-License-Identifier: MIT
 import numpy
 from scipy.spatial.transform import Rotation
 

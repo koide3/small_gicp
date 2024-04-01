@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: Copyright 2024 Kenji Koide
+// SPDX-License-Identifier: MIT
+
 /// @brief Basic point cloud registration example with PCL interfaces
 #include <small_gicp/pcl/pcl_point.hpp>
 #include <small_gicp/pcl/pcl_point_traits.hpp>
