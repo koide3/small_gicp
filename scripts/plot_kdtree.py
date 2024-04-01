@@ -38,32 +38,35 @@ def parse_result(filename):
 def main():
   results_path = os.path.dirname(__file__) + '/results'
 
-  results = []  
+  results = {}
   for filename in os.listdir(results_path):
-    matched = re.match(r'kdtree_benchmark_(\d+).txt', filename)
+    matched = re.match(r'kdtree_benchmark_(\S+)_(\d+).txt', filename)
     if not matched:
       continue
 
-    results.append(parse_result(results_path + '/' + filename))
-  
-  results = sorted(results, key=lambda x: x[0])
-  num_threads = [x[0] for x in results]
-  num_points = results[0][1]
+    method = '{}_{}'.format(matched.group(1), matched.group(2))
+    print(method)
 
-  fig, axes = pyplot.subplots(1, 2, figsize=(12, 2))
+    num_threads, num_points, rets = parse_result(results_path + '/' + filename)
+    results[method] = rets[list(rets.keys())[0]] 
+
+  fig, axes = pyplot.subplots(1, 2, figsize=(12, 3))
   
-  axes[0].plot(num_points, results[0][2]['kdtree'], label='kdtree (nanoflann)', marker='o', linestyle='--')
+  num_threads = [1, 2, 3, 4, 5, 6, 7, 8, 16, 32, 64, 128]
+  axes[0].plot(num_points, results['small_1'], label='kdtree (nanoflann)', marker='o', linestyle='--')
   for idx in [1, 3, 5, 7, 8]:
     N = num_threads[idx]
-    axes[0].plot(num_points, results[idx][2]['kdtree_omp'], label='kdtree_omp (%d threads)' % N, marker='s')
-    axes[0].plot(num_points, results[idx][2]['kdtree_tbb'], label='kdtree_tbb (%d threads)' % N, marker='^')
+    axes[0].plot(num_points, results['omp_{}'.format(N)], label='kdtree_omp (%d threads)' % N, marker='s')
+    axes[0].plot(num_points, results['tbb_{}'.format(N)], label='kdtree_tbb (%d threads)' % N, marker='^')
 
-  baseline = numpy.array(results[0][2]['kdtree'])
+  baseline = numpy.array(results['small_1'])
   axes[1].plot([num_threads[0], num_threads[-1]], [1.0, 1.0], label='kdtree (nanoflann)', linestyle='--')
   for idx in [5]:
-    N = num_points[idx]  
-    axes[1].plot(num_threads, baseline[idx] / [x[2]['kdtree_omp'][idx] for x in results], label='omp (num_points=%d)' % N, marker='s')
-    axes[1].plot(num_threads, baseline[idx] / [x[2]['kdtree_tbb'][idx] for x in results], label='tbb (num_points=%d)' % N, marker='^')
+    threads = num_threads[idx]
+    N = num_points[idx]
+    
+    axes[1].plot(num_threads, baseline[idx] / [results['omp_{}'.format(threads)][idx] for threads in num_threads], label='omp (num_points=%d)' % N, marker='s')
+    axes[1].plot(num_threads, baseline[idx] / [results['tbb_{}'.format(threads)][idx] for threads in num_threads], label='tbb (num_points=%d)' % N, marker='^')
 
   axes[1].set_xscale('log')
    

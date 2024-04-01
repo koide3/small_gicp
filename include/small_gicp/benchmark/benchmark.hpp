@@ -3,6 +3,7 @@
 #pragma once
 
 #include <chrono>
+#include <deque>
 #include <vector>
 #include <numeric>
 #include <algorithm>
@@ -33,13 +34,15 @@ public:
 
 struct Summarizer {
 public:
-  Summarizer() : num_data(0), sum(0.0), sq_sum(0.0), last_x(0.0) {}
+  Summarizer(bool full_log = false) : full_log(full_log), num_data(0), sum(0.0), sq_sum(0.0), last_x(0.0) {}
 
   void push(double x) {
     num_data++;
     sum += x;
     sq_sum += x * x;
     last_x = x;
+
+    full_data.emplace_back(x);
   }
 
   std::pair<double, double> mean_std() const {
@@ -48,14 +51,33 @@ public:
     return {mean, std::sqrt(var)};
   }
 
+  double median() const {
+    if (!full_log || full_data.empty()) {
+      return std::nan("");
+    }
+
+    std::vector<double> sorted(full_data.begin(), full_data.end());
+    std::ranges::nth_element(sorted, sorted.begin() + sorted.size() / 2);
+    return sorted[sorted.size() / 2];
+  }
+
   double last() const { return last_x; }
 
   std::string str() const {
+    if (full_log) {
+      const auto [mean, std] = mean_std();
+      const double med = median();
+      return fmt::format("{:.3f} +- {:.3f} (median={:.3f})", mean, std, med);
+    }
+
     const auto [mean, std] = mean_std();
     return fmt::format("{:.3f} +- {:.3f} (last={:.3f})", mean, std, last_x);
   }
 
 private:
+  bool full_log;
+  std::deque<double> full_data;
+
   size_t num_data;
   double sum;
   double sq_sum;

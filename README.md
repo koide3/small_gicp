@@ -5,8 +5,8 @@
 - **Highly Optimized** : The implementation of the core registration algorithm is further optimized from that in fast_gicp. It enables up to **2x speed gain** compared to fast_gicp.
 - **All parallerized** : small_gicp offers parallelized implementations of several preprocessing algorithms to make the entire registration process parallelized (Downsampling, KdTree construction, Normal/covariance estimation). As a parallelism backend, either (or both) of [OpenMP](https://www.openmp.org/) and [Intel TBB](https://github.com/oneapi-src/oneTBB) can be used. 
 - **Minimum dependency** : Only [Eigen](https://eigen.tuxfamily.org/) (and bundled [nanoflann](https://github.com/jlblancoc/nanoflann) and [Sophus](https://github.com/strasdat/Sophus)) are required at a minimum. Optionally, it provides the [PCL](https://pointclouds.org/) registration interface so that it can be used as a drop-in replacement in many systems.
-- **Customizable** : small_gicp is implemented with the trait mechanism that enables feeding any custom point cloud class to the registration algorithm. Furthermore, the template-based implementation allows customizing the regisration process with your original correspondence estimator and registration factors.
-- **Python bindinds** : The isolation from PCL makes small_gicp's python bindinds more portable and connectable to other libraries seamlessly. 
+- **Customizable** : small_gicp allows feeding any custom point cloud class to the registration algorithm via traits. Furthermore, the template-based implementation enables customizing the regisration process with your original correspondence estimator and registration factors.
+- **Python bindinds** : The isolation from PCL makes small_gicp's python bindinds more portable and connectable to other libraries (e.g., Open3D) without problems. 
 
 Note that GPU-based implementations are NOT included in this package.
 
@@ -27,7 +27,7 @@ This library uses some C++20 features. While porting it to older environments sh
 
 small_gicp is a header-only library. You can just download and drop it in your project directory to use it.
 
-Meanwhile, if you need only basic point cloud registration, you can build and install the helper library as follows.
+If you need only basic point cloud registration functions, you can build and install the helper library as follows.
 
 ```bash
 sudo apt-get install libeigen3-dev libomp-dev
@@ -60,7 +60,7 @@ The following examples assume `using namespace small_gicp` is placed somewhere.
 The helper library (`registration_helper.hpp`) enables easily processing point clouds represented as `std::vector<Eigen::Vector(3|4)(f|d)>`.
 <details><summary>Expand</summary>
 
-`small_gicp::align` takes two point clouds (`std::vectors` of `Eigen::Vector(3|4)(f|d)`) and returns a registration result (estimated transformation and some information on the optimization result). This is the easiest way to use **small_gicp** but causes an overhead for duplicated preprocessing.
+`small_gicp::align` takes two point clouds (`std::vectors` of `Eigen::Vector(3|4)(f|d)`) and returns a registration result (estimated transformation and some information on the optimization result). This is the easiest way to use small_gicp but causes an overhead for duplicated preprocessing.
 
 ```cpp
 #include <small_gicp/registration/registration_helper.hpp>
@@ -111,9 +111,9 @@ Eigen::Matrix<double, 6, 6> H = result.H;      // Final Hessian matrix (6x6)
 
 </details>
 
-### Using with PCL interface ([02_basic_resigtration_pcl.cpp](src/example/02_basic_resigtration_pcl.cpp))
+### Using PCL interface ([02_basic_resigtration_pcl.cpp](src/example/02_basic_resigtration_pcl.cpp))
 
-The PCL interface allows using small_gicp as a drop-in replacement for `pcl::GeneralizedIterativeClosestPoint`. It is also possible to directly feed `pcl::PointCloud` to algorithms implemented in small_gicp.
+The PCL interface allows using small_gicp as a drop-in replacement for `pcl::Registration`. It is also possible to directly feed `pcl::PointCloud` to algorithms implemented in small_gicp.
 
 <details><summary>Expand</summary>
 
@@ -233,7 +233,7 @@ size_t num_inliers = result.num_inliers;       // Number of inlier source points
 Eigen::Matrix<double, 6, 6> H = result.H;      // Final Hessian matrix (6x6)
 ```
 
-See [03_registration_template.cpp](src/example/03_registration_template.cpp)  for more detailed customization example.
+See [03_registration_template.cpp](src/example/03_registration_template.cpp)  for more detailed customization examples.
 
 </details>
 

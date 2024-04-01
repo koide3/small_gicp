@@ -14,7 +14,7 @@ int main(int argc, char** argv) {
     std::cout << "USAGE: kdtree_benchmark <dataset_path>" << std::endl;
     std::cout << "OPTIONS:" << std::endl;
     std::cout << "  --num_threads <value> (default: 4)" << std::endl;
-    std::cout << "  --downsampling_resolution <value> (default: 0.25)" << std::endl;
+    std::cout << "  --method <str> (small|tbb|omp)" << std::endl;
     return 0;
   }
 
@@ -22,13 +22,16 @@ int main(int argc, char** argv) {
 
   int num_threads = 4;
   int num_trials = 100;
+  std::string method = "small";
 
-  for (int i = 0; i < argc; i++) {
+  for (int i = 1; i < argc; i++) {
     const std::string arg = argv[i];
     if (arg == "--num_threads") {
       num_threads = std::stoi(argv[i + 1]);
     } else if (arg == "--num_trials") {
       num_trials = std::stoi(argv[i + 1]);
+    } else if (arg == "--method") {
+      method = argv[i + 1];
     } else if (arg.size() >= 2 && arg.substr(0, 2) == "--") {
       std::cerr << "unknown option: " << arg << std::endl;
       return 1;
@@ -38,6 +41,7 @@ int main(int argc, char** argv) {
   std::cout << "dataset_path=" << dataset_path << std::endl;
   std::cout << "num_threads=" << num_threads << std::endl;
   std::cout << "num_trials=" << num_trials << std::endl;
+  std::cout << "method=" << method << std::endl;
 
   tbb::global_control tbb_control(tbb::global_control::max_allowed_parallelism, num_threads);
 
@@ -93,55 +97,60 @@ int main(int argc, char** argv) {
   std::cout << "---" << std::endl;
 
   // warmup
-  for (int i = 0; i < 10; i++) {
+  auto t1 = std::chrono::high_resolution_clock::now();
+  while (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now() - t1).count() < 1) {
     auto downsampled = voxelgrid_sampling(*raw_points, 0.1);
-    UnsafeKdTree<PointCloud> tree(*downsampled);
-    UnsafeKdTreeTBB<PointCloud> tree_tbb(*downsampled);
-    UnsafeKdTreeOMP<PointCloud> tree_omp(*downsampled, num_threads);
+
+    if (method == "small") {
+      UnsafeKdTree<PointCloud> tree(*downsampled);
+    } else if (method == "tbb") {
+      UnsafeKdTreeTBB<PointCloud> tree(*downsampled);
+    } else if (method == "omp") {
+      UnsafeKdTreeOMP<PointCloud> tree(*downsampled, num_threads);
+    }
   }
 
   Stopwatch sw;
-  for (size_t i = 0; i < downsampling_resolutions.size(); i++) {
-    if (num_threads != 1) {
-      break;
+
+  if (method == "small") {
+    for (size_t i = 0; i < downsampling_resolutions.size(); i++) {
+      if (num_threads != 1) {
+        break;
+      }
+
+      Summarizer kdtree_times(true);
+      sw.start();
+      for (size_t j = 0; j < num_trials; j++) {
+        UnsafeKdTree<PointCloud> tree(*downsampled[i]);
+        sw.lap();
+        kdtree_times.push(sw.msec());
+      }
+      std::cout << "kdtree_times=" << kdtree_times.str() << " [msec]" << std::endl;
     }
+  } else if (method == "tbb") {
+    for (size_t i = 0; i < downsampling_resolutions.size(); i++) {
+      Summarizer kdtree_tbb_times(true);
+      sw.start();
+      for (size_t j = 0; j < num_trials; j++) {
+        UnsafeKdTreeTBB<PointCloud> tree(*downsampled[i]);
+        sw.lap();
+        kdtree_tbb_times.push(sw.msec());
+      }
 
-    Summarizer kdtree_times;
-    sw.start();
-    for (size_t j = 0; j < num_trials; j++) {
-      UnsafeKdTree<PointCloud> tree(*downsampled[i]);
-      sw.lap();
-      kdtree_times.push(sw.msec());
+      std::cout << "kdtree_tbb_times=" << kdtree_tbb_times.str() << " [msec]" << std::endl;
     }
-    std::cout << "kdtree_times=" << kdtree_times.str() << " [msec]" << std::endl;
-  }
+  } else if (method == "omp") {
+    for (size_t i = 0; i < downsampling_resolutions.size(); i++) {
+      Summarizer kdtree_omp_times(true);
+      sw.start();
+      for (size_t j = 0; j < num_trials; j++) {
+        UnsafeKdTreeOMP<PointCloud> tree(*downsampled[i], num_threads);
+        sw.lap();
+        kdtree_omp_times.push(sw.msec());
+      }
 
-  std::cout << "---" << std::endl;
-
-  for (size_t i = 0; i < downsampling_resolutions.size(); i++) {
-    Summarizer kdtree_tbb_times;
-    sw.start();
-    for (size_t j = 0; j < num_trials; j++) {
-      UnsafeKdTreeTBB<PointCloud> tree(*downsampled[i]);
-      sw.lap();
-      kdtree_tbb_times.push(sw.msec());
+      std::cout << "kdtree_omp_times=" << kdtree_omp_times.str() << " [msec]" << std::endl;
     }
-
-    std::cout << "kdtree_tbb_times=" << kdtree_tbb_times.str() << " [msec]" << std::endl;
-  }
-
-  std::cout << "---" << std::endl;
-
-  for (size_t i = 0; i < downsampling_resolutions.size(); i++) {
-    Summarizer kdtree_omp_times;
-    sw.start();
-    for (size_t j = 0; j < num_trials; j++) {
-      UnsafeKdTreeOMP<PointCloud> tree(*downsampled[i], num_threads);
-      sw.lap();
-      kdtree_omp_times.push(sw.msec());
-    }
-
-    std::cout << "kdtree_omp_times=" << kdtree_omp_times.str() << " [msec]" << std::endl;
   }
 
   return 0;
