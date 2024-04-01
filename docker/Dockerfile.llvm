@@ -4,7 +4,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install --no-install-recommends -y \
   && apt-get install --no-install-recommends -y \
-  wget nano build-essential git cmake \
+  wget nano build-essential git cmake python3-pip pybind11-dev \
   libeigen3-dev libfmt-dev libtbb-dev libomp-dev libpcl-dev libgtest-dev \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
@@ -14,6 +14,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   clang lld \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
+
+RUN pip install -U setuptools pytest numpy scipy
 
 RUN update-alternatives --install /usr/bin/ld ld /usr/bin/ld.lld 50
 ENV CC=clang
@@ -29,6 +31,10 @@ RUN cmake --build . -j$(nproc)
 RUN cmake .. -DBUILD_TESTS=ON -DBUILD_EXAMPLES=ON -DBUILD_BENCHMARKS=ON -DBUILD_WITH_TBB=ON -DBUILD_WITH_PCL=ON
 RUN cmake --build . -j$(nproc)
 RUN ctest -j$(nproc)
+
+WORKDIR /root/small_gicp
+RUN python3 setup.py build && python3 setup.py install
+RUN pytest src/example/basic_registration.py
 
 WORKDIR /
 

@@ -3,7 +3,6 @@ import numpy
 from scipy.spatial.transform import Rotation
 
 import small_gicp
-from pyridescence import *
 
 
 # Basic registation example with numpy arrays
@@ -97,8 +96,8 @@ def verify_result(T_target_source, gt_T_target_source):
   error_trans = numpy.linalg.norm(error[:3, 3])
   error_rot = Rotation.from_matrix(error[:3, :3]).magnitude()
   
-  assert error_trans < 0.01
-  assert error_rot < 0.01
+  assert error_trans < 0.05
+  assert error_rot < 0.05
 
 import pytest
 

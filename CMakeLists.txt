@@ -79,16 +79,18 @@ endif()
 find_package(Python COMPONENTS Interpreter Development)
 find_package(pybind11 CONFIG)
 
-# Python binding
-pybind11_add_module(small_gicp src/python/python.cpp)
-target_include_directories(small_gicp PUBLIC
-  include
-  ${EIGEN3_INCLUDE_DIR}
-)
-target_link_libraries(small_gicp PRIVATE
-  small_gicp_helper
-  OpenMP::OpenMP_CXX
-)
+# Python bindings
+if(BUILD_PYTHON_BINDINGS)
+  pybind11_add_module(small_gicp src/python/python.cpp)
+  target_include_directories(small_gicp PUBLIC
+    include
+    ${EIGEN3_INCLUDE_DIR}
+  )
+  target_link_libraries(small_gicp PRIVATE
+    small_gicp_helper
+    OpenMP::OpenMP_CXX
+  )
+endif()
 
 ###############
 ## Benchmark ##
@@ -108,7 +110,8 @@ if(BUILD_BENCHMARKS)
     add_compile_definitions(BUILD_WITH_IRIDESCENCE)
   endif()
   if (BUILD_WITH_FAST_GICP)
-    set(FAST_GICP_INCLUDE_DIR /home/koide/workspace/fast_gicp/include)
+    # set(FAST_GICP_INCLUDE_DIR /home/koide/workspace/fast_gicp/include)
+    set(FAST_GICP_INCLUDE_DIR $ENV{FAST_GICP_INCLUDE_DIR})
     add_compile_definitions(BUILD_WITH_FAST_GICP)
   endif()
 

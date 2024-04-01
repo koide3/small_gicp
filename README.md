@@ -1,12 +1,12 @@
 # small_gicp (fast_gicp2)
 
-**small_gicp** is a header-only C++ library that provides efficient and parallelized fine point cloud registration algorithms (ICP, Point-to-Plane ICP, GICP, VGICP, etc.). It is a refined and optimized version of its predecessor, [fast_gicp](https://github.com/SMRT-AIST/fast_gicp), with the following features.
+**small_gicp** is a header-only C++ library that offers efficient and parallelized algorithms for fine point cloud registration (ICP, Point-to-Plane ICP, GICP, VGICP, etc.). It is a refined and optimized version of its predecessor, [fast_gicp](https://github.com/SMRT-AIST/fast_gicp), re-written from scratch with the following features.
 
-- **Highly Optimized** : The implementation of the core registration algorithm is further optimized from that in fast_gicp. It offers up to 2x speed up compared to fast_gicp.
-- **All parallerized** : small_gicp offers parallelized implementations of several algorithms in the point cloud registration process (Downsampling, KdTree construction, Normal/covariance estimation). As a parallelism backend, either (or both) of [OpenMP](https://www.openmp.org/) and [Intel TBB](https://github.com/oneapi-src/oneTBB) can be used. 
-- **Minimum dependency** : Only [Eigen](https://eigen.tuxfamily.org/) (and bundled [nanoflann](https://github.com/jlblancoc/nanoflann) and [Sophus](https://github.com/strasdat/Sophus)) are required at a minimum. Optionally, it provides the [PCL](https://pointclouds.org/) registration interface so that it can be used as a drop-in replacement in many systems.
-- **Customizable** : small_gicp is implemented with the trait mechanism that allows feeding any custom point cloud class to the registration algorithm. Furthermore, the template-based implementation allows customizing the regisration process with your original correspondence estimator and registration factors.
-- **Python bindinds** (coming soon) : The isolation from PCL makes the small_gicp's python bindinds more portable and connectable to other libraries seamlessly. 
+- **Highly Optimized** : The implementation of the core registration algorithm is further optimized from that in fast_gicp. It enables up to **2x speed gain** compared to fast_gicp.
+- **All parallerized** : small_gicp offers parallelized implementations of several preprocessing algorithms to make the entire registration process parallelized (Downsampling, KdTree construction, Normal/covariance estimation). As a parallelism backend, either (or both) of [OpenMP](https://www.openmp.org/) and [Intel TBB](https://github.com/oneapi-src/oneTBB) can be used. 
+- **Minimum dependency** : Only [Eigen](https://eigen.tuxfamily.org/) (and bundled [nanoflann](https://github.com/jlblancoc/nanoflann) and [Sophus](https://github.com/strasdat/Sophus)) are required at a minimum. Optionally, it provides the [PCL](https://pointclouds.org/) registration interface so that it can be used as a drop-in replacement for registration algorithms in PCL.
+- **Customizable** : small_gicp is implemented with the trait mechanism that enables feeding any custom point cloud class to the registration algorithm. Furthermore, the template-based implementation allows customizing the regisration process with your original correspondence estimator and registration factors.
+- **Python bindinds** : The isolation from PCL makes small_gicp's python bindinds more portable and connectable to other libraries seamlessly. 
 
 Note that GPU-based implementations are NOT included in this package.
 
