@@ -25,6 +25,7 @@ option(BUILD_WITH_FAST_GICP "Build with fast_gicp (required for benchmark and te
 option(BUILD_WITH_IRIDESCENCE "Build with Iridescence (required for benchmark)" OFF)
 option(BUILD_WITH_MARCH_NATIVE "Build with -march=native" OFF)
 option(ENABLE_COVERAGE "Enable coverage" OFF)
+option(BUILD_PYTHON_BINDINGS "Build python bindings" OFF)
 
 if(BUILD_WITH_MARCH_NATIVE)
   add_compile_options(-march=native)

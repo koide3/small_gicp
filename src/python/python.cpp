@@ -131,8 +131,8 @@ PYBIND11_MODULE(small_gicp, m) {
       return voxelgrid_sampling_omp(points, resolution, num_threads);
     },
     "Voxelgrid sampling",
-    py::arg("points (Nx3) or (Nx4)"),
-    py::arg("resolution"),
+    py::arg("points"),
+    py::arg("downsampling_resolution"),
     py::arg("num_threads") = 1);
 
   // estimate_normals

@@ -35,13 +35,22 @@ sudo make install
 
 ### Python
 
-Coming soon.
+```bash
+cd small_gicp
+python3 setup.py build
+python3 setup.py install --user
+
+# [Optional] Install stubs for autocomplete (If you know a better way, let me know...)
+pip install pybind11-stubgen
+cd ~/.local/lib/python3.10/site-packages
+pybind11-stubgen -o . --ignore-invalid=all small_gicp
+```
 
 ## Usage (C++)
 
 The following examples assume `using namespace small_gicp` is placed somewhere.
 
-### Using helper library ([01_basic_resigtration.cpp](https://github.com/koide3/small_gicp/blob/master/src/example/01_basic_registration.cpp))
+### Using helper library ([01_basic_resigtration.cpp](src/example/01_basic_registration.cpp))
 
 The helper library (`registration_helper.hpp`) enables easily processing point clouds represented as `std::vector<Eigen::Vector(3|4)(f|d)>`.
 <details><summary>Expand</summary>
@@ -76,7 +85,7 @@ std::vector<Eigen::Vector3d> target_points = ...;   // Any of Eigen::Vector(3|4)
 std::vector<Eigen::Vector3d> source_points = ...;   // 
 
 int num_threads = 4;                    // Number of threads to be used
-double downsampling_resolution = 0.25;    // Downsampling resolution
+double downsampling_resolution = 0.25;  // Downsampling resolution
 int num_neighbors = 10;                 // Number of neighbor points used for normal and covariance estimation
 
 // std::pair<PointCloud::Ptr, KdTree<PointCloud>::Ptr>
@@ -97,7 +106,7 @@ Eigen::Matrix<double, 6, 6> H = result.H;      // Final Hessian matrix (6x6)
 
 </details>
 
-### Using with PCL interface ([02_basic_resigtration_pcl.cpp](https://github.com/koide3/small_gicp/blob/master/src/example/02_basic_resigtration_pcl.cpp))
+### Using with PCL interface ([02_basic_resigtration_pcl.cpp](src/example/02_basic_resigtration_pcl.cpp))
 
 The PCL interface allows using small_gicp as a drop-in replacement for `pcl::GeneralizedIterativeClosestPoint`. It is also possible to directly feed `pcl::PointCloud` to algorithms implemented in small_gicp.
 
@@ -168,7 +177,7 @@ auto result = registration.align(*target, *source, *target_tree, Eigen::Isometry
 
 </details>
 
-### Using `Registration` template ([03_registration_template.cpp](https://github.com/koide3/small_gicp/blob/master/src/example/03_registration_template.cpp))
+### Using `Registration` template ([03_registration_template.cpp](src/example/03_registration_template.cpp))
 
 If you want to fine-control and customize the registration process, use `small_gicp::Registration` template that allows modifying the inner algorithms and parameters.
 <details><summary>Expand</summary>
@@ -219,13 +228,89 @@ size_t num_inliers = result.num_inliers;       // Number of inlier source points
 Eigen::Matrix<double, 6, 6> H = result.H;      // Final Hessian matrix (6x6)
 ```
 
-See [03_registration_template.cpp](https://github.com/koide3/small_gicp/blob/master/src/example/03_registration_template.cpp)  for more detailed customization example.
+See [03_registration_template.cpp](src/example/03_registration_template.cpp)  for more detailed customization example.
 
 </details>
 
 ## Usage (Python)
 
-Coming soon.
+[basic_registration.py](src/example/basic_registration.py)
+
+<details><summary>Expand</summary>
+
+Example A : Perform registration with numpy arrays
+
+```python
+# Arguments
+# - target_points               : Nx4 or Nx3 numpy array of the target point cloud
+# - source_points               : Nx4 or Nx3 numpy array of the source point cloud
+# Optional arguments
+# - init_T_target_source        : Initial guess of the transformation matrix (4x4 numpy array)
+# - registration_type           : Registration type ("ICP", "PLANE_ICP", "GICP", "VGICP")
+# - voxel_resolution            : Voxel resolution for VGICP
+# - downsampling_resolution     : Downsampling resolution
+# - max_correspondence_distance : Maximum correspondence distance
+# - num_threads                 : Number of threads
+result = small_gicp.align_points(target_raw_numpy, source_raw_numpy, downsampling_resolution=0.25)
+
+result.T_target_source  # Estimated transformation (4x4 numpy array)
+result.converged        # If true, the optimization converged successfully
+result.iterations       # Number of iterations the optimization took
+result.num_inliers      # Number of inlier points
+result.H                # Final Hessian matrix (6x6 matrix)
+result.b                # Final information vector (6D vector)
+result.e                # Final error (float)
+```
+
+Example B : Perform preprocessing and registration separately
+
+```python
+# Preprocess point clouds
+# Arguments
+# - points_numpy                : Nx4 or Nx3 numpy array of the target point cloud
+# Optional arguments
+# - downsampling_resolution     : Downsampling resolution
+# - num_neighbors               : Number of neighbors for normal and covariance estimation
+# - num_threads                 : Number of threads
+target, target_tree = small_gicp.preprocess_points(points_numpy=target_raw_numpy, downsampling_resolution=0.25)
+source, source_tree = small_gicp.preprocess_points(points_numpy=source_raw_numpy, downsampling_resolution=0.25)
+
+# Align point clouds
+# Arguments
+# - target                      : Target point cloud (small_gicp.PointCloud)
+# - source                      : Source point cloud (small_gicp.PointCloud)
+# - target_tree                 : KD-tree of the target point cloud (small_gicp.KdTree)
+# Optional arguments
+# - init_T_target_source        : Initial guess of the transformation matrix (4x4 numpy array)
+# - max_correspondence_distance : Maximum correspondence distance
+# - num_threads                 : Number of threads
+result = small_gicp.align(target, source, target_tree)
+```
+
+Example C : Perform each of preprocessing steps one-by-one
+
+```python
+# Convert numpy arrays (Nx3 or Nx4) to small_gicp.PointCloud
+target_raw = small_gicp.PointCloud(target_raw_numpy)
+source_raw = small_gicp.PointCloud(source_raw_numpy)
+
+# Downsampling
+target = small_gicp.voxelgrid_sampling(target_raw, 0.25)
+source = small_gicp.voxelgrid_sampling(source_raw, 0.25)
+
+# KdTree construction
+target_tree = small_gicp.KdTree(target)
+source_tree = small_gicp.KdTree(source)
+
+# Estimate covariances
+small_gicp.estimate_covariances(target, target_tree)
+small_gicp.estimate_covariances(source, source_tree)
+
+# Align point clouds
+result = small_gicp.align(target, source, target_tree)
+```
+
+</details>
 
 ## Benchmark
 
@@ -250,7 +335,7 @@ Coming soon.
 
 - Single-thread `small_gicp::GICP` is about **2.4x and 1.9x faster** than `pcl::GICP` and `fast_gicp::GICP`, respectively.
 - `small_gicp::(GICP|VGICP)` shows a better multi-thread scalability compared to `fast_gicp::(GICP|VGICP)`.
-- `small_gicp::GICP` parallelized with [TBB flow graph](https://github.com/koide3/small_gicp/blob/master/src/odometry_benchmark_small_gicp_tbb_flow.cpp) shows an excellent scalablity to many-threads situations (**~128 threads**) but with latency degradation.
+- `small_gicp::GICP` parallelized with [TBB flow graph](src/odometry_benchmark_small_gicp_tbb_flow.cpp) shows an excellent scalablity to many-threads situations (**~128 threads**) but with latency degradation.
 
 ![odometry_time](docs/assets/odometry_time.png)
 
