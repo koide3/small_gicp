@@ -16,6 +16,11 @@ Note that GPU-based implementations are NOT included in this package.
 
 This library uses some C++20 features. While porting it to older environments should be easy, we have no plan to support environments older than Ubuntu 22.04.
 
+## Dependencies
+
+- [Mandatory] [Eigen](https://eigen.tuxfamily.org/), [nanoflann](https://github.com/jlblancoc/nanoflann) ([bundled1](include/ann/nanoflann.hpp), [bundled2](include/ann/nanoflann_omp.hpp), [bundled3](include/ann/nanoflann_tbb.hpp)), [Sophus](https://github.com/strasdat/Sophus) ([bundled](include/util/lie.hpp))
+- [Optional] [OpenMP](https://www.openmp.org/), [Intel TBB](https://www.intel.com/content/www/us/en/developer/tools/oneapi/onetbb.html), [PCL](https://pointclouds.org/)
+
 ## Installation
 
 ### C++
@@ -360,7 +365,7 @@ open3d.visualization.draw_geometries([target_o3d, source_o3d])
 ## License
 This package is released under the MIT license.
 
-If you find this package useful for your project, please consider leaving a comment here. It would help the author gain internal recognition in his organization and keep working on this project.
+If you find this package useful for your project, please consider leaving a comment [here](https://github.com/koide3/small_gicp/issues/3). It would help the author receive recognition in his organization and keep working on this project.
 
 ## Contact
 
