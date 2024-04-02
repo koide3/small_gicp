@@ -25,7 +25,7 @@ jobs:
         run: |
           sudo apt-get -y update
           sudo apt-get install -y build-essential cmake python3-pip pybind11-dev libeigen3-dev libfmt-dev libtbb-dev libomp-dev libpcl-dev libgtest-dev lcov
-          pip install -U setuptools pytest numpy scipy
+          pip install -U setuptools pytest pytest-cov numpy scipy
 
       - name: Build (C++)
         run: |
@@ -45,7 +45,7 @@ jobs:
 
       - name: Test (Python)
         run: |
-          pytest src/example/basic_registration.py
+          pytest src/example/basic_registration.py --cov --cov-report=xml
       
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4.0.1
