@@ -10,6 +10,9 @@
 
 Note that GPU-based implementations are NOT included in this package.
 
+If you find this package useful for your project, please consider leaving a comment [here](https://github.com/koide3/small_gicp/issues/3). It would help the author receive recognition in his organization and keep working on this project.
+
+
 [![Build](https://github.com/koide3/small_gicp/actions/workflows/build.yml/badge.svg)](https://github.com/koide3/small_gicp/actions/workflows/build.yml)
 
 ## Requirements
