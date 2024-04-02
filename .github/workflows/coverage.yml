@@ -52,4 +52,4 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: koide3/small_gicp
-          exclude: include/small_gicp/benchmark/*,src/benchmark/*,src/example/*
+          files: build/coverage.info,coverage.xml
