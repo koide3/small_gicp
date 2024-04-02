@@ -117,7 +117,7 @@ if(BUILD_BENCHMARKS)
 
   # Odometry benchmark
   add_executable(odometry_benchmark
-    src/small_gicp/util/benchmark_odom.cpp
+    src/small_gicp/benchmark/benchmark_odom.cpp
     src/benchmark/odometry_benchmark_pcl.cpp
     src/benchmark/odometry_benchmark_fast_gicp.cpp
     src/benchmark/odometry_benchmark_fast_vgicp.cpp

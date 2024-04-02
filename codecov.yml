@@ -1,0 +1,6 @@
+ignore:
+  - "include/small_gicp/benchmark/*"
+  - "src/test/*"
+  - "src/example/*"
+  - "src/benchmark/*"
+  - "src/small_gicp/benchmark/*"
