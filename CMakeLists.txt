@@ -9,6 +9,9 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 endif()
 
+option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+option(CMAKE_POSITION_INDEPENDENT_CODE "Generate position-independent code" ON)
+
 # Eigen is the sole mandatory dependency
 find_package(Eigen3 REQUIRED CONFIG)
 
@@ -63,7 +66,7 @@ install(DIRECTORY include/ DESTINATION include)
 
 # Helper library
 if(BUILD_HELPER)
-  add_library(small_gicp_helper SHARED
+  add_library(small_gicp_helper
     src/small_gicp/registration/registration.cpp
     src/small_gicp/registration/registration_helper.cpp
   )
@@ -84,6 +87,12 @@ if(BUILD_PYTHON_BINDINGS)
   pybind11_add_module(small_gicp src/python/python.cpp)
   target_include_directories(small_gicp PUBLIC include)
   target_link_libraries(small_gicp PRIVATE small_gicp_helper)
+
+  if(DEFINED SKBUILD_PROJECT_NAME)
+    set(PYTHON_INSTALL_DIR ${SKBUILD_PROJECT_NAME})
+  elseif(NOT DEFINED PYTHON_INSTALL_DIR)
+    set(PYTHON_INSTALL_DIR lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages/novatel_edie)
+  endif()
 endif()
 
 ###############
