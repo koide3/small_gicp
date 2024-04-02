@@ -54,6 +54,7 @@ int main(int argc, char** argv) {
     }
   }
 
+  std::cout << "SIMD in use=" << Eigen::SimdInstructionSetsInUse() << std::endl;
   std::cout << "dataset_path=" << dataset_path << std::endl;
   std::cout << "output_path=" << output_path << std::endl;
   std::cout << "registration_engine=" << engine << std::endl;

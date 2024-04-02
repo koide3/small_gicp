@@ -335,7 +335,7 @@ open3d.visualization.draw_geometries([target_o3d, source_o3d])
 
 </details>
 
-## Benchmark
+## [Benchmark](BENCHMARK.md)
 
 ### Downsampling
 

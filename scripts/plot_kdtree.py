@@ -21,16 +21,17 @@ def parse_result(filename):
         num_points.append(int(matched.group(1)))
         continue
       
-      matched = re.match(r'(\S+)_times=(\S+) \+\- (\S+)', line)
+      matched = re.match(r'(\S+)_times=(\S+) \+\- (\S+) \(median=(\S+)\)', line)
       if matched:
         method = matched.group(1)
         mean = float(matched.group(2))
         std = float(matched.group(3))
+        med = float(matched.group(4))
 
         if method not in results:
           results[method] = []
         
-        results[method].append(mean)
+        results[method].append(med)
         continue
 
   return (num_threads, num_points, results)
