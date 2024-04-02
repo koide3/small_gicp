@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
+#include <vector>
 #include <Eigen/Core>
 
 namespace small_gicp {

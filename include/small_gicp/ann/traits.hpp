@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
+#include <type_traits>
 #include <Eigen/Core>
 
 namespace small_gicp {
@@ -24,7 +25,13 @@ size_t knn_search(const T& tree, const Eigen::Vector4d& point, size_t k, size_t*
 }
 
 template <typename T>
-concept HasNearestNeighborSearch = requires(const T& tree) { Traits<T>::nearest_neighbor_search(tree, Eigen::Vector4d(), nullptr, nullptr); };
+struct has_nearest_neighbor_search {
+  template <typename U, int = (&Traits<U>::nearest_neighbor_search, 0)>
+  static std::true_type test(U*);
+  static std::false_type test(...);
+
+  static constexpr bool value = decltype(test((T*)nullptr))::value;
+};
 
 /// @brief Find the nearest neighbor
 /// @param tree       Nearest neighbor search (e.g., KdTree)
@@ -32,12 +39,12 @@ concept HasNearestNeighborSearch = requires(const T& tree) { Traits<T>::nearest_
 /// @param k_index    [out] Index of the nearest neighbor
 /// @param k_sq_dist  [out] Squared distance to the nearest neighbor
 /// @return 1 if a neighbor is found else 0
-template <HasNearestNeighborSearch T>
+template <typename T, std::enable_if_t<has_nearest_neighbor_search<T>::value, bool> = true>
 size_t nearest_neighbor_search(const T& tree, const Eigen::Vector4d& point, size_t* k_index, double* k_sq_dist) {
   return Traits<T>::nearest_neighbor_search(tree, point, k_index, k_sq_dist);
 }
 
-template <typename T>
+template <typename T, std::enable_if_t<!has_nearest_neighbor_search<T>::value, bool> = true>
 size_t nearest_neighbor_search(const T& tree, const Eigen::Vector4d& point, size_t* k_index, double* k_sq_dist) {
   return Traits<T>::knn_search(tree, point, 1, k_index, k_sq_dist);
 }

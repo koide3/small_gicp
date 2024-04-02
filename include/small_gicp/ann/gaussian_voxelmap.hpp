@@ -78,14 +78,14 @@ public:
   /// @brief Get voxel means
   std::vector<Eigen::Vector4d> voxel_means() const {
     std::vector<Eigen::Vector4d> means(flat_voxels.size());
-    std::ranges::transform(flat_voxels, means.begin(), [](const GaussianVoxel& voxel) { return voxel.mean; });
+    std::transform(flat_voxels.begin(), flat_voxels.end(), means.begin(), [](const GaussianVoxel& voxel) { return voxel.mean; });
     return means;
   }
 
   /// @brief Get voxel covariances
   std::vector<Eigen::Matrix4d> voxel_covs() const {
     std::vector<Eigen::Matrix4d> covs(flat_voxels.size());
-    std::ranges::transform(flat_voxels, covs.begin(), [](const GaussianVoxel& voxel) { return voxel.cov; });
+    std::transform(flat_voxels.begin(), flat_voxels.end(), covs.begin(), [](const GaussianVoxel& voxel) { return voxel.cov; });
     return covs;
   }
 
@@ -112,7 +112,8 @@ public:
 
     if ((++lru_counter) % lru_clear_cycle == 0) {
       // Remove least recently used voxels
-      std::erase_if(flat_voxels, [&](const GaussianVoxel& voxel) { return voxel.lru + lru_horizon < lru_counter; });
+      auto remove_counter = std::remove_if(flat_voxels.begin(), flat_voxels.end(), [&](const GaussianVoxel& voxel) { return voxel.lru + lru_horizon < lru_counter; });
+      flat_voxels.erase(remove_counter, flat_voxels.end());
       voxels.clear();
 
       // Rehash

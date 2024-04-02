@@ -54,7 +54,7 @@ struct GaussNewtonOptimizer {
       result.error = e;
     }
 
-    result.num_inliers = std::ranges::count_if(factors, [](const auto& factor) { return factor.inlier(); });
+    result.num_inliers = std::count_if(factors.begin(), factors.end(), [](const auto& factor) { return factor.inlier(); });
 
     return result;
   }
@@ -128,7 +128,7 @@ struct LevenbergMarquardtOptimizer {
       result.error = e;
     }
 
-    result.num_inliers = std::ranges::count_if(factors, [](const auto& factor) { return factor.inlier(); });
+    result.num_inliers = std::count_if(factors.begin(), factors.end(), [](const auto& factor) { return factor.inlier(); });
 
     return result;
   }

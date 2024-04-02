@@ -64,7 +64,7 @@ static std::vector<Eigen::Vector4f> read_ply(const std::string& filename) {
       break;
     }
 
-    if (line.starts_with("element")) {
+    if (line.find("element") == 0) {
       std::stringstream sst(line);
       std::string token, vertex, num_points;
       sst >> token >> vertex >> num_points;
@@ -74,7 +74,7 @@ static std::vector<Eigen::Vector4f> read_ply(const std::string& filename) {
       }
 
       points.resize(std::stol(num_points));
-    } else if (line.starts_with("property")) {
+    } else if (line.find("property") == 0) {
       std::stringstream sst(line);
       std::string token, type, name;
       sst >> token >> type >> name;

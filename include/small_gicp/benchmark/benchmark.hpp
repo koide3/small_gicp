@@ -57,7 +57,7 @@ public:
     }
 
     std::vector<double> sorted(full_data.begin(), full_data.end());
-    std::ranges::nth_element(sorted, sorted.begin() + sorted.size() / 2);
+    std::nth_element(sorted.begin(), sorted.end(), sorted.begin() + sorted.size() / 2);
     return sorted[sorted.size() / 2];
   }
 
@@ -105,19 +105,19 @@ public:
       filenames.emplace_back(path.path().string());
     }
 
-    std::ranges::sort(filenames);
+    std::sort(filenames.begin(), filenames.end());
     if (filenames.size() > max_num_data) {
       filenames.resize(max_num_data);
     }
 
     points.resize(filenames.size());
-    std::ranges::transform(filenames, points.begin(), [](const std::string& filename) { return read_points(filename); });
+    std::transform(filenames.begin(), filenames.end(), points.begin(), [](const std::string& filename) { return read_points(filename); });
   }
 
   template <typename PointCloud>
   std::vector<std::shared_ptr<PointCloud>> convert(bool release = false) {
     std::vector<std::shared_ptr<PointCloud>> converted(points.size());
-    std::ranges::transform(points, converted.begin(), [=](auto& raw_points) {
+    std::transform(points.begin(), points.end(), converted.begin(), [=](auto& raw_points) {
       auto points = std::make_shared<PointCloud>();
       traits::resize(*points, raw_points.size());
       for (size_t i = 0; i < raw_points.size(); i++) {

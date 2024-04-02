@@ -28,8 +28,8 @@ public:
 
     CacheTable::const_accessor ca;
     if (cache.find(ca, coord)) {
-      std::ranges::copy(ca->second.first, k_indices);
-      std::ranges::copy(ca->second.second, k_sq_dists);
+      std::copy(ca->second.first.begin(), ca->first.end(), k_indices);
+      std::copy(ca->second.second.begin(), ca->second.end(), k_sq_dists);
       return ca->second.first.size();
     }
 

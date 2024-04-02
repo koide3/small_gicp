@@ -3,6 +3,7 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 #include <Eigen/Core>
 #include <small_gicp/points/traits.hpp>
 

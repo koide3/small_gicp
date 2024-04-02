@@ -32,10 +32,10 @@ TEST(SortOMP, MergeSortTest) {
   for (int i = 0; i < 100; i++) {
     std::uniform_int_distribution<> data_dist(-100, 100);
     std::vector<int> data(size_dist(mt));
-    std::ranges::generate(data, [&] { return data_dist(mt); });
+    std::generate(data.begin(), data.end(), [&] { return data_dist(mt); });
 
     std::vector<int> sorted = data;
-    std::ranges::sort(sorted);
+    std::sort(sorted.begin(), sorted.end());
 
     std::vector<int> sorted_omp = data;
     merge_sort_omp(sorted_omp.begin(), sorted_omp.end(), std::less<int>(), 4);
@@ -47,10 +47,10 @@ TEST(SortOMP, MergeSortTest) {
   for (int i = 0; i < 100; i++) {
     std::uniform_real_distribution<> data_dist(-100, 100);
     std::vector<double> data(size_dist(mt));
-    std::ranges::generate(data, [&] { return data_dist(mt); });
+    std::generate(data.begin(), data.end(), [&] { return data_dist(mt); });
 
     std::vector<double> sorted = data;
-    std::ranges::sort(sorted);
+    std::sort(sorted.begin(), sorted.end());
 
     std::vector<double> sorted_omp = data;
     merge_sort_omp(sorted_omp.begin(), sorted_omp.end(), std::less<double>(), 4);
@@ -74,10 +74,10 @@ TEST(SortOMP, QuickSortTest) {
   for (int i = 0; i < 100; i++) {
     std::uniform_int_distribution<> data_dist(-100, 100);
     std::vector<int> data(size_dist(mt));
-    std::ranges::generate(data, [&] { return data_dist(mt); });
+    std::generate(data.begin(), data.end(), [&] { return data_dist(mt); });
 
     std::vector<int> sorted = data;
-    std::ranges::sort(sorted);
+    std::sort(sorted.begin(), sorted.end());
 
     std::vector<int> sorted_omp = data;
     quick_sort_omp(sorted_omp.begin(), sorted_omp.end(), std::less<int>(), 4);
@@ -89,10 +89,10 @@ TEST(SortOMP, QuickSortTest) {
   for (int i = 0; i < 100; i++) {
     std::uniform_real_distribution<> data_dist(-100, 100);
     std::vector<double> data(size_dist(mt));
-    std::ranges::generate(data, [&] { return data_dist(mt); });
+    std::generate(data.begin(), data.end(), [&] { return data_dist(mt); });
 
     std::vector<double> sorted = data;
-    std::ranges::sort(sorted);
+    std::sort(sorted.begin(), sorted.end());
 
     std::vector<double> sorted_omp = data;
     quick_sort_omp(sorted_omp.begin(), sorted_omp.end(), std::less<double>(), 4);

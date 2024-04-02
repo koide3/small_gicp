@@ -13,7 +13,7 @@ size_t register_odometry(const std::string& name, std::function<OdometryEstimati
 
 std::vector<std::string> odometry_names() {
   std::vector<std::string> names(odometry_registry.size());
-  std::ranges::transform(odometry_registry.begin(), odometry_registry.end(), names.begin(), [](const auto& p) { return p.first; });
+  std::transform(odometry_registry.begin(), odometry_registry.end(), names.begin(), [](const auto& p) { return p.first; });
   return names;
 }
 

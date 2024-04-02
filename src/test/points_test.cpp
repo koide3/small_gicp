@@ -47,7 +47,7 @@ TEST(PointsTest, PointsTest) {
   std::uniform_real_distribution<> dist(-100.0, 100.0);
 
   std::vector<Eigen::Vector4d> src_points(100);
-  std::ranges::generate(src_points, [&] { return Eigen::Vector4d(dist(mt), dist(mt), dist(mt), 1.0); });
+  std::generate(src_points.begin(), src_points.end(), [&] { return Eigen::Vector4d(dist(mt), dist(mt), dist(mt), 1.0); });
 
   auto points = std::make_shared<PointCloud>(src_points);
   test_points(src_points, *points, mt);

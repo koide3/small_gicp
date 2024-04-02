@@ -48,7 +48,7 @@ std::shared_ptr<OutputPointCloud> voxelgrid_sampling(const InputPointCloud& poin
 
   // Sort by voxel coord
   const auto compare = [](const auto& lhs, const auto& rhs) { return lhs.first < rhs.first; };
-  std::ranges::sort(coord_pt, compare);
+  std::sort(coord_pt.begin(), coord_pt.end(), compare);
 
   auto downsampled = std::make_shared<OutputPointCloud>();
   traits::resize(*downsampled, traits::size(points));

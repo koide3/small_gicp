@@ -120,7 +120,7 @@ TEST_F(KdTreeTest, LoadCheck) {
   for (size_t i = 0; i < queries.size(); i++) {
     EXPECT_EQ(k_indices[i].size(), k);
     EXPECT_EQ(k_sq_dists[i].size(), k);
-    EXPECT_TRUE(std::ranges::is_sorted(k_sq_dists[i])) << "Must be sorted by distance";
+    EXPECT_TRUE(std::is_sorted(k_sq_dists[i].begin(), k_sq_dists[i].end())) << "Must be sorted by distance";
   }
 }
 

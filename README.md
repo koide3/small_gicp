@@ -14,12 +14,12 @@ Note that GPU-based implementations are NOT included in this package.
 
 ## Requirements
 
-This library uses some C++20 features. While porting it to older environments should be easy, we have no plan to support environments older than Ubuntu 22.04.
+This library uses some C++17 features. While porting it to older environments should be easy, we have no plan to support environments older than Ubuntu 20.04.
 
 ## Dependencies
 
-- [Mandatory] [Eigen](https://eigen.tuxfamily.org/), [nanoflann](https://github.com/jlblancoc/nanoflann) ([bundled1](include/ann/nanoflann.hpp), [bundled2](include/ann/nanoflann_omp.hpp), [bundled3](include/ann/nanoflann_tbb.hpp)), [Sophus](https://github.com/strasdat/Sophus) ([bundled](include/util/lie.hpp))
-- [Optional] [OpenMP](https://www.openmp.org/), [Intel TBB](https://www.intel.com/content/www/us/en/developer/tools/oneapi/onetbb.html), [PCL](https://pointclouds.org/)
+- [Mandatory] [Eigen](https://eigen.tuxfamily.org/), [nanoflann](https://github.com/jlblancoc/nanoflann) ([bundled1](include/small_gicp/ann/nanoflann.hpp), [bundled2](include/small_gicp/ann/nanoflann_omp.hpp), [bundled3](include/small_gicp/ann/nanoflann_tbb.hpp)), [Sophus](https://github.com/strasdat/Sophus) ([bundled](include/small_gicp/util/lie.hpp))
+- [Optional] [OpenMP](https://www.openmp.org/), [Intel TBB](https://www.intel.com/content/www/us/en/developer/tools/oneapi/onetbb.html), [PCL](https://pointclouds.org/), [Iridescence](https://github.com/koide3/iridescence)
 
 ## Installation
 
@@ -342,7 +342,7 @@ open3d.visualization.draw_geometries([target_o3d, source_o3d])
 - Single-threaded `small_gicp::voxelgrid_sampling` is about **1.3x faster** than `pcl::VoxelGrid`.
 - Multi-threaded `small_gicp::voxelgrid_sampling_tbb` (6 threads) is about **3.2x faster** than `pcl::VoxelGrid`.
 - `small_gicp::voxelgrid_sampling` gives accurate downsampling results (almost identical to those of `pcl::VoxelGrid`) while `pcl::ApproximateVoxelGrid` yields spurious points (up to 2x points).
-- `small_gicp::voxelgrid_sampling` can process a larger point cloud with a fine voxel resolution compared to `pcl::VoxelGrid` (for a point cloud of 1000m width, minimum voxel resolution can be 0.5 mm).
+- `small_gicp::voxelgrid_sampling` can process a larger point cloud with a fine voxel resolution compared to `pcl::VoxelGrid` (for a point cloud of 1000m width, the minimum voxel resolution can be **0.5 mm**).
 
 ![downsampling_comp](docs/assets/downsampling_comp.png)
 
