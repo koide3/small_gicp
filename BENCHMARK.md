@@ -72,7 +72,7 @@ python3 plot_kdtree.py
 ```
 
 - Multi-threaded implementation (TBB and OMP) can be up to **4x faster** than the single-threaded one (All the implementations are based on nanoflann).
-- Basically the processing speed get faster as the number of threads increases, but the speed gain is not monotonic sometimes (because of the scheduling algorithm or some CPU(AMD 5995WX)-specific issues?).
+- The processing speed gets faster as the number of threads increases, but the speed gain is not monotonic sometimes (because of the scheduling algorithm or some CPU(AMD 5995WX)-specific issues?).
 - This benchmark only compares the construction time (query time is not included). 
 
 ![kdtree_time](docs/assets/kdtree_time.png)
@@ -87,7 +87,7 @@ python3 plot_odometry.py
 
 - Single-thread `small_gicp::GICP` is about **2.4x and 1.9x faster** than `pcl::GICP` and `fast_gicp::GICP`, respectively.
 - `small_gicp::(GICP|VGICP)` shows a better multi-thread scalability compared to `fast_gicp::(GICP|VGICP)`.
-- `small_gicp::GICP` parallelized with [TBB flow graph](src/odometry_benchmark_small_gicp_tbb_flow.cpp) shows an excellent scalablity to many-threads situations (**~128 threads**) but with latency degradation.
+- `small_gicp::GICP` parallelized with [TBB flow graph](src/odometry_benchmark_small_gicp_tbb_flow.cpp) shows an excellent scalability to many-threads situations (**~128 threads**) but with latency degradation.
 
 ![odometry_time](docs/assets/odometry_time.png)
 
