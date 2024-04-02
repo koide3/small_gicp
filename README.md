@@ -17,7 +17,7 @@ If you find this package useful for your project, please consider leaving a comm
 
 ## Requirements
 
-This library uses some C++17 features. The PCL interface is not compatible with PCL older than 1.11 that uses `boost::shared_ptr`. While porting this package to older environments should be easy, we have no plan to support environments older than Ubuntu 22.04.
+This library uses some C++17 features. The PCL interface is not compatible with PCL older than 1.11 that uses `boost::shared_ptr`.
 
 ## Dependencies
 
