@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(small_gicp CXX)
+project(small_gicp VERSION 0.0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
@@ -11,6 +11,7 @@ endif()
 
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 option(CMAKE_POSITION_INDEPENDENT_CODE "Generate position-independent code" ON)
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 # Eigen is the sole mandatory dependency
 find_package(Eigen3 REQUIRED CONFIG)
@@ -55,28 +56,25 @@ if(ENABLE_COVERAGE)
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
 endif()
 
-#############
-## Install ##
-#############
-install(DIRECTORY include/ DESTINATION include)
-
 ###########
 ## Build ##
 ###########
 
+include_directories(
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+
 # Helper library
 if(BUILD_HELPER)
-  add_library(small_gicp_helper
+  add_library(small_gicp
     src/small_gicp/registration/registration.cpp
     src/small_gicp/registration/registration_helper.cpp
   )
-  target_include_directories(small_gicp_helper PUBLIC include)
-  target_link_libraries(small_gicp_helper PUBLIC
+  target_link_libraries(small_gicp PUBLIC
     Eigen3::Eigen
     $<TARGET_NAME_IF_EXISTS:OpenMP::OpenMP_CXX>
   )
-
-  install(TARGETS small_gicp_helper DESTINATION lib)
 endif()
 
 # Python bindings
@@ -84,15 +82,9 @@ if(BUILD_PYTHON_BINDINGS)
   find_package(Python COMPONENTS Interpreter Development REQUIRED)
   find_package(pybind11 CONFIG REQUIRED)
 
-  pybind11_add_module(small_gicp src/python/python.cpp)
-  target_include_directories(small_gicp PUBLIC include)
-  target_link_libraries(small_gicp PRIVATE small_gicp_helper)
-
-  if(DEFINED SKBUILD_PROJECT_NAME)
-    set(PYTHON_INSTALL_DIR ${SKBUILD_PROJECT_NAME})
-  elseif(NOT DEFINED PYTHON_INSTALL_DIR)
-    set(PYTHON_INSTALL_DIR lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages/novatel_edie)
-  endif()
+  pybind11_add_module(small_gicp_python src/python/python.cpp)
+  set_target_properties(small_gicp_python PROPERTIES OUTPUT_NAME small_gicp)
+  target_link_libraries(small_gicp_python PRIVATE small_gicp)
 endif()
 
 ###############
@@ -141,7 +133,6 @@ if(BUILD_BENCHMARKS)
     src/benchmark/odometry_benchmark.cpp
   )
   target_include_directories(odometry_benchmark PUBLIC
-    include
     ${FAST_GICP_INCLUDE_DIR}
   )
   target_link_libraries(odometry_benchmark PRIVATE
@@ -158,7 +149,6 @@ if(BUILD_BENCHMARKS)
   add_executable(kdtree_benchmark
     src/benchmark/kdtree_benchmark.cpp
   )
-  target_include_directories(kdtree_benchmark PUBLIC include)
   target_link_libraries(kdtree_benchmark PRIVATE
     fmt::fmt
     Eigen3::Eigen
@@ -172,7 +162,6 @@ if(BUILD_BENCHMARKS)
     add_executable(downsampling_benchmark
       src/benchmark/downsampling_benchmark.cpp
     )
-    target_include_directories(downsampling_benchmark PUBLIC include)
     target_link_libraries(downsampling_benchmark PRIVATE
       fmt::fmt
       Eigen3::Eigen
@@ -196,9 +185,8 @@ if(BUILD_EXAMPLES)
   foreach(EXAMPLE_SOURCE ${EXAMPLE_SOURCES})
     get_filename_component(EXAMPLE_NAME ${EXAMPLE_SOURCE} NAME_WE)
     add_executable(${EXAMPLE_NAME} ${EXAMPLE_SOURCE})
-    target_include_directories(${EXAMPLE_NAME} PUBLIC include)
     target_link_libraries(${EXAMPLE_NAME} PRIVATE
-      small_gicp_helper
+      small_gicp
       fmt::fmt
       TBB::tbb
       TBB::tbbmalloc
@@ -222,9 +210,8 @@ if(BUILD_TESTS)
   foreach(TEST_SOURCE ${TEST_SOURCES})
     get_filename_component(TEST_NAME ${TEST_SOURCE} NAME_WE)
     add_executable(${TEST_NAME} ${TEST_SOURCE})
-    target_include_directories(${TEST_NAME} PUBLIC include)
     target_link_libraries(${TEST_NAME} PRIVATE
-      small_gicp_helper
+      small_gicp
       fmt::fmt
       GTest::gtest_main
       TBB::tbb
@@ -234,4 +221,52 @@ if(BUILD_TESTS)
 
     gtest_discover_tests(${TEST_NAME} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
   endforeach()
+endif()
+
+
+#############
+## Install ##
+#############
+
+include(GNUInstallDirs)
+install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+if(BUILD_HELPER)
+  set(CMAKE_CONFIG_INSTALL_DIR
+    "${CMAKE_INSTALL_LIBDIR}/cmake/small_gicp"
+    CACHE PATH "Install directory for CMake config files"
+  )
+  install(TARGETS small_gicp
+    EXPORT small_gicp-targets
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  )
+  install(EXPORT small_gicp-targets
+    FILE small_gicp-targets.cmake
+    NAMESPACE small_gicp::
+    DESTINATION ${CMAKE_CONFIG_INSTALL_DIR}
+  )
+  include(CMakePackageConfigHelpers)
+  write_basic_package_version_file(
+    "${CMAKE_CURRENT_BINARY_DIR}/small_gicp-config-version.cmake"
+    VERSION ${VERSION}
+    COMPATIBILITY SameMajorVersion
+  )
+  install(FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/small_gicp-config-version.cmake"
+    DESTINATION ${CMAKE_CONFIG_INSTALL_DIR}
+  )
+endif()
+
+if(BUILD_PYTHON_BINDINGS)
+  if(DEFINED SKBUILD_PROJECT_NAME)
+    set(PYTHON_INSTALL_DIR .)
+  elseif(NOT DEFINED PYTHON_INSTALL_DIR)
+    set(PYTHON_INSTALL_DIR lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages)
+  endif()
+  install(TARGETS small_gicp_python small_gicp
+    LIBRARY DESTINATION ${PYTHON_INSTALL_DIR}
+    COMPONENT python
+  )
 endif()
