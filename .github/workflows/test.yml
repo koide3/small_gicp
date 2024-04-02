@@ -1,0 +1,35 @@
+name: Build
+
+on:
+  push:
+    branches: [ master ]
+    paths-ignore: '**.md'
+  pull_request:
+    branches: [ master ]
+    paths-ignore: '**.md'
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GH_PAT }}
+          submodules: recursive
+      
+      - name: Install Dependencies
+        run: |
+          sudo apt-get -y update
+          sudo apt-get install -y build-essential cmake python3-pip pybind11-dev libeigen3-dev libfmt-dev libtbb-dev libomp-dev libpcl-dev libgtest-dev
+
+      - name: Build
+        run: |
+          mkdir build && cd build
+          cmake .. -DBUILD_TESTS=ON -DBUILD_EXAMPLES=ON -DBUILD_BENCHMARKS=ON -DBUILD_WITH_TBB=ON -DBUILD_WITH_PCL=ON
+          cmake --build . -j$(nproc)
+          ctest -j$(nproc)
+

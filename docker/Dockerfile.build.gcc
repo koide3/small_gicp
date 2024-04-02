@@ -1,0 +1,23 @@
+ARG BASE_IMAGE
+
+FROM ${BASE_IMAGE}
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install --no-install-recommends -y \
+  && apt-get install --no-install-recommends -y \
+  wget nano build-essential git cmake \
+  libeigen3-dev libfmt-dev libtbb-dev libomp-dev libgtest-dev  \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
+
+COPY . /root/small_gicp
+WORKDIR /root/small_gicp/build
+RUN rm -rf ./*
+
+RUN cmake .. -DBUILD_WITH_TBB=ON
+RUN cmake --build . -j$(nproc)
+
+WORKDIR /
+
+CMD ["bash"]

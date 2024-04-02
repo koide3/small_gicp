@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        DISTRO: [jammy, focal]
+        DISTRO: [noble, jammy, focal]
         TOOLCHAIN: [gcc, llvm]
 
     steps:
@@ -35,7 +35,7 @@ jobs:
       - name: Docker build
         uses: docker/build-push-action@v2
         with:
-          file: ${{github.workspace}}/docker/Dockerfile.${{ matrix.TOOLCHAIN }}
+          file: ${{github.workspace}}/docker/Dockerfile.build.${{ matrix.TOOLCHAIN }}
           build-args: BASE_IMAGE=ubuntu:${{ matrix.DISTRO }}
           context: .
           push: false
