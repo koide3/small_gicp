@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 /// @brief Basic point cloud registration example with small_gicp::align()
+#include <queue>
 #include <iostream>
 #include <small_gicp/benchmark/read_points.hpp>
 
@@ -114,6 +115,69 @@ struct Traits<MyPointCloud> {
 }  // namespace traits
 }  // namespace small_gicp
 
+/// @brief Custom nearest neighbor search with brute force search. (Do not use this in practical applications)
+struct MyNearestNeighborSearch {
+public:
+  MyNearestNeighborSearch(const std::shared_ptr<MyPointCloud>& points) : points(points) {}
+
+  size_t knn_search(const Eigen::Vector4d& pt, int k, size_t* k_indices, double* k_sq_dists) const {
+    // Priority queue to hold top-k neighbors
+    const auto comp = [](const std::pair<size_t, double>& lhs, const std::pair<size_t, double>& rhs) { return lhs.second < rhs.second; };
+    std::priority_queue<std::pair<size_t, double>, std::vector<std::pair<size_t, double>>, decltype(comp)> queue(comp);
+
+    // Push pairs of (index, squared distance) to the queue
+    for (size_t i = 0; i < points->size(); i++) {
+      const double sq_dist = (Eigen::Map<const Eigen::Vector3d>(points->at(i).point.data()) - pt.head<3>()).squaredNorm();
+      queue.push({i, sq_dist});
+      if (queue.size() > k) {
+        queue.pop();
+      }
+    }
+
+    // Pop results
+    const size_t n = queue.size();
+    while (!queue.empty()) {
+      k_indices[queue.size() - 1] = queue.top().first;
+      k_sq_dists[queue.size() - 1] = queue.top().second;
+      queue.pop();
+    }
+
+    return n;
+  }
+
+  std::shared_ptr<MyPointCloud> points;
+};
+
+// Define traits for MyNearestNeighborSearch so that it can be fed to small_gicp algorithms.
+namespace small_gicp {
+namespace traits {
+template <>
+struct Traits<MyNearestNeighborSearch> {
+  /// @brief Find k-nearest neighbors.
+  /// @note  This generic knn search is used for preprocessing (e.g., normal estimation).
+  /// @param search      Nearest neighbor search
+  /// @param point       Query point [x, y, z, 1.0]
+  /// @param k           Number of neighbors
+  /// @param k_indices   [out] Indices of the k-nearest neighbors
+  /// @param k_sq_dists  [out] Squared distances of the k-nearest neighbors
+  /// @return            Number of neighbors found
+  static size_t knn_search(const MyNearestNeighborSearch& search, const Eigen::Vector4d& point, size_t k, size_t* k_indices, double* k_sq_dists) {
+    return search.knn_search(point, k, k_indices, k_sq_dists);
+  }
+
+  /// @brief Find the nearest neighbor. This is a special case of knn_search with k=1 and is used for registration.
+  ///        You can define this to optimize the search speed for k=1. Otherwise, knn_search() with k=1 is used.
+  ///        It is also valid to define only nearest_neighbor_search() and do not define knn_search() if you only feed your class to registration but not to preprocessing.
+  /// @param search      Nearest neighbor search
+  /// @param point       Query point [x, y, z, 1.0]
+  /// @param k_indices   [out] Indices of the k-nearest neighbors
+  /// @param k_sq_dists  [out] Squared distances of the k-nearest neighbors
+  /// @return            1 if the nearest neighbor is found, 0 otherwise
+  // static size_t nearest_neighbor_search(const MyNearestNeighborSearch& search, const Eigen::Vector4d& point, size_t* k_index, double* k_sq_dist);
+};
+}  // namespace traits
+}  // namespace small_gicp
+
 /// @brief Custom correspondence rejector.
 struct MyCorrespondenceRejector {
   MyCorrespondenceRejector() : max_correpondence_dist_sq(1.0), min_feature_cos_dist(0.9) {}
@@ -214,13 +278,14 @@ void example2(const std::vector<Eigen::Vector4f>& target_points, const std::vect
   target = voxelgrid_sampling_omp(*target, downsampling_resolution, num_threads);
   source = voxelgrid_sampling_omp(*source, downsampling_resolution, num_threads);
 
-  // Create KdTree
-  auto target_tree = std::make_shared<KdTreeOMP<MyPointCloud>>(target, num_threads);
-  auto source_tree = std::make_shared<KdTreeOMP<MyPointCloud>>(source, num_threads);
+  // Create nearest neighbor search
+  auto target_search = std::make_shared<MyNearestNeighborSearch>(target);
+  auto source_search = std::make_shared<MyNearestNeighborSearch>(target);
 
   // Estimate point normals
-  estimate_normals_omp(*target, *target_tree, num_neighbors, num_threads);
-  estimate_normals_omp(*source, *source_tree, num_neighbors, num_threads);
+  // You can use your custom nearest neighbor search here!
+  estimate_normals_omp(*target, *target_search, num_neighbors, num_threads);
+  estimate_normals_omp(*source, *source_search, num_neighbors, num_threads);
 
   // Compute point features (e.g., FPFH, SHOT, etc.)
   for (size_t i = 0; i < target->size(); i++) {
@@ -243,8 +308,9 @@ void example2(const std::vector<Eigen::Vector4f>& target_points, const std::vect
   registration.general_factor.lambda = 1e8;
 
   // Align point clouds
+  // Again, you can use your custom nearest neighbor search here!
   Eigen::Isometry3d init_T_target_source = Eigen::Isometry3d::Identity();
-  auto result = registration.align(*target, *source, *target_tree, init_T_target_source);
+  auto result = registration.align(*target, *source, *target_search, init_T_target_source);
 
   std::cout << "--- T_target_source ---" << std::endl << result.T_target_source.matrix() << std::endl;
   std::cout << "converged:" << result.converged << std::endl;
