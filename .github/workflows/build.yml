@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        DISTRO: [jammy]
+        DISTRO: [jammy, focal]
         TOOLCHAIN: [gcc, llvm]
 
     steps:
