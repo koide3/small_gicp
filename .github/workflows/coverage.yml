@@ -27,12 +27,27 @@ jobs:
           sudo apt-get install -y build-essential cmake python3-pip pybind11-dev libeigen3-dev libfmt-dev libtbb-dev libomp-dev libpcl-dev libgtest-dev
           pip install -U setuptools pytest numpy scipy
 
-      - name: Build
+      - name: Build (C++)
         run: |
           mkdir build && cd build
-          cmake .. -DBUILD_TESTS=ON -DBUILD_EXAMPLES=ON -DBUILD_BENCHMARKS=ON -DBUILD_WITH_TBB=ON -DBUILD_WITH_PCL=ON
+          cmake .. -DBUILD_TESTS=ON -DBUILD_EXAMPLES=ON -DBUILD_BENCHMARKS=ON -DBUILD_WITH_TBB=ON -DBUILD_WITH_PCL=ON -DENABLE_COVERAGE=ON
           cmake --build . -j$(nproc)
+      
+      - name: Test (C++)
+        run: |
           ctest -j$(nproc)
+
+      - name: Build (Python)
+        run: |
           cd ..
           python3 setup.py build && python3 setup.py install --user
+
+      - name: Test
+        run: |
           pytest src/example/basic_registration.py
+      
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4.0.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: koide3/small_gicp
