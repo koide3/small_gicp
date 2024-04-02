@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
-project(small_gicp)
+project(small_gicp CXX)
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build." FORCE)
@@ -10,15 +10,13 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 # Eigen is the sole mandatory dependency
-find_package(Eigen3 REQUIRED)
-find_package(OpenMP)
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+find_package(Eigen3 REQUIRED CONFIG)
 
 option(BUILD_HELPER "Build helper library" ON)
 option(BUILD_TESTS "Build tests" OFF)
 option(BUILD_EXAMPLES "Build examples" OFF)
 option(BUILD_BENCHMARKS "Build benchmarks" OFF)
+set(BUILD_WITH_OPENMP CACHE STRING "Build with OpenMP" "auto")
 option(BUILD_WITH_TBB "Build with TBB" ON)
 option(BUILD_WITH_PCL "Build with PCL (required for benchmark and test only)" OFF)
 option(BUILD_WITH_FAST_GICP "Build with fast_gicp (required for benchmark and test only)" OFF)
@@ -27,10 +25,14 @@ option(BUILD_WITH_MARCH_NATIVE "Build with -march=native" OFF)
 option(ENABLE_COVERAGE "Enable coverage" OFF)
 option(BUILD_PYTHON_BINDINGS "Build python bindings" OFF)
 
+if(BUILD_WITH_OPENMP STREQUAL "auto")
+  find_package(OpenMP)
+elseif(BUILD_WITH_OPENMP)
+  find_package(OpenMP REQUIRED)
+endif()
+
 if(BUILD_WITH_MARCH_NATIVE)
   add_compile_options(-march=native)
-  set(CMAKE_C_FLAGS "-march=native ${CMAKE_C_FLAGS}")
-  set(CMAKE_CXX_FLAGS "-march=native ${CMAKE_CXX_FLAGS}")
 endif()
 
 ##############
@@ -65,31 +67,23 @@ if(BUILD_HELPER)
     src/small_gicp/registration/registration.cpp
     src/small_gicp/registration/registration_helper.cpp
   )
-  target_include_directories(small_gicp_helper PUBLIC
-    include
-    ${EIGEN3_INCLUDE_DIR}
-  )
-  target_link_libraries(small_gicp_helper
-    OpenMP::OpenMP_CXX
+  target_include_directories(small_gicp_helper PUBLIC include)
+  target_link_libraries(small_gicp_helper PUBLIC
+    Eigen3::Eigen
+    $<TARGET_NAME_IF_EXISTS:OpenMP::OpenMP_CXX>
   )
 
   install(TARGETS small_gicp_helper DESTINATION lib)
 endif()
 
-find_package(Python COMPONENTS Interpreter Development)
-find_package(pybind11 CONFIG)
-
 # Python bindings
 if(BUILD_PYTHON_BINDINGS)
+  find_package(Python COMPONENTS Interpreter Development REQUIRED)
+  find_package(pybind11 CONFIG REQUIRED)
+
   pybind11_add_module(small_gicp src/python/python.cpp)
-  target_include_directories(small_gicp PUBLIC
-    include
-    ${EIGEN3_INCLUDE_DIR}
-  )
-  target_link_libraries(small_gicp PRIVATE
-    small_gicp_helper
-    OpenMP::OpenMP_CXX
-  )
+  target_include_directories(small_gicp PUBLIC include)
+  target_link_libraries(small_gicp PRIVATE small_gicp_helper)
 endif()
 
 ###############
@@ -104,6 +98,13 @@ if(BUILD_BENCHMARKS)
   if (BUILD_WITH_PCL)
     find_package(PCL REQUIRED)
     add_compile_definitions(BUILD_WITH_PCL)
+    if (NOT TARGET PCL::PCL)
+      add_library(PCL::PCL INTERFACE IMPORTED)
+      set_target_properties(PCL::PCL PROPERTIES
+        INTERFACE_INCLUDE_DIRECTORIES "${PCL_INCLUDE_DIRS}"
+        INTERFACE_LINK_LIBRARIES "${PCL_LIBRARIES}"
+      )
+    endif()
   endif()
   if (BUILD_WITH_IRIDESCENCE)
     find_package(Iridescence REQUIRED)
@@ -132,33 +133,29 @@ if(BUILD_BENCHMARKS)
   )
   target_include_directories(odometry_benchmark PUBLIC
     include
-    ${PCL_INCLUDE_DIRS}
-    ${TBB_INCLUDE_DIRS}
-    ${EIGEN3_INCLUDE_DIR}
-    ${Iridescence_INCLUDE_DIRS}
     ${FAST_GICP_INCLUDE_DIR}
   )
-  target_link_libraries(odometry_benchmark
+  target_link_libraries(odometry_benchmark PRIVATE
     fmt::fmt
-    OpenMP::OpenMP_CXX
-    ${PCL_LIBRARIES}
-    ${TBB_LIBRARIES}
-    ${Iridescence_LIBRARIES}
+    Eigen3::Eigen
+    $<TARGET_NAME_IF_EXISTS:OpenMP::OpenMP_CXX>
+    Iridescence::Iridescence
+    TBB::tbb
+    TBB::tbbmalloc
+    PCL::PCL
   )
 
   # KdTree construction benchmark
   add_executable(kdtree_benchmark
     src/benchmark/kdtree_benchmark.cpp
   )
-  target_include_directories(kdtree_benchmark PUBLIC
-    include
-    ${TBB_INCLUDE_DIRS}
-    ${EIGEN3_INCLUDE_DIR}
-  )
-  target_link_libraries(kdtree_benchmark
+  target_include_directories(kdtree_benchmark PUBLIC include)
+  target_link_libraries(kdtree_benchmark PRIVATE
     fmt::fmt
-    OpenMP::OpenMP_CXX
-    ${TBB_LIBRARIES}
+    Eigen3::Eigen
+    $<TARGET_NAME_IF_EXISTS:OpenMP::OpenMP_CXX>
+    TBB::tbb
+    TBB::tbbmalloc
   )
 
   if(BUILD_WITH_PCL)
@@ -166,17 +163,14 @@ if(BUILD_BENCHMARKS)
     add_executable(downsampling_benchmark
       src/benchmark/downsampling_benchmark.cpp
     )
-    target_include_directories(downsampling_benchmark PUBLIC
-      include
-      ${PCL_INCLUDE_DIRS}
-      ${TBB_INCLUDE_DIRS}
-      ${EIGEN3_INCLUDE_DIR}
-    )
-    target_link_libraries(downsampling_benchmark
+    target_include_directories(downsampling_benchmark PUBLIC include)
+    target_link_libraries(downsampling_benchmark PRIVATE
       fmt::fmt
-      OpenMP::OpenMP_CXX
-      ${PCL_LIBRARIES}
-      ${TBB_LIBRARIES}
+      Eigen3::Eigen
+      $<TARGET_NAME_IF_EXISTS:OpenMP::OpenMP_CXX>
+      TBB::tbb
+      TBB::tbbmalloc
+      PCL::PCL
     )
   endif()
 endif()
@@ -193,18 +187,13 @@ if(BUILD_EXAMPLES)
   foreach(EXAMPLE_SOURCE ${EXAMPLE_SOURCES})
     get_filename_component(EXAMPLE_NAME ${EXAMPLE_SOURCE} NAME_WE)
     add_executable(${EXAMPLE_NAME} ${EXAMPLE_SOURCE})
-    target_include_directories(${EXAMPLE_NAME} PUBLIC
-      include
-      ${PCL_INCLUDE_DIRS}
-      ${TBB_INCLUDE_DIRS}
-      ${EIGEN3_INCLUDE_DIR}
-    )
-    target_link_libraries(${EXAMPLE_NAME}
+    target_include_directories(${EXAMPLE_NAME} PUBLIC include)
+    target_link_libraries(${EXAMPLE_NAME} PRIVATE
       small_gicp_helper
       fmt::fmt
-      OpenMP::OpenMP_CXX
-      ${PCL_LIBRARIES}
-      ${TBB_LIBRARIES}
+      TBB::tbb
+      TBB::tbbmalloc
+      PCL::PCL
     )
   endforeach()
 endif()
@@ -224,19 +213,14 @@ if(BUILD_TESTS)
   foreach(TEST_SOURCE ${TEST_SOURCES})
     get_filename_component(TEST_NAME ${TEST_SOURCE} NAME_WE)
     add_executable(${TEST_NAME} ${TEST_SOURCE})
-    target_include_directories(${TEST_NAME} PUBLIC
-      include
-      ${PCL_INCLUDE_DIRS}
-      ${TBB_INCLUDE_DIRS}
-      ${EIGEN3_INCLUDE_DIR}
-    )
-    target_link_libraries(${TEST_NAME}
+    target_include_directories(${TEST_NAME} PUBLIC include)
+    target_link_libraries(${TEST_NAME} PRIVATE
       small_gicp_helper
       fmt::fmt
-      OpenMP::OpenMP_CXX
       GTest::gtest_main
-      ${PCL_LIBRARIES}
-      ${TBB_LIBRARIES}
+      TBB::tbb
+      TBB::tbbmalloc
+      PCL::PCL
     )
 
     gtest_discover_tests(${TEST_NAME} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
