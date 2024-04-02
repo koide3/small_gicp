@@ -1,0 +1,6 @@
+codecov:
+  ignore:
+    - "include/benchmark/*"
+    - "src/test/*"
+    - "src/example/*"
+    - "src/benchmark/*"
