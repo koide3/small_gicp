@@ -118,17 +118,17 @@ if(BUILD_BENCHMARKS)
   # Odometry benchmark
   add_executable(odometry_benchmark
     src/small_gicp/util/benchmark_odom.cpp
-    src/odometry_benchmark_pcl.cpp
-    src/odometry_benchmark_fast_gicp.cpp
-    src/odometry_benchmark_fast_vgicp.cpp
-    src/odometry_benchmark_small_gicp.cpp
-    src/odometry_benchmark_small_gicp_omp.cpp
-    src/odometry_benchmark_small_vgicp_omp.cpp
-    src/odometry_benchmark_small_gicp_tbb.cpp
-    src/odometry_benchmark_small_vgicp_tbb.cpp
-    src/odometry_benchmark_small_vgicp_model_tbb.cpp
-    src/odometry_benchmark_small_gicp_tbb_flow.cpp
-    src/odometry_benchmark.cpp
+    src/benchmark/odometry_benchmark_pcl.cpp
+    src/benchmark/odometry_benchmark_fast_gicp.cpp
+    src/benchmark/odometry_benchmark_fast_vgicp.cpp
+    src/benchmark/odometry_benchmark_small_gicp.cpp
+    src/benchmark/odometry_benchmark_small_gicp_omp.cpp
+    src/benchmark/odometry_benchmark_small_vgicp_omp.cpp
+    src/benchmark/odometry_benchmark_small_gicp_tbb.cpp
+    src/benchmark/odometry_benchmark_small_vgicp_tbb.cpp
+    src/benchmark/odometry_benchmark_small_vgicp_model_tbb.cpp
+    src/benchmark/odometry_benchmark_small_gicp_tbb_flow.cpp
+    src/benchmark/odometry_benchmark.cpp
   )
   target_include_directories(odometry_benchmark PUBLIC
     include
@@ -148,7 +148,7 @@ if(BUILD_BENCHMARKS)
 
   # KdTree construction benchmark
   add_executable(kdtree_benchmark
-    src/kdtree_benchmark.cpp
+    src/benchmark/kdtree_benchmark.cpp
   )
   target_include_directories(kdtree_benchmark PUBLIC
     include
@@ -164,7 +164,7 @@ if(BUILD_BENCHMARKS)
   if(BUILD_WITH_PCL)
     # Downsampling benchmark
     add_executable(downsampling_benchmark
-      src/downsampling_benchmark.cpp
+      src/benchmark/downsampling_benchmark.cpp
     )
     target_include_directories(downsampling_benchmark PUBLIC
       include
