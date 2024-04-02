@@ -35,12 +35,12 @@ jobs:
       
       - name: Test (C++)
         run: |
-          ctest
+          cd build
+          ctest -j$(nproc)
           make coverage
 
       - name: Build (Python)
         run: |
-          cd ..
           python3 setup.py build && python3 setup.py install --user
 
       - name: Test (Python)
