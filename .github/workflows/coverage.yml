@@ -31,11 +31,12 @@ jobs:
         run: |
           mkdir build && cd build
           cmake .. -DBUILD_TESTS=ON -DBUILD_EXAMPLES=ON -DBUILD_BENCHMARKS=ON -DBUILD_WITH_TBB=ON -DBUILD_WITH_PCL=ON -DENABLE_COVERAGE=ON
-          cmake --build . -j$(nproc)
+          make -j$(nproc)
       
       - name: Test (C++)
         run: |
-          ctest -j$(nproc)
+          ctest
+          make coverage
 
       - name: Build (Python)
         run: |

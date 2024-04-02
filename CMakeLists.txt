@@ -45,8 +45,8 @@ if(ENABLE_COVERAGE)
 
   add_custom_target(coverage
     COMMAND ${LCOV} --directory . --capture --output-file coverage.info
-    COMMAND ${LCOV} --remove coverage.info -o filtered_coverage.info '/usr/*'
-    COMMAND ${GENHTML} --demangle-cpp -o coverage filtered_coverage.info
+    COMMAND ${LCOV} --remove coverage.info -o coverage.info '/usr/*'
+    COMMAND ${GENHTML} --demangle-cpp -o coverage coverage.info
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
 endif()
 
