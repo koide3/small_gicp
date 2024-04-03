@@ -13,9 +13,6 @@ option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 option(CMAKE_POSITION_INDEPENDENT_CODE "Generate position-independent code" ON)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
-# Eigen is the sole mandatory dependency
-find_package(Eigen3 REQUIRED CONFIG)
-
 option(BUILD_HELPER "Build helper library" ON)
 option(BUILD_TESTS "Build tests" OFF)
 option(BUILD_EXAMPLES "Build examples" OFF)
@@ -29,8 +26,12 @@ option(BUILD_WITH_MARCH_NATIVE "Build with -march=native" OFF)
 option(ENABLE_COVERAGE "Enable coverage" OFF)
 option(BUILD_PYTHON_BINDINGS "Build python bindings" OFF)
 
+# Eigen is the sole mandatory dependency
+find_package(Eigen3 REQUIRED CONFIG)
+
 if(BUILD_WITH_OPENMP STREQUAL "auto")
   find_package(OpenMP)
+  set(BUILD_WITH_OPENMP ${OpenMP_FOUND})
 elseif(BUILD_WITH_OPENMP)
   find_package(OpenMP REQUIRED)
 endif()
@@ -60,16 +61,17 @@ endif()
 ## Build ##
 ###########
 
-include_directories(
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
-)
+include_directories(include)
 
 # Helper library
 if(BUILD_HELPER)
   add_library(small_gicp
     src/small_gicp/registration/registration.cpp
     src/small_gicp/registration/registration_helper.cpp
+  )
+  target_include_directories(small_gicp PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
   )
   target_link_libraries(small_gicp PUBLIC
     Eigen3::Eigen
@@ -232,29 +234,39 @@ include(GNUInstallDirs)
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 if(BUILD_HELPER)
-  set(CMAKE_CONFIG_INSTALL_DIR
-    "${CMAKE_INSTALL_LIBDIR}/cmake/small_gicp"
-    CACHE PATH "Install directory for CMake config files"
-  )
   install(TARGETS small_gicp
     EXPORT small_gicp-targets
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
   )
+  set(CMAKE_CONFIG_INSTALL_DIR
+    "${CMAKE_INSTALL_LIBDIR}/cmake/small_gicp"
+    CACHE PATH "Install directory for CMake config files"
+  )
+  include(CMakePackageConfigHelpers)
   install(EXPORT small_gicp-targets
     FILE small_gicp-targets.cmake
     NAMESPACE small_gicp::
     DESTINATION ${CMAKE_CONFIG_INSTALL_DIR}
   )
-  include(CMakePackageConfigHelpers)
+  configure_package_config_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/small_gicp-config.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/small_gicp-config.cmake"
+    INSTALL_DESTINATION ${CMAKE_CONFIG_INSTALL_DIR}
+  )
   write_basic_package_version_file(
     "${CMAKE_CURRENT_BINARY_DIR}/small_gicp-config-version.cmake"
     VERSION ${VERSION}
     COMPATIBILITY SameMajorVersion
   )
   install(FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/small_gicp-config.cmake"
     "${CMAKE_CURRENT_BINARY_DIR}/small_gicp-config-version.cmake"
+    DESTINATION ${CMAKE_CONFIG_INSTALL_DIR}
+  )
+  install(FILES
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindTBB.cmake"
     DESTINATION ${CMAKE_CONFIG_INSTALL_DIR}
   )
 endif()
