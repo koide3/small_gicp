@@ -26,7 +26,7 @@ bool identical(const std::vector<T>& arr1, const std::vector<T>& arr2) {
 TEST(SortOMP, MergeSortTest) {
   std::mt19937 mt;
 
-  std::uniform_int_distribution<> size_dist(0, 1024);
+  std::uniform_int_distribution<> size_dist(0, 8192);
 
   // int
   for (int i = 0; i < 100; i++) {
@@ -68,7 +68,7 @@ TEST(SortOMP, MergeSortTest) {
 TEST(SortOMP, QuickSortTest) {
   std::mt19937 mt;
 
-  std::uniform_int_distribution<> size_dist(0, 1024);
+  std::uniform_int_distribution<> size_dist(0, 8192);
 
   // int
   for (int i = 0; i < 100; i++) {
