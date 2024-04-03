@@ -102,3 +102,18 @@ Results:
 - `BUILD_WITH_MARCH_NATIVE=ON` : `Eigen::SimdInstructionSetsInUse()=AVX, SSE, SSE2, SSE3, SSSE3, SSE4.1, SSE4.2`
 
 ![odometry_native](docs/assets/odometry_native.png)
+
+**Accuracy**
+
+- `small_gicp::GICP` outputs mostly identical results to those of `fast_gicp::GICP`.
+- The results of `small_gicp::VGICP` slightly differ from `fast_gicp::VGICP`. Although the difference is marginal, it needs to be investigated.
+
+```
+pcl_gicp             : APE=6.451 +- 3.421  RPE(100)=2.424 +- 1.707  RPE(400)=8.416 +- 4.284  RPE(800)=12.652 +- 6.799
+fast_gicp            : APE=6.118 +- 3.078  RPE(100)=1.212 +- 0.717  RPE(400)=6.058 +- 3.128  RPE(800)=10.356 +- 6.335
+fast_vgicp           : APE=6.791 +- 3.215  RPE(100)=1.253 +- 0.734  RPE(400)=6.315 +- 3.011  RPE(800)=10.367 +- 6.147
+small_gicp           : APE=6.096 +- 3.056  RPE(100)=1.211 +- 0.717  RPE(400)=6.057 +- 3.123  RPE(800)=10.364 +- 6.336
+small_gicp (tbb)     : APE=6.096 +- 3.056  RPE(100)=1.211 +- 0.717  RPE(400)=6.057 +- 3.123  RPE(800)=10.364 +- 6.336
+small_gicp (omp)     : APE=6.096 +- 3.056  RPE(100)=1.211 +- 0.717  RPE(400)=6.057 +- 3.123  RPE(800)=10.364 +- 6.336
+small_vgicp          : APE=5.956 +- 2.725  RPE(100)=1.315 +- 0.762  RPE(400)=6.849 +- 3.401  RPE(800)=10.396 +- 6.972
+```
