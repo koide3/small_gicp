@@ -4,6 +4,7 @@ import os
 import pathos
 import subprocess
 from collections import namedtuple
+from matplotlib import pyplot
 
 def run_evo(commands):
   p = subprocess.Popen(commands, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -49,26 +50,38 @@ def main():
     method = found[0][0] + '_' + found[0][1]
     filenames.append((method, results_path + '/' + filename))
   
-  Result = namedtuple('Result', ['ape', 'rpe'])
-  def evaluate(filename):
+  methods = ['pcl_1', 'fast_gicp_128', 'fast_vgicp_128', 'small_gicp_1', 'small_gicp_tbb_128', 'small_gicp_omp_128', 'small_vgicp_tbb_128']
+  labels = ['pcl_gicp', 'fast_gicp', 'fast_vgicp', 'small_gicp', 'small_gicp (tbb)', 'small_gicp (omp)', 'small_vgicp']
+  
+  Result = namedtuple('Result', ['ape', 'rpe100', 'rpe400', 'rpe800'])
+  def evaluate(inputs):
+    method, filename = inputs
+    print('.', end='', flush=True)
     ape = eval_ape(gt_path, filename)
-    rpe = eval_rpe(gt_path, filename, delta=100)
-    return Result(ape, rpe)
+    rpe100 = eval_rpe(gt_path, filename, delta=100)
+    rpe400 = eval_rpe(gt_path, filename, delta=400)
+    rpe800 = eval_rpe(gt_path, filename, delta=800)
+    return method, Result(ape, rpe100, rpe400, rpe800)
 
   print('evaluating')
   with pathos.multiprocessing.ProcessingPool() as p:
-    errors = p.map(evaluate, [filename for method, filename in filenames])
+    errors = p.map(evaluate, [(method, filename) for method, filename in filenames if method in methods])
+  print()
   
   results = {}
-  for (method, filename), error in zip(filenames, errors):
+  for method, error in errors:
     results[method] = error
-  
-  methods = ['pcl_1', 'fast_gicp_1', 'fast_vgicp_1', 'small_gicp_1', 'small_gicp_tbb_1', 'small_gicp_omp_1', 'small_vgicp_tbb_1']
-  labels = ['pcl_gicp', 'fast_gicp', 'fast_vgicp', 'small_gicp', 'small_gicp (tbb)', 'small_gicp (omp)', 'small_vgicp']
-  
+    
   for method, label in zip(methods, labels):
-    ape, rpe = results[method]
-    print('{:20s} : APE {:.3f} +- {:.3f}  RPE {:.3f} +- {:.3f}'.format(label, ape['rmse'], ape['std'], rpe['rmse'], rpe['std']))
+    ape, rpe100, rpe400, rpe800 = results[method]
+    print('{:20s} : APE={:.3f} +- {:.3f}  RPE(100)={:.3f} +- {:.3f}  RPE(400)={:.3f} +- {:.3f}  RPE(800)={:.3f} +- {:.3f}'
+          .format(label, ape['rmse'], ape['std'], rpe100['rmse'], rpe100['std'], rpe400['rmse'], rpe400['std'], rpe800['rmse'], rpe800['std']))
+  
+  fig, axes = pyplot.subplots(1, 3, figsize=(15, 5))
+  apes = [results[method].ape['rmse'] for method in methods]
+  axes[0].bar(labels, apes)
+  
+  pyplot.show()
   
     
   

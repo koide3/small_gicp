@@ -30,11 +30,20 @@ public:
   SmallGICPFlowEstimationTBB(const OdometryEstimationParams& params)
   : OdometryEstimation(params),
     control(tbb::global_control::max_allowed_parallelism, params.num_threads),
-    throughput(0.0) {}
+    throughput(0.0) {
+#ifdef BUILD_WITH_IRIDESCENCE
+    if (params.visualize) {
+      auto async_viewer = guik::async_viewer();
+      async_viewer->use_orbit_camera_control(250.0);
+    }
+#endif
+  }
 
   ~SmallGICPFlowEstimationTBB() {
 #ifdef BUILD_WITH_IRIDESCENCE
-    guik::async_destroy();
+    if (params.visualize) {
+      guik::async_destroy();
+    }
 #endif
   }
 
