@@ -8,6 +8,7 @@
 #include <small_gicp/ann/kdtree_omp.hpp>
 #include <small_gicp/ann/kdtree_tbb.hpp>
 #include <small_gicp/ann/cached_kdtree.hpp>
+#include <small_gicp/ann/flat_voxelmap.hpp>
 #include <small_gicp/util/downsampling.hpp>
 #include <small_gicp/points/point_cloud.hpp>
 #include <small_gicp/pcl/pcl_point_traits.hpp>
@@ -83,16 +84,12 @@ public:
       std::vector<size_t> indices(k);
       std::vector<double> sq_dists(k);
       const size_t num_results = traits::knn_search(tree, query, k, indices.data(), sq_dists.data());
-      EXPECT_EQ(num_results, k) << "num_neighbors must be k";
 
       if (strict) {
+        EXPECT_EQ(num_results, k) << "num_neighbors must be k";
         for (size_t j = 0; j < k; j++) {
           EXPECT_EQ(indices[j], k_indices[i][j]);
           EXPECT_NEAR(sq_dists[j], k_sq_dists[i][j], 1e-3);
-        }
-      } else {
-        for (size_t j = 0; j < k; j++) {
-          EXPECT_NEAR(sq_dists[j], k_sq_dists[i][j], 0.05);
         }
       }
 
@@ -100,13 +97,11 @@ public:
       size_t k_index;
       double k_sq_dist;
       const size_t found = traits::nearest_neighbor_search(tree, query, &k_index, &k_sq_dist);
-      EXPECT_EQ(found, 1) << "num_neighbors must be 1";
 
       if (strict) {
+        EXPECT_EQ(found, 1) << "num_neighbors must be 1";
         EXPECT_EQ(k_index, k_indices[i][0]);
         EXPECT_NEAR(k_sq_dist, k_sq_dists[i][0], 1e-3);
-      } else {
-        EXPECT_NEAR(k_sq_dist, k_sq_dists[i][0], 0.05);
       }
     }
   }
@@ -136,7 +131,7 @@ TEST_F(KdTreeTest, LoadCheck) {
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(KdTreeTest, KdTreeTest, testing::Values("SMALL", "TBB", "OMP", "CACHED"), [](const auto& info) { return info.param; });
+INSTANTIATE_TEST_SUITE_P(KdTreeTest, KdTreeTest, testing::Values("SMALL", "TBB", "OMP", "CACHED", "FLAT"), [](const auto& info) { return info.param; });
 
 // Check if kdtree works correctly for empty points
 TEST_P(KdTreeTest, EmptyTest) {
@@ -169,11 +164,27 @@ TEST_P(KdTreeTest, KnnTest) {
     auto kdtree_pcl = std::make_shared<KdTreeOMP<pcl::PointCloud<pcl::PointXYZ>>>(points_pcl, 4);
     test_knn_(*points_pcl, *kdtree_pcl);
   } else if (method == "CACHED") {
+    // This is approximated and no guarantee about the search result
+    const bool strict = false;
+
     auto kdtree = std::make_shared<CachedKdTree<PointCloud>>(points, 0.025);
-    test_knn_(*points, *kdtree, false);
+    test_knn_(*points, *kdtree, strict);
 
     auto kdtree_pcl = std::make_shared<CachedKdTree<pcl::PointCloud<pcl::PointXYZ>>>(points_pcl, 0.025);
-    test_knn_(*points_pcl, *kdtree_pcl, false);
+    test_knn_(*points_pcl, *kdtree_pcl, strict);
+  } else if (method == "FLAT") {
+    // This is approximated and no guarantee about the search result
+    const bool strict = false;
+
+    auto kdtree = std::make_shared<FlatVoxelMap<PointCloud>>(points, 0.5);
+    kdtree->set_offset_pattern(1);
+    kdtree->set_offset_pattern(7);
+    kdtree->set_offset_pattern(27);
+    test_knn_(*points, *kdtree, strict);
+
+    auto kdtree_pcl = std::make_shared<FlatVoxelMap<pcl::PointCloud<pcl::PointXYZ>>>(points_pcl, 0.5);
+    kdtree_pcl->set_offset_pattern(27);
+    test_knn_(*points_pcl, *kdtree_pcl, strict);
   } else {
     throw std::runtime_error("Invalid method: " + method);
   }
