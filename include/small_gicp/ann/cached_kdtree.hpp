@@ -21,16 +21,18 @@ public:
   /// @brief Constructor
   /// @param points     Input points
   /// @param leaf_size  Cache voxel resolution
-  CachedKdTree(const PointCloud& points, double leaf_size) : inv_leaf_size(1.0 / leaf_size), kdtree(points) {}
+  CachedKdTree(const std::shared_ptr<const PointCloud>& points, double leaf_size) : inv_leaf_size(1.0 / leaf_size), kdtree(points) {}
 
   size_t knn_search(const Eigen::Vector4d& pt, size_t k, size_t* k_indices, double* k_sq_dists) const {
     const Eigen::Vector3i coord = fast_floor(pt * inv_leaf_size).head<3>();
 
     CacheTable::const_accessor ca;
     if (cache.find(ca, coord)) {
-      std::copy(ca->second.first.begin(), ca->first.end(), k_indices);
-      std::copy(ca->second.second.begin(), ca->second.end(), k_sq_dists);
-      return ca->second.first.size();
+      const size_t n = std::min(ca->second.first.size(), k);
+
+      std::copy(ca->second.first.begin(), ca->second.first.begin() + n, k_indices);
+      std::copy(ca->second.second.begin(), ca->second.second.begin() + n, k_sq_dists);
+      return n;
     }
 
     const size_t n = kdtree.knn_search(pt, k, k_indices, k_sq_dists);
@@ -53,7 +55,7 @@ public:
   using CacheTable = tbb::concurrent_hash_map<Eigen::Vector3i, KnnResult, XORVector3iHash>;
   mutable CacheTable cache;
 
-  UnsafeKdTree<PointCloud> kdtree;
+  KdTree<PointCloud> kdtree;
 };
 
 namespace traits {

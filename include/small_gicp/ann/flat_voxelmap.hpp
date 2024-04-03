@@ -35,9 +35,9 @@ public:
   using Ptr = std::shared_ptr<FlatVoxelMap>;
   using ConstPtr = std::shared_ptr<const FlatVoxelMap>;
 
-  FlatVoxelMap(double leaf_size, const PointCloud& points) : inv_leaf_size(1.0 / leaf_size), seek_count(2), points(points) {
+  FlatVoxelMap(const std::shared_ptr<const PointCloud>& points, double leaf_size) : inv_leaf_size(1.0 / leaf_size), seek_count(2), points(points) {
     set_offset_pattern(7);
-    create_table(points);
+    create_table(*points);
   }
   ~FlatVoxelMap() {}
 
@@ -101,7 +101,7 @@ public:
 
       const auto index_begin = indices.data() + voxel->index_loc;
       for (auto index_itr = index_begin; index_itr != index_begin + voxel->num_indices; index_itr++) {
-        const double sq_dist = (traits::point(points, *index_itr) - pt).squaredNorm();
+        const double sq_dist = (traits::point(*points, *index_itr) - pt).squaredNorm();
         if (queue.size() < k) {
           queue.push(IndexDistance{*index_itr, sq_dist});
         } else if (sq_dist < queue.top().distance) {
@@ -125,11 +125,16 @@ public:
 
 private:
   void create_table(const PointCloud& points) {
+    // Here, we assume that the data structure of std::atomic_int64_t is the same as that of std::int64_t.
+    // This is a dangerous assumption. If C++20 is available, should use std::atomic_ref<std::int64_t> instead.
+    static_assert(sizeof(std::atomic_int64_t) == sizeof(std::int64_t), "We assume that std::atomic_int64_t is the same as std::int64_t.");
+
     const double min_sq_dist_in_cell = 0.05 * 0.05;
     const int max_points_per_cell = 10;
 
     const size_t buckets_size = traits::size(points);
-    std::vector<std::int64_t> assignment_table(max_points_per_cell * buckets_size, -1);
+    std::vector<std::atomic_int64_t> assignment_table(max_points_per_cell * buckets_size);
+    memset(assignment_table.data(), -1, sizeof(std::atomic_int64_t) * max_points_per_cell * buckets_size);
 
     std::vector<Eigen::Vector3i> coords(traits::size(points));
     tbb::parallel_for(static_cast<size_t>(0), static_cast<size_t>(traits::size(points)), [&](size_t i) {
@@ -140,10 +145,9 @@ private:
       const size_t hash = XORVector3iHash::hash(coord);
       for (size_t bucket_index = hash; bucket_index < hash + seek_count; bucket_index++) {
         auto slot_begin = assignment_table.data() + (bucket_index % buckets_size) * max_points_per_cell;
-        std::atomic_ref<std::int64_t> slot_begin_a(*slot_begin);
 
         std::int64_t expected = -1;
-        if (slot_begin_a.compare_exchange_strong(expected, static_cast<std::int64_t>(i))) {
+        if (slot_begin->compare_exchange_strong(expected, static_cast<std::int64_t>(i))) {
           // Succeeded to insert the point in the first slot
           break;
         }
@@ -160,8 +164,7 @@ private:
 
         for (auto slot = slot_begin + 1; slot != slot_begin + max_points_per_cell; slot++) {
           std::int64_t expected = -1;
-          std::atomic_ref<std::int64_t> slot_a(*slot);
-          if (slot_a.compare_exchange_strong(expected, static_cast<std::int64_t>(i))) {
+          if (slot->compare_exchange_strong(expected, static_cast<std::int64_t>(i))) {
             // Succeeded to insert the point
             break;
           }
@@ -206,7 +209,7 @@ public:
   const int seek_count;
   std::vector<Eigen::Vector3i> offsets;
 
-  const PointCloud& points;
+  std::shared_ptr<const PointCloud> points;
   std::vector<FlatVoxelInfo> voxels;
   std::vector<size_t> indices;
 };
