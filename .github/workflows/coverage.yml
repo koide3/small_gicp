@@ -2,10 +2,10 @@ name: Coverage
 
 on:
   push:
-    branches: [ master, coverage ]
+    branches: [ master ]
     paths-ignore: '**.md'
   pull_request:
-    branches: [ master, coverage ]
+    branches: [ master ]
     paths-ignore: '**.md'
 
   # Allows you to run this workflow manually from the Actions tab
