@@ -88,18 +88,24 @@ align(const PointCloud& target, const PointCloud& source, const KdTree<PointClou
       Registration<ICPFactor, ParallelReductionOMP> registration;
       registration.reduction.num_threads = setting.num_threads;
       registration.rejector.max_dist_sq = setting.max_correspondence_distance * setting.max_correspondence_distance;
+      registration.criteria.rotation_eps = setting.rotation_eps;
+      registration.criteria.translation_eps = setting.translation_eps;
       return registration.align(target, source, target_tree, init_T);
     }
     case RegistrationSetting::PLANE_ICP: {
       Registration<PointToPlaneICPFactor, ParallelReductionOMP> registration;
       registration.reduction.num_threads = setting.num_threads;
       registration.rejector.max_dist_sq = setting.max_correspondence_distance * setting.max_correspondence_distance;
+      registration.criteria.rotation_eps = setting.rotation_eps;
+      registration.criteria.translation_eps = setting.translation_eps;
       return registration.align(target, source, target_tree, init_T);
     }
     case RegistrationSetting::GICP: {
       Registration<GICPFactor, ParallelReductionOMP> registration;
       registration.reduction.num_threads = setting.num_threads;
       registration.rejector.max_dist_sq = setting.max_correspondence_distance * setting.max_correspondence_distance;
+      registration.criteria.rotation_eps = setting.rotation_eps;
+      registration.criteria.translation_eps = setting.translation_eps;
       return registration.align(target, source, target_tree, init_T);
     }
     case RegistrationSetting::VGICP: {
@@ -117,6 +123,8 @@ RegistrationResult align(const GaussianVoxelMap& target, const PointCloud& sourc
 
   Registration<GICPFactor, ParallelReductionOMP> registration;
   registration.reduction.num_threads = setting.num_threads;
+  registration.criteria.rotation_eps = setting.rotation_eps;
+  registration.criteria.translation_eps = setting.translation_eps;
   return registration.align(target, source, target, init_T);
 }
 
