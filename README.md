@@ -362,6 +362,7 @@ open3d.visualization.draw_geometries([target_o3d, source_o3d])
 - Single-thread `small_gicp::GICP` is about **2.4x and 1.9x faster** than `pcl::GICP` and `fast_gicp::GICP`, respectively.
 - `small_gicp::(GICP|VGICP)` shows a better multi-thread scalability compared to `fast_gicp::(GICP|VGICP)`.
 - `small_gicp::GICP` parallelized with [TBB flow graph](src/odometry_benchmark_small_gicp_tbb_flow.cpp) shows an excellent scalability to many-threads situations (**~128 threads**) but with latency degradation.
+- Results of `small_gicp::GICP` are almost identical to those of `fast_gicp::GICP`.
 
 ![odometry_time](docs/assets/odometry_time.png)
 
