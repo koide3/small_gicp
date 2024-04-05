@@ -23,6 +23,7 @@ public:
     Stopwatch sw;
     sw.start();
 
+    // Note that input points here is already downsampled
     // Estimate per-point covariances
     estimate_covariances_tbb(*points, params.num_neighbors);
 
