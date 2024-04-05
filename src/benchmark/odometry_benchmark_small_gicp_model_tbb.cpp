@@ -12,9 +12,9 @@
 
 namespace small_gicp {
 
-class SmallVGICPModelOnlineOdometryEstimationTBB : public OnlineOdometryEstimation {
+class SmallGICPModelOnlineOdometryEstimationTBB : public OnlineOdometryEstimation {
 public:
-  SmallVGICPModelOnlineOdometryEstimationTBB(const OdometryEstimationParams& params)
+  SmallGICPModelOnlineOdometryEstimationTBB(const OdometryEstimationParams& params)
   : OnlineOdometryEstimation(params),
     control(tbb::global_control::max_allowed_parallelism, params.num_threads),
     T_world_lidar(Eigen::Isometry3d::Identity()) {}
@@ -28,7 +28,7 @@ public:
 
     if (voxelmap == nullptr) {
       // This is the very first frame
-      voxelmap = std::make_shared<GaussianVoxelMap>(params.voxel_resolution);
+      voxelmap = std::make_shared<IncrementalVoxelMap<FlatContainerCov>>(params.voxel_resolution);
       voxelmap->insert(*points);
       return T_world_lidar;
     }
@@ -62,12 +62,12 @@ private:
 
   Summarizer reg_times;
 
-  GaussianVoxelMap::Ptr voxelmap;   // Target voxel map that is an accumulation of past point clouds
-  Eigen::Isometry3d T_world_lidar;  // Current world-to-lidar transformation
+  IncrementalVoxelMap<FlatContainerCov>::Ptr voxelmap;  // Target voxel map that is an accumulation of past point clouds
+  Eigen::Isometry3d T_world_lidar;                      // Current world-to-lidar transformation
 };
 
 static auto small_gicp_model_tbb_registry =
-  register_odometry("small_vgicp_model_tbb", [](const OdometryEstimationParams& params) { return std::make_shared<SmallVGICPModelOnlineOdometryEstimationTBB>(params); });
+  register_odometry("small_gicp_model_tbb", [](const OdometryEstimationParams& params) { return std::make_shared<SmallGICPModelOnlineOdometryEstimationTBB>(params); });
 
 }  // namespace small_gicp
 

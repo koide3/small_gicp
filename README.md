@@ -240,6 +240,13 @@ See [03_registration_template.cpp](src/example/03_registration_template.cpp)  fo
 
 </details>
 
+### Cookbook
+
+- [Standard scan-to-scan GICP matching odometry](src/benchmark/odometry_benchmark_small_gicp_omp.cpp)
+- [Extremely scalable scan-to-scan matching odometry with data flow graph](src/benchmark/odometry_benchmark_small_gicp_tbb_flow.cpp)
+- [Scan-to-model matching odometry with incremental voxelmap (GICP + iVox)](src/benchmark/odometry_benchmark_small_gicp_model_tbb.cpp)
+- [Scan-to-model matching odometry with incremental Gaussian voxelmap (VGICP)](src/benchmark/odometry_benchmark_small_vgicp_model_tbb.cpp)
+
 ## Usage (Python) [basic_registration.py](src/example/basic_registration.py)
 
 <details><summary>Expand</summary>

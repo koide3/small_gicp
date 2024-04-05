@@ -11,35 +11,41 @@ namespace small_gicp {
 
 class SmallGICPOnlineOdometryEstimationOMP : public OnlineOdometryEstimation {
 public:
-  SmallGICPOnlineOdometryEstimationOMP(const OdometryEstimationParams& params) : OnlineOdometryEstimation(params), T(Eigen::Isometry3d::Identity()) {}
+  SmallGICPOnlineOdometryEstimationOMP(const OdometryEstimationParams& params) : OnlineOdometryEstimation(params), T_world_lidar(Eigen::Isometry3d::Identity()) {}
 
   Eigen::Isometry3d estimate(const PointCloud::Ptr& points) override {
     Stopwatch sw;
     sw.start();
 
+    // Preprocess input points (kdtree construction & covariance estimation)
+    // Note that input points here is already downsampled
     auto tree = std::make_shared<KdTreeOMP<PointCloud>>(points, params.num_threads);
     estimate_covariances_omp(*points, *tree, params.num_neighbors, params.num_threads);
 
     if (target_points == nullptr) {
+      // This is the very first frame
       target_points = points;
       target_tree = tree;
-      return T;
+      return T_world_lidar;
     }
 
+    // Registration using GICP + OMP-based parallel reduction
     Registration<GICPFactor, ParallelReductionOMP> registration;
     registration.rejector.max_dist_sq = params.max_correspondence_distance * params.max_correspondence_distance;
     registration.reduction.num_threads = params.num_threads;
 
+    // Perform registration
     auto result = registration.align(*target_points, *points, *target_tree, Eigen::Isometry3d::Identity());
+
+    // Update T_world_lidar and target points
+    T_world_lidar = T_world_lidar * result.T_target_source;
+    target_points = points;
+    target_tree = tree;
 
     sw.stop();
     reg_times.push(sw.msec());
 
-    T = T * result.T_target_source;
-    target_points = points;
-    target_tree = tree;
-
-    return T;
+    return T_world_lidar;
   }
 
   void report() override {  //
@@ -49,10 +55,10 @@ public:
 private:
   Summarizer reg_times;
 
-  PointCloud::Ptr target_points;
-  KdTreeOMP<PointCloud>::Ptr target_tree;
+  PointCloud::Ptr target_points;           // Last point cloud to be registration target
+  KdTreeOMP<PointCloud>::Ptr target_tree;  // KdTree of the last point cloud
 
-  Eigen::Isometry3d T;
+  Eigen::Isometry3d T_world_lidar;  // T_world_lidar
 };
 
 static auto small_gicp_omp_registry =
