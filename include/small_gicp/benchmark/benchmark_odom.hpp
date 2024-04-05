@@ -81,11 +81,32 @@ public:
     return traj;
   }
 
+  void update_model_points(const Eigen::Isometry3d& T, const std::vector<Eigen::Vector4d>& points) {
+    if (!params.visualize) {
+      return;
+    }
+
+#ifdef BUILD_WITH_IRIDESCENCE
+    if (!async_sub_initialized) {
+      async_sub_initialized = true;
+      async_sub = guik::async_viewer()->async_sub_viewer("model");
+    }
+
+    async_sub.update_points("model", points, guik::Rainbow());
+    async_sub.lookat(T.translation().cast<float>());
+#endif
+  }
+
   virtual Eigen::Isometry3d estimate(const PointCloud::Ptr& points) = 0;
 
 protected:
   Eigen::Vector2f z_range;
   Summarizer total_times;
+
+#ifdef BUILD_WITH_IRIDESCENCE
+  bool async_sub_initialized = false;
+  guik::AsyncLightViewerContext async_sub;
+#endif
 };
 
 size_t register_odometry(const std::string& name, std::function<OdometryEstimation::Ptr(const OdometryEstimationParams&)> factory);

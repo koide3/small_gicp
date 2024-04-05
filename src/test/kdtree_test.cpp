@@ -7,8 +7,8 @@
 #include <small_gicp/ann/kdtree.hpp>
 #include <small_gicp/ann/kdtree_omp.hpp>
 #include <small_gicp/ann/kdtree_tbb.hpp>
-#include <small_gicp/ann/cached_kdtree.hpp>
-#include <small_gicp/ann/flat_voxelmap.hpp>
+#include <small_gicp/ann/gaussian_voxelmap.hpp>
+#include <small_gicp/ann/incremental_voxelmap.hpp>
 #include <small_gicp/util/downsampling.hpp>
 #include <small_gicp/points/point_cloud.hpp>
 #include <small_gicp/pcl/pcl_point_traits.hpp>
@@ -77,7 +77,7 @@ public:
   }
 
   template <typename PointCloud, typename KdTree>
-  void test_knn_(const PointCloud& points, const KdTree& tree, bool strict = true) {
+  void test_kdtree(const PointCloud& points, const KdTree& tree) {
     for (size_t i = 0; i < queries.size(); i++) {
       // k-nearest neighbors search
       const auto& query = queries[i];
@@ -85,12 +85,10 @@ public:
       std::vector<double> sq_dists(k);
       const size_t num_results = traits::knn_search(tree, query, k, indices.data(), sq_dists.data());
 
-      if (strict) {
-        EXPECT_EQ(num_results, k) << "num_neighbors must be k";
-        for (size_t j = 0; j < k; j++) {
-          EXPECT_EQ(indices[j], k_indices[i][j]);
-          EXPECT_NEAR(sq_dists[j], k_sq_dists[i][j], 1e-3);
-        }
+      EXPECT_EQ(num_results, k) << "num_neighbors must be k";
+      for (size_t j = 0; j < k; j++) {
+        EXPECT_EQ(indices[j], k_indices[i][j]);
+        EXPECT_NEAR(sq_dists[j], k_sq_dists[i][j], 1e-3);
       }
 
       // Nearest neighbor search
@@ -98,12 +96,45 @@ public:
       double k_sq_dist;
       const size_t found = traits::nearest_neighbor_search(tree, query, &k_index, &k_sq_dist);
 
-      if (strict) {
-        EXPECT_EQ(found, 1) << "num_neighbors must be 1";
-        EXPECT_EQ(k_index, k_indices[i][0]);
-        EXPECT_NEAR(k_sq_dist, k_sq_dists[i][0], 1e-3);
+      EXPECT_EQ(found, 1) << "num_neighbors must be 1";
+      EXPECT_EQ(k_index, k_indices[i][0]);
+      EXPECT_NEAR(k_sq_dist, k_sq_dists[i][0], 1e-3);
+    }
+  }
+
+  template <typename PointCloud, typename VoxelMap>
+  void test_voxelmap(const PointCloud& points, const VoxelMap& voxelmap) {
+    size_t hit_count = 0;
+    for (size_t i = 0; i < queries.size(); i++) {
+      // k-nearest neighbors search
+      const auto& query = queries[i];
+      std::vector<size_t> indices(k);
+      std::vector<double> sq_dists(k);
+      const size_t num_results = traits::knn_search(voxelmap, query, k, indices.data(), sq_dists.data());
+
+      EXPECT_LE(num_results, k) << "num_neighbors must be less than or equal to k";
+      for (size_t j = 0; j < num_results; j++) {
+        const Eigen::Vector4d pt = traits::point(voxelmap, indices[j]);
+        const double sq_dist = (pt - query).squaredNorm();
+        EXPECT_NEAR(sq_dists[j], sq_dist, 1e-3);
+      }
+
+      // Nearest neighbor search
+      size_t nn_index;
+      double nn_sq_dist;
+      const size_t found = traits::nearest_neighbor_search(voxelmap, query, &nn_index, &nn_sq_dist);
+
+      EXPECT_LE(found, 1) << "num_neighbors must be less than or equal to 1";
+      if (found) {
+        const Eigen::Vector4d pt = traits::point(voxelmap, nn_index);
+        const double sq_dist = (pt - query).squaredNorm();
+        EXPECT_NEAR(nn_sq_dist, sq_dist, 1e-3);
+        hit_count++;
       }
     }
+
+    const double net_tp = queries.size() * 2.0 / 3.0;
+    EXPECT_GE(hit_count, net_tp * 0.5) << "Hit_count must be greater than or equal to " << net_tp;
   }
 
 protected:
@@ -131,7 +162,7 @@ TEST_F(KdTreeTest, LoadCheck) {
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(KdTreeTest, KdTreeTest, testing::Values("SMALL", "TBB", "OMP", "CACHED", "FLAT"), [](const auto& info) { return info.param; });
+INSTANTIATE_TEST_SUITE_P(KdTreeTest, KdTreeTest, testing::Values("SMALL", "TBB", "OMP", "IVOX", "GVOX"), [](const auto& info) { return info.param; });
 
 // Check if kdtree works correctly for empty points
 TEST_P(KdTreeTest, EmptyTest) {
@@ -147,44 +178,34 @@ TEST_P(KdTreeTest, KnnTest) {
   const auto method = GetParam();
   if (method == "SMALL") {
     auto kdtree = std::make_shared<KdTree<PointCloud>>(points);
-    test_knn_(*points, *kdtree);
+    test_kdtree(*points, *kdtree);
 
     auto kdtree_pcl = std::make_shared<KdTree<pcl::PointCloud<pcl::PointXYZ>>>(points_pcl);
-    test_knn_(*points_pcl, *kdtree_pcl);
+    test_kdtree(*points_pcl, *kdtree_pcl);
   } else if (method == "TBB") {
     auto kdtree = std::make_shared<KdTreeTBB<PointCloud>>(points);
-    test_knn_(*points, *kdtree);
+    test_kdtree(*points, *kdtree);
 
     auto kdtree_pcl = std::make_shared<KdTreeTBB<pcl::PointCloud<pcl::PointXYZ>>>(points_pcl);
-    test_knn_(*points_pcl, *kdtree_pcl);
+    test_kdtree(*points_pcl, *kdtree_pcl);
   } else if (method == "OMP") {
     auto kdtree = std::make_shared<KdTreeOMP<PointCloud>>(points, 4);
-    test_knn_(*points, *kdtree);
+    test_kdtree(*points, *kdtree);
 
     auto kdtree_pcl = std::make_shared<KdTreeOMP<pcl::PointCloud<pcl::PointXYZ>>>(points_pcl, 4);
-    test_knn_(*points_pcl, *kdtree_pcl);
-  } else if (method == "CACHED") {
-    // This is approximated and no guarantee about the search result
-    const bool strict = false;
+    test_kdtree(*points_pcl, *kdtree_pcl);
+  } else if (method == "IVOX") {
+    auto voxelmap = std::make_shared<IncrementalVoxelMap<FlatContainerNormalCov>>(1.0);
+    voxelmap->insert(*points);
+    test_voxelmap(*points, *voxelmap);
 
-    auto kdtree = std::make_shared<CachedKdTree<PointCloud>>(points, 0.025);
-    test_knn_(*points, *kdtree, strict);
-
-    auto kdtree_pcl = std::make_shared<CachedKdTree<pcl::PointCloud<pcl::PointXYZ>>>(points_pcl, 0.025);
-    test_knn_(*points_pcl, *kdtree_pcl, strict);
-  } else if (method == "FLAT") {
-    // This is approximated and no guarantee about the search result
-    const bool strict = false;
-
-    auto kdtree = std::make_shared<FlatVoxelMap<PointCloud>>(points, 0.5);
-    kdtree->set_offset_pattern(1);
-    kdtree->set_offset_pattern(7);
-    kdtree->set_offset_pattern(27);
-    test_knn_(*points, *kdtree, strict);
-
-    auto kdtree_pcl = std::make_shared<FlatVoxelMap<pcl::PointCloud<pcl::PointXYZ>>>(points_pcl, 0.5);
-    kdtree_pcl->set_offset_pattern(27);
-    test_knn_(*points_pcl, *kdtree_pcl, strict);
+    auto voxelmap_pcl = std::make_shared<IncrementalVoxelMap<FlatContainer<>>>(1.0);
+    voxelmap_pcl->insert(*points_pcl);
+    test_voxelmap(*points, *voxelmap_pcl);
+  } else if (method == "GVOX") {
+    auto voxelmap = std::make_shared<GaussianVoxelMap>(1.0);
+    voxelmap->insert(*points);
+    test_voxelmap(*points, *voxelmap);
   } else {
     throw std::runtime_error("Invalid method: " + method);
   }

@@ -12,9 +12,9 @@
 
 namespace small_gicp {
 
-class SmallVGICPModelOnlineOdometryEstimationTBB : public OnlineOdometryEstimation {
+class SmallGICPModelOnlineOdometryEstimationTBB : public OnlineOdometryEstimation {
 public:
-  SmallVGICPModelOnlineOdometryEstimationTBB(const OdometryEstimationParams& params)
+  SmallGICPModelOnlineOdometryEstimationTBB(const OdometryEstimationParams& params)
   : OnlineOdometryEstimation(params),
     control(tbb::global_control::max_allowed_parallelism, params.num_threads),
     T(Eigen::Isometry3d::Identity()) {}
@@ -26,7 +26,7 @@ public:
     estimate_covariances_tbb(*points, params.num_neighbors);
 
     if (voxelmap == nullptr) {
-      voxelmap = std::make_shared<GaussianVoxelMap>(params.voxel_resolution);
+      voxelmap = std::make_shared<IncrementalVoxelMap<FlatContainerCov>>(params.voxel_resolution);
       voxelmap->insert(*points);
       return T;
     }
@@ -56,12 +56,12 @@ private:
 
   Summarizer reg_times;
 
-  GaussianVoxelMap::Ptr voxelmap;
+  IncrementalVoxelMap<FlatContainerCov>::Ptr voxelmap;
   Eigen::Isometry3d T;
 };
 
 static auto small_gicp_model_tbb_registry =
-  register_odometry("small_vgicp_model_tbb", [](const OdometryEstimationParams& params) { return std::make_shared<SmallVGICPModelOnlineOdometryEstimationTBB>(params); });
+  register_odometry("small_gicp_model_tbb", [](const OdometryEstimationParams& params) { return std::make_shared<SmallGICPModelOnlineOdometryEstimationTBB>(params); });
 
 }  // namespace small_gicp
 
