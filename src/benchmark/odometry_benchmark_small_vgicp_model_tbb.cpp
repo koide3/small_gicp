@@ -17,34 +17,40 @@ public:
   SmallVGICPModelOnlineOdometryEstimationTBB(const OdometryEstimationParams& params)
   : OnlineOdometryEstimation(params),
     control(tbb::global_control::max_allowed_parallelism, params.num_threads),
-    T(Eigen::Isometry3d::Identity()) {}
+    T_world_lidar(Eigen::Isometry3d::Identity()) {}
 
   Eigen::Isometry3d estimate(const PointCloud::Ptr& points) override {
     Stopwatch sw;
     sw.start();
 
+    // Estimate per-point covariances
     estimate_covariances_tbb(*points, params.num_neighbors);
 
     if (voxelmap == nullptr) {
+      // This is the very first frame
       voxelmap = std::make_shared<GaussianVoxelMap>(params.voxel_resolution);
       voxelmap->insert(*points);
-      return T;
+      return T_world_lidar;
     }
 
+    // Registration using GICP + TBB-based parallel reduction
     Registration<GICPFactor, ParallelReductionTBB> registration;
-    auto result = registration.align(*voxelmap, *points, *voxelmap, T);
+    auto result = registration.align(*voxelmap, *points, *voxelmap, T_world_lidar);
 
-    T = result.T_target_source;
-    voxelmap->insert(*points, T);
+    // Update T_world_lidar with the estimated transformation
+    T_world_lidar = result.T_target_source;
 
-    if (params.visualize) {
-      update_model_points(T, traits::voxel_points(*voxelmap));
-    }
+    // Insert points to the target voxel map
+    voxelmap->insert(*points, T_world_lidar);
 
     sw.stop();
     reg_times.push(sw.msec());
 
-    return T;
+    if (params.visualize) {
+      update_model_points(T_world_lidar, traits::voxel_points(*voxelmap));
+    }
+
+    return T_world_lidar;
   }
 
   void report() override {  //
@@ -56,8 +62,8 @@ private:
 
   Summarizer reg_times;
 
-  GaussianVoxelMap::Ptr voxelmap;
-  Eigen::Isometry3d T;
+  GaussianVoxelMap::Ptr voxelmap;   // Target voxel map that is an accumulation of past point clouds
+  Eigen::Isometry3d T_world_lidar;  // Current world-to-lidar transformation
 };
 
 static auto small_gicp_model_tbb_registry =
