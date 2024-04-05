@@ -10,6 +10,7 @@
 #include <small_gicp/ann/gaussian_voxelmap.hpp>
 #include <small_gicp/ann/incremental_voxelmap.hpp>
 #include <small_gicp/util/downsampling.hpp>
+#include <small_gicp/util/normal_estimation.hpp>
 #include <small_gicp/points/point_cloud.hpp>
 #include <small_gicp/pcl/pcl_point_traits.hpp>
 #include <small_gicp/benchmark/read_points.hpp>
@@ -22,6 +23,7 @@ public:
     // Load points
     auto points_4f = read_ply("data/target.ply");
     points = voxelgrid_sampling(*std::make_shared<PointCloud>(points_4f), 0.5);
+    estimate_normals_covariances(*points);
 
     points_pcl = pcl::make_shared<pcl::PointCloud<pcl::PointXYZ>>();
     points_pcl->resize(points->size());
@@ -199,6 +201,21 @@ TEST_P(KdTreeTest, KnnTest) {
     voxelmap->insert(*points);
     test_voxelmap(*points, *voxelmap);
 
+    auto indices = traits::point_indices(*voxelmap);
+    auto voxel_points = traits::voxel_points(*voxelmap);
+    auto voxel_normals = traits::voxel_normals(*voxelmap);
+    auto voxel_covs = traits::voxel_covs(*voxelmap);
+
+    EXPECT_EQ(indices.size(), voxel_points.size());
+    EXPECT_EQ(indices.size(), voxel_normals.size());
+    EXPECT_EQ(indices.size(), voxel_covs.size());
+
+    for (size_t i = 0; i < indices.size(); i++) {
+      EXPECT_NEAR((voxel_points[i] - traits::point(*voxelmap, indices[i])).squaredNorm(), 0.0, 1e-6);
+      EXPECT_NEAR((voxel_normals[i] - traits::normal(*voxelmap, indices[i])).squaredNorm(), 0.0, 1e-6);
+      EXPECT_NEAR((voxel_covs[i] - traits::cov(*voxelmap, indices[i])).squaredNorm(), 0.0, 1e-6);
+    }
+
     auto voxelmap_pcl = std::make_shared<IncrementalVoxelMap<FlatContainer<>>>(1.0);
     voxelmap_pcl->insert(*points_pcl);
     test_voxelmap(*points, *voxelmap_pcl);
@@ -206,6 +223,18 @@ TEST_P(KdTreeTest, KnnTest) {
     auto voxelmap = std::make_shared<GaussianVoxelMap>(1.0);
     voxelmap->insert(*points);
     test_voxelmap(*points, *voxelmap);
+
+    auto indices = traits::point_indices(*voxelmap);
+    auto voxel_points = traits::voxel_points(*voxelmap);
+    auto voxel_covs = traits::voxel_covs(*voxelmap);
+
+    EXPECT_EQ(indices.size(), voxel_points.size());
+    EXPECT_EQ(indices.size(), voxel_covs.size());
+
+    for (size_t i = 0; i < indices.size(); i++) {
+      EXPECT_NEAR((voxel_points[i] - traits::point(*voxelmap, indices[i])).squaredNorm(), 0.0, 1e-6);
+      EXPECT_NEAR((voxel_covs[i] - traits::cov(*voxelmap, indices[i])).squaredNorm(), 0.0, 1e-6);
+    }
   } else {
     throw std::runtime_error("Invalid method: " + method);
   }

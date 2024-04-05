@@ -193,6 +193,21 @@ struct Traits<IncrementalVoxelMap<VoxelContents>> {
 };
 
 template <typename VoxelContents>
+std::vector<size_t> point_indices(const IncrementalVoxelMap<VoxelContents>& voxelmap) {
+  std::vector<size_t> indices;
+  indices.reserve(voxelmap.size() * 5);
+
+  for (size_t voxel_id = 0; voxel_id < voxelmap.flat_voxels.size(); voxel_id++) {
+    const auto& voxel = voxelmap.flat_voxels[voxel_id];
+    for (size_t point_id = 0; point_id < traits::size(voxel->second); point_id++) {
+      indices.emplace_back(voxelmap.calc_index(voxel_id, point_id));
+    }
+  }
+
+  return indices;
+}
+
+template <typename VoxelContents>
 std::vector<Eigen::Vector4d> voxel_points(const IncrementalVoxelMap<VoxelContents>& voxelmap) {
   std::vector<Eigen::Vector4d> points;
   points.reserve(voxelmap.size() * 5);
