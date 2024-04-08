@@ -10,15 +10,19 @@ find_library(TBB_MALLOC_LIB NAMES tbbmalloc
   HINTS /usr/local/lib /usr/lib
   DOC "TBB malloc libraries")
 
+if(TARGET TBB::tbb)
+  return()
+endif()
+
 add_library(TBB::tbb INTERFACE IMPORTED GLOBAL)
 set_target_properties(TBB::tbb PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${TBB_INCLUDE_DIRS}"
-  INTERFACE_LINK_LIBRARIES "${TBB_LIBRARIES}")
+  INTERFACE_LINK_LIBRARIES "${TBB_LIB}")
 
 add_library(TBB::tbbmalloc INTERFACE IMPORTED GLOBAL)
 set_target_properties(TBB::tbbmalloc PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${TBB_INCLUDE_DIRS}"
-  INTERFACE_LINK_LIBRARIES "${TBB_LIBRARIES}")
+  INTERFACE_LINK_LIBRARIES "${TBB_MALLOC_LIB}")
 
 if(TBB_LIB AND TBB_MALLOC_LIB)
   set(TBB_LIBRARIES TBB::tbb TBB::tbbmalloc)
