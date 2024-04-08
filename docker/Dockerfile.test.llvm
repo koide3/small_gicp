@@ -35,7 +35,7 @@ RUN cmake --build . -j$(nproc)
 RUN ctest -j$(nproc)
 
 WORKDIR /root/small_gicp
-RUN python3 setup.py build && python3 setup.py install
+RUN pip install .
 RUN pytest src/example/basic_registration.py
 
 WORKDIR /

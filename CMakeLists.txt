@@ -13,29 +13,34 @@ option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 option(CMAKE_POSITION_INDEPENDENT_CODE "Generate position-independent code" ON)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
+# Build options
 option(BUILD_HELPER "Build helper library" ON)
 option(BUILD_TESTS "Build tests" OFF)
 option(BUILD_EXAMPLES "Build examples" OFF)
 option(BUILD_BENCHMARKS "Build benchmarks" OFF)
+option(BUILD_PYTHON_BINDINGS "Build python bindings" OFF)
+option(ENABLE_COVERAGE "Enable coverage" OFF)
 
+# Dependency options
 set(BUILD_WITH_OPENMP CACHE STRING "Build with OpenMP" "auto")
 option(BUILD_WITH_TBB "Build with TBB" ON)
 option(BUILD_WITH_PCL "Build with PCL (required for benchmark and test only)" OFF)
 option(BUILD_WITH_FAST_GICP "Build with fast_gicp (required for benchmark and test only)" OFF)
 option(BUILD_WITH_IRIDESCENCE "Build with Iridescence (required for benchmark)" OFF)
 option(BUILD_WITH_MARCH_NATIVE "Build with -march=native" OFF)
-option(ENABLE_COVERAGE "Enable coverage" OFF)
-option(BUILD_PYTHON_BINDINGS "Build python bindings" OFF)
 
-# Eigen is the sole mandatory dependency
-find_package(Eigen3 REQUIRED CONFIG)
-
+# Set mandatory dependencies of optional features
 if(BUILD_TESTS OR BUILD_EXAMPLES OR BUILD_BENCHMARKS)
   find_package(fmt REQUIRED)
   set(BUILD_HELPER ON CACHE BOOL "Helper library is required" FORCE)
   set(BUILD_WITH_TBB ON CACHE BOOL "TBB is required" FORCE)
+endif()
+if(BUILD_TESTS OR BUILD_EXAMPLES)
   set(BUILD_WITH_PCL ON CACHE BOOL "PCL is required" FORCE)
 endif()
+
+# Eigen is the sole mandatory dependency
+find_package(Eigen3 REQUIRED CONFIG)
 
 if(BUILD_WITH_OPENMP STREQUAL "auto")
   find_package(OpenMP)
