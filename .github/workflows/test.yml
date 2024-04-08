@@ -33,5 +33,5 @@ jobs:
           cmake --build . -j$(nproc)
           ctest -j$(nproc)
           cd ..
-          python3 setup.py build && python3 setup.py install --user
+          pip install . --user
           pytest src/example/basic_registration.py

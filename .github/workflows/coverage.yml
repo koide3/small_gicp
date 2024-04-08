@@ -40,7 +40,7 @@ jobs:
 
       - name: Build (Python)
         run: |
-          python3 setup.py build && python3 setup.py install --user
+          pip install . --user
 
       - name: Test (Python)
         run: |
