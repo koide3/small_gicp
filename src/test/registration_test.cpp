@@ -243,6 +243,24 @@ TEST_F(RegistrationTest, PCLInterfaceTest) {
     }
   }
 
+  // Re-use covariances
+  std::vector<Eigen::Matrix4d> target_covs = registration.getTargetCovariances();
+  std::vector<Eigen::Matrix4d> source_covs = registration.getSourceCovariances();
+  EXPECT_EQ(target_covs.size(), target_pcl->size());
+  EXPECT_EQ(source_covs.size(), source_pcl->size());
+
+  registration.clearTarget();
+  registration.clearSource();
+
+  registration.setInputTarget(target_pcl);
+  registration.setTargetCovariances(target_covs);
+  registration.setInputSource(source_pcl);
+  registration.setSourceCovariances(source_covs);
+
+  registration.align(aligned);
+  EXPECT_EQ(aligned.size(), source_pcl->size());
+  EXPECT_TRUE(compare_transformation(T_target_source, Eigen::Isometry3d(registration.getFinalTransformation().cast<double>())));
+
   // Swap and backward align
   registration.swapSourceAndTarget();
   registration.align(aligned);

@@ -63,6 +63,54 @@ void RegistrationPCL<PointSource, PointTarget>::setInputTarget(const PointCloudT
 }
 
 template <typename PointSource, typename PointTarget>
+void RegistrationPCL<PointSource, PointTarget>::setSourceCovariances(const std::vector<Eigen::Matrix4d>& covs) {
+  if (input_ == nullptr) {
+    PCL_ERROR("[RegistrationPCL::setSourceCovariances] Target cloud is not set\n");
+    return;
+  }
+
+  if (covs.size() != input_->size()) {
+    PCL_ERROR("[RegistrationPCL::setSourceCovariances] Invalid number of covariances: %lu\n", covs.size());
+    return;
+  }
+
+  source_covs_ = covs;
+}
+
+template <typename PointSource, typename PointTarget>
+void RegistrationPCL<PointSource, PointTarget>::setTargetCovariances(const std::vector<Eigen::Matrix4d>& covs) {
+  if (target_ == nullptr) {
+    PCL_ERROR("[RegistrationPCL::setTargetCovariances] Target cloud is not set\n");
+    return;
+  }
+
+  if (covs.size() != target_->size()) {
+    PCL_ERROR("[RegistrationPCL::setTargetCovariances] Invalid number of covariances: %lu\n", covs.size());
+    return;
+  }
+
+  target_covs_ = covs;
+}
+
+template <typename PointSource, typename PointTarget>
+const std::vector<Eigen::Matrix4d>& RegistrationPCL<PointSource, PointTarget>::getSourceCovariances() const {
+  if (source_covs_.empty()) {
+    PCL_WARN("[RegistrationPCL::getSourceCovariances] Covariances are not estimated\n");
+  }
+
+  return source_covs_;
+}
+
+template <typename PointSource, typename PointTarget>
+const std::vector<Eigen::Matrix4d>& RegistrationPCL<PointSource, PointTarget>::getTargetCovariances() const {
+  if (target_covs_.empty()) {
+    PCL_WARN("[RegistrationPCL::getTargetCovariances] Covariances are not estimated\n");
+  }
+
+  return target_covs_;
+}
+
+template <typename PointSource, typename PointTarget>
 void RegistrationPCL<PointSource, PointTarget>::swapSourceAndTarget() {
   input_.swap(target_);
   source_tree_.swap(target_tree_);

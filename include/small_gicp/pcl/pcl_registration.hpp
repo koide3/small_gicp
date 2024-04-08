@@ -71,6 +71,15 @@ public:
   /// @brief  Set the input target (fixed) point cloud.
   void setInputTarget(const PointCloudTargetConstPtr& cloud) override;
 
+  /// @brief Set source point covariances.
+  void setSourceCovariances(const std::vector<Eigen::Matrix4d>& covs);
+  /// @brief Set target point covariances.
+  void setTargetCovariances(const std::vector<Eigen::Matrix4d>& covs);
+  /// @brief Get source point covariances.
+  const std::vector<Eigen::Matrix4d>& getSourceCovariances() const;
+  /// @brief Get target point covariances.
+  const std::vector<Eigen::Matrix4d>& getTargetCovariances() const;
+
   /// @brief Swap source and target point clouds and their augmented data (KdTrees, covariances, and voxelmaps).
   void swapSourceAndTarget();
   /// @brief Clear source point cloud.
