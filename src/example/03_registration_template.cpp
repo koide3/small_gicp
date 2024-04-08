@@ -75,7 +75,7 @@ namespace small_gicp {
 namespace traits {
 template <>
 struct Traits<MyPointCloud> {
-  // *** Setters ***
+  // *** Getters ***
   // The following getters are required for feeding this class to registration algorithms.
 
   // Number of points in the point cloud.
@@ -95,21 +95,21 @@ struct Traits<MyPointCloud> {
     const auto& n = points[i].normal;
     return Eigen::Vector4d(n[0], n[1], n[2], 0.0);
   }
-  // To use GICP, the following covariance getter is required.
+  // To use GICP, the following covariance getters are required additionally.
   // static bool has_covs(const MyPointCloud& points) { return !points.empty(); }
   // static const Eigen::Matrix4d cov(const MyPointCloud& points, size_t i);
 
   // *** Setters ***
   // The following methods are required for feeding this class to preprocessing algorithms.
-  // (e.g., downsampling and covariance estimation)
+  // (e.g., downsampling and normal estimation)
 
-  // Resize the point cloud.
+  // Resize the point cloud. This must retain the values of existing points.
   static void resize(MyPointCloud& points, size_t n) { points.resize(n); }
   // Set i-th point. pt = [x, y, z, 1.0].
   static void set_point(MyPointCloud& points, size_t i, const Eigen::Vector4d& pt) { Eigen::Map<Eigen::Vector3d>(points[i].point.data()) = pt.head<3>(); }
   // Set i-th normal. n = [nx, ny, nz, 0.0].
   static void set_normal(MyPointCloud& points, size_t i, const Eigen::Vector4d& n) { Eigen::Map<Eigen::Vector3d>(points[i].normal.data()) = n.head<3>(); }
-  // To feed this class to estimate_covariances(), the following setter is required.
+  // To feed this class to estimate_covariances(), the following setter is required additionally.
   // static void set_cov(MyPointCloud& points, size_t i, const Eigen::Matrix4d& cov);
 };
 }  // namespace traits
@@ -165,8 +165,8 @@ struct Traits<MyNearestNeighborSearch> {
     return search.knn_search(point, k, k_indices, k_sq_dists);
   }
 
-  /// @brief Find the nearest neighbor. This is a special case of knn_search with k=1 and is used for registration.
-  ///        You can define this to optimize the search speed for k=1. Otherwise, knn_search() with k=1 is used.
+  /// @brief Find the nearest neighbor. This is a special case of knn_search with k=1 and is used in point cloud registration.
+  ///        You can define this to optimize the search speed for k=1. Otherwise, nearest_neighbor_search() automatically falls back to knn_search() with k=1.
   ///        It is also valid to define only nearest_neighbor_search() and do not define knn_search() if you only feed your class to registration but not to preprocessing.
   /// @param search      Nearest neighbor search
   /// @param point       Query point [x, y, z, 1.0]
@@ -208,13 +208,13 @@ struct MyCorrespondenceRejector {
   double min_feature_cos_dist;       // Maximum feature distance
 };
 
-/// @brief Custom general factor that can affect the entire registration process.
+/// @brief Custom general factor that can control the registration process.
 struct MyGeneralFactor {
   MyGeneralFactor() : lambda(1e8) {}
 
-  /// @brief Update linearized system consisting of linearized per-point factors.
+  /// @brief Update linearized system.
   /// @note  This method is  called just before the linearized system is solved.
-  ///        By modifying the linearized system (H, b, e), you can add constraints to the optimization.
+  ///        By modifying the linearized system (H, b, e), you can inject arbitrary constraints.
   /// @param target       Target point cloud
   /// @param source       Source point cloud
   /// @param target_tree  Nearest neighbor search for the target point cloud
@@ -241,7 +241,7 @@ struct MyGeneralFactor {
 
   /// @brief Update error consisting of per-point factors.
   /// @note  This method is  called just after the linearized system is solved in LM to check if the objective function is decreased.
-  ///        If you modified the error in update_linearized_system(), you should update the error here to be consistent.
+  ///        If you modified the error in update_linearized_system(), you need to update the error here for consistency.
   /// @param target   Target point cloud
   /// @param source   Source point cloud
   /// @param T        Evaluation point
@@ -274,7 +274,7 @@ void example2(const std::vector<Eigen::Vector4f>& target_points, const std::vect
     Eigen::Map<Eigen::Vector3d>(source->at(i).point.data()) = source_points[i].head<3>().cast<double>();
   }
 
-  // Downsampling
+  // Downsampling works directly on MyPointCloud
   target = voxelgrid_sampling_omp(*target, downsampling_resolution, num_threads);
   source = voxelgrid_sampling_omp(*source, downsampling_resolution, num_threads);
 

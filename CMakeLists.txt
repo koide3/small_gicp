@@ -72,8 +72,9 @@ if (BUILD_WITH_IRIDESCENCE)
 endif()
 
 if (BUILD_WITH_FAST_GICP)
-  # set(FAST_GICP_INCLUDE_DIR /home/koide/workspace/fast_gicp/include)
-  set(FAST_GICP_INCLUDE_DIR $ENV{FAST_GICP_INCLUDE_DIR})
+  if (NOT FAST_GICP_INCLUDE_DIR)
+    set(FAST_GICP_INCLUDE_DIR $ENV{FAST_GICP_INCLUDE_DIR} CACHE PATH "Path to fast_gicp include directory")
+  endif()
   add_compile_definitions(BUILD_WITH_FAST_GICP)
 endif()
 
