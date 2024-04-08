@@ -33,8 +33,6 @@ RegistrationPCL<PointSource, PointTarget>::RegistrationPCL() {
   voxel_resolution_ = 1.0;
   verbose_ = false;
   registration_type_ = "GICP";
-
-  final_hessian_.setIdentity();
 }
 
 template <typename PointSource, typename PointTarget>
@@ -65,6 +63,54 @@ void RegistrationPCL<PointSource, PointTarget>::setInputTarget(const PointCloudT
 }
 
 template <typename PointSource, typename PointTarget>
+void RegistrationPCL<PointSource, PointTarget>::setSourceCovariances(const std::vector<Eigen::Matrix4d>& covs) {
+  if (input_ == nullptr) {
+    PCL_ERROR("[RegistrationPCL::setSourceCovariances] Target cloud is not set\n");
+    return;
+  }
+
+  if (covs.size() != input_->size()) {
+    PCL_ERROR("[RegistrationPCL::setSourceCovariances] Invalid number of covariances: %lu\n", covs.size());
+    return;
+  }
+
+  source_covs_ = covs;
+}
+
+template <typename PointSource, typename PointTarget>
+void RegistrationPCL<PointSource, PointTarget>::setTargetCovariances(const std::vector<Eigen::Matrix4d>& covs) {
+  if (target_ == nullptr) {
+    PCL_ERROR("[RegistrationPCL::setTargetCovariances] Target cloud is not set\n");
+    return;
+  }
+
+  if (covs.size() != target_->size()) {
+    PCL_ERROR("[RegistrationPCL::setTargetCovariances] Invalid number of covariances: %lu\n", covs.size());
+    return;
+  }
+
+  target_covs_ = covs;
+}
+
+template <typename PointSource, typename PointTarget>
+const std::vector<Eigen::Matrix4d>& RegistrationPCL<PointSource, PointTarget>::getSourceCovariances() const {
+  if (source_covs_.empty()) {
+    PCL_WARN("[RegistrationPCL::getSourceCovariances] Covariances are not estimated\n");
+  }
+
+  return source_covs_;
+}
+
+template <typename PointSource, typename PointTarget>
+const std::vector<Eigen::Matrix4d>& RegistrationPCL<PointSource, PointTarget>::getTargetCovariances() const {
+  if (target_covs_.empty()) {
+    PCL_WARN("[RegistrationPCL::getTargetCovariances] Covariances are not estimated\n");
+  }
+
+  return target_covs_;
+}
+
+template <typename PointSource, typename PointTarget>
 void RegistrationPCL<PointSource, PointTarget>::swapSourceAndTarget() {
   input_.swap(target_);
   source_tree_.swap(target_tree_);
@@ -89,6 +135,45 @@ void RegistrationPCL<PointSource, PointTarget>::clearTarget() {
 }
 
 template <typename PointSource, typename PointTarget>
+void RegistrationPCL<PointSource, PointTarget>::setNumThreads(int n) {
+  if (n <= 0) {
+    PCL_ERROR("[RegistrationPCL::setNumThreads] Invalid number of threads: %d\n", n);
+    n = 1;
+  }
+
+  num_threads_ = n;
+}
+
+template <typename PointSource, typename PointTarget>
+void RegistrationPCL<PointSource, PointTarget>::setCorrespondenceRandomness(int k) {
+  setNumNeighborsForCovariance(k);
+}
+
+template <typename PointSource, typename PointTarget>
+void RegistrationPCL<PointSource, PointTarget>::setNumNeighborsForCovariance(int k) {
+  if (k < 5) {
+    PCL_ERROR("[RegistrationPCL::setNumNeighborsForCovariance] Invalid number of neighbors: %d\n", k);
+    k = 5;
+  }
+  k_correspondences_ = k;
+}
+
+template <typename PointSource, typename PointTarget>
+void RegistrationPCL<PointSource, PointTarget>::setVoxelResolution(double r) {
+  if (voxel_resolution_ <= 0) {
+    PCL_ERROR("[RegistrationPCL::setVoxelResolution] Invalid voxel resolution: %f\n", r);
+    r = 1.0;
+  }
+
+  voxel_resolution_ = r;
+}
+
+template <typename PointSource, typename PointTarget>
+void RegistrationPCL<PointSource, PointTarget>::setRotationEpsilon(double eps) {
+  rotation_epsilon_ = eps;
+}
+
+template <typename PointSource, typename PointTarget>
 void RegistrationPCL<PointSource, PointTarget>::setRegistrationType(const std::string& type) {
   if (type == "GICP") {
     registration_type_ = type;
@@ -97,6 +182,21 @@ void RegistrationPCL<PointSource, PointTarget>::setRegistrationType(const std::s
   } else {
     PCL_ERROR("[RegistrationPCL::setRegistrationType] Invalid registration type: %s\n", type.c_str());
   }
+}
+
+template <typename PointSource, typename PointTarget>
+void RegistrationPCL<PointSource, PointTarget>::setVerbosity(bool verbose) {
+  verbose_ = verbose;
+}
+
+template <typename PointSource, typename PointTarget>
+const Eigen::Matrix<double, 6, 6>& RegistrationPCL<PointSource, PointTarget>::getFinalHessian() const {
+  return result_.H;
+}
+
+template <typename PointSource, typename PointTarget>
+const RegistrationResult& RegistrationPCL<PointSource, PointTarget>::getRegistrationResult() const {
+  return result_;
 }
 
 template <typename PointSource, typename PointTarget>
@@ -123,9 +223,8 @@ void RegistrationPCL<PointSource, PointTarget>::computeTransformation(PointCloud
   registration.optimizer.verbose = verbose_;
   registration.optimizer.max_iterations = max_iterations_;
 
-  RegistrationResult result(Eigen::Isometry3d::Identity());
   if (registration_type_ == "GICP") {
-    result = registration.align(target_proxy, source_proxy, *target_tree_, Eigen::Isometry3d(guess.template cast<double>()));
+    result_ = registration.align(target_proxy, source_proxy, *target_tree_, Eigen::Isometry3d(guess.template cast<double>()));
   } else if (registration_type_ == "VGICP") {
     if (!target_voxelmap_) {
       target_voxelmap_ = std::make_shared<GaussianVoxelMap>(voxel_resolution_);
@@ -136,14 +235,14 @@ void RegistrationPCL<PointSource, PointTarget>::computeTransformation(PointCloud
       source_voxelmap_->insert(source_proxy);
     }
 
-    result = registration.align(*target_voxelmap_, source_proxy, *target_voxelmap_, Eigen::Isometry3d(guess.template cast<double>()));
+    result_ = registration.align(*target_voxelmap_, source_proxy, *target_voxelmap_, Eigen::Isometry3d(guess.template cast<double>()));
   } else {
     PCL_ERROR("[RegistrationPCL::computeTransformation] Invalid registration type: %s\n", registration_type_.c_str());
     return;
   }
 
-  final_transformation_ = result.T_target_source.matrix().template cast<float>();
-  final_hessian_ = result.H;
+  converged_ = result_.converged;
+  final_transformation_ = result_.T_target_source.matrix().template cast<float>();
   pcl::transformPointCloud(*input_, output, final_transformation_);
 }
 

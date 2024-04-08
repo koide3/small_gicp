@@ -9,7 +9,7 @@ namespace small_gicp {
 
 /// @brief Registration result
 struct RegistrationResult {
-  RegistrationResult(const Eigen::Isometry3d& T)
+  RegistrationResult(const Eigen::Isometry3d& T = Eigen::Isometry3d::Identity())
   : T_target_source(T),
     converged(false),
     iterations(0),

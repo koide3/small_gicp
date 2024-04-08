@@ -178,8 +178,12 @@ TEST_F(RegistrationTest, LoadCheck) {
 // PCL interface test
 TEST_F(RegistrationTest, PCLInterfaceTest) {
   RegistrationPCL<pcl::PointNormalCovariance, pcl::PointNormalCovariance> registration;
-  registration.setRegistrationType("GICP");
+  registration.setNumThreads(2);
+  registration.setCorrespondenceRandomness(20);
+  registration.setRotationEpsilon(1e-4);
+  registration.setTransformationEpsilon(1e-4);
   registration.setMaxCorrespondenceDistance(1.0);
+  registration.setRegistrationType("GICP");
 
   // Forward align
   registration.setInputTarget(target_pcl);
@@ -209,6 +213,15 @@ TEST_F(RegistrationTest, PCLInterfaceTest) {
   EXPECT_EQ(aligned.size(), source_pcl->size());
   EXPECT_TRUE(compare_transformation(T_target_source, Eigen::Isometry3d(registration.getFinalTransformation().cast<double>())));
 
+  Eigen::Matrix<double, 6, 6> H = registration.getFinalHessian();
+  Eigen::SelfAdjointEigenSolver<Eigen::Matrix<double, 6, 6>> eig(H);
+  EXPECT_GT(eig.eigenvalues()[0], 10.0);
+  for (int i = 0; i < 6; i++) {
+    for (int j = i + 1; j < 6; j++) {
+      EXPECT_NEAR(H(i, j), H(j, i), 1e-3);
+    }
+  }
+
   registration.setRegistrationType("VGICP");
   registration.setVoxelResolution(1.0);
 
@@ -218,6 +231,33 @@ TEST_F(RegistrationTest, PCLInterfaceTest) {
 
   registration.align(aligned);
 
+  EXPECT_EQ(aligned.size(), source_pcl->size());
+  EXPECT_TRUE(compare_transformation(T_target_source, Eigen::Isometry3d(registration.getFinalTransformation().cast<double>())));
+
+  H = registration.getFinalHessian();
+  eig.compute(H);
+  EXPECT_GT(eig.eigenvalues()[0], 10.0);
+  for (int i = 0; i < 6; i++) {
+    for (int j = i + 1; j < 6; j++) {
+      EXPECT_NEAR(H(i, j), H(j, i), 1e-3);
+    }
+  }
+
+  // Re-use covariances
+  std::vector<Eigen::Matrix4d> target_covs = registration.getTargetCovariances();
+  std::vector<Eigen::Matrix4d> source_covs = registration.getSourceCovariances();
+  EXPECT_EQ(target_covs.size(), target_pcl->size());
+  EXPECT_EQ(source_covs.size(), source_pcl->size());
+
+  registration.clearTarget();
+  registration.clearSource();
+
+  registration.setInputTarget(target_pcl);
+  registration.setTargetCovariances(target_covs);
+  registration.setInputSource(source_pcl);
+  registration.setSourceCovariances(source_covs);
+
+  registration.align(aligned);
   EXPECT_EQ(aligned.size(), source_pcl->size());
   EXPECT_TRUE(compare_transformation(T_target_source, Eigen::Isometry3d(registration.getFinalTransformation().cast<double>())));
 
