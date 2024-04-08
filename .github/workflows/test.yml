@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-22.04
 
     steps:
@@ -23,7 +23,7 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get -y update
-          sudo apt-get install -y build-essential cmake python3-pip pybind11-dev libeigen3-dev libfmt-dev libtbb-dev libomp-dev libpcl-dev libgtest-dev
+          sudo apt-get install --no-install-recommends -y build-essential cmake python3-pip pybind11-dev libeigen3-dev libfmt-dev libtbb-dev libomp-dev libpcl-dev libgtest-dev
           pip install -U setuptools pytest numpy scipy
 
       - name: Build
@@ -33,5 +33,5 @@ jobs:
           cmake --build . -j$(nproc)
           ctest -j$(nproc)
           cd ..
-          python3 setup.py build && python3 setup.py install --user
+          pip install . --user
           pytest src/example/basic_registration.py
