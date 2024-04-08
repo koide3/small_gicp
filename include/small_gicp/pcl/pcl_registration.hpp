@@ -10,6 +10,7 @@
 
 namespace small_gicp {
 
+/// @brief PCL registration interfaces.
 template <typename PointSource, typename PointTarget>
 class RegistrationPCL : public pcl::Registration<PointSource, PointTarget, float> {
 public:

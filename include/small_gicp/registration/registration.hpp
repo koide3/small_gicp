@@ -31,6 +31,13 @@ public:
   template <typename TargetPointCloud, typename SourcePointCloud, typename TargetTree>
   RegistrationResult
   align(const TargetPointCloud& target, const SourcePointCloud& source, const TargetTree& target_tree, const Eigen::Isometry3d& init_T = Eigen::Isometry3d::Identity()) const {
+    if (traits::size(target) <= 10) {
+      std::cerr << "warning: target point cloud is too small. |target|=" << traits::size(target) << std::endl;
+    }
+    if (traits::size(source) <= 10) {
+      std::cerr << "warning: source point cloud is too small. |source|=" << traits::size(source) << std::endl;
+    }
+
     std::vector<Factor> factors(traits::size(source));
     return optimizer.optimize(target, source, target_tree, rejector, criteria, reduction, init_T, factors, general_factor);
   }

@@ -38,8 +38,11 @@ struct GaussNewtonOptimizer {
 
     RegistrationResult result(init_T);
     for (int i = 0; i < max_iterations && !result.converged; i++) {
+      // Linearize
       auto [H, b, e] = reduction.linearize(target, source, target_tree, rejector, result.T_target_source, factors);
       general_factor.update_linearized_system(target, source, target_tree, result.T_target_source, &H, &b, &e);
+
+      // Solve linear system
       const Eigen::Matrix<double, 6, 1> delta = (H + lambda * Eigen ::Matrix<double, 6, 6>::Identity()).ldlt().solve(-b);
 
       if (verbose) {
@@ -95,12 +98,17 @@ struct LevenbergMarquardtOptimizer {
     double lambda = init_lambda;
     RegistrationResult result(init_T);
     for (int i = 0; i < max_iterations && !result.converged; i++) {
+      // Linearize
       auto [H, b, e] = reduction.linearize(target, source, target_tree, rejector, result.T_target_source, factors);
       general_factor.update_linearized_system(target, source, target_tree, result.T_target_source, &H, &b, &e);
 
+      // Lambda iteration
       bool success = false;
       for (int j = 0; j < max_inner_iterations; j++) {
+        // Solve with damping
         const Eigen::Matrix<double, 6, 1> delta = (H + lambda * Eigen ::Matrix<double, 6, 6>::Identity()).ldlt().solve(-b);
+
+        // Validte new solution
         const Eigen::Isometry3d new_T = result.T_target_source * se3_exp(delta);
         double new_e = reduction.error(target, source, new_T, factors);
         general_factor.update_error(target, source, new_T, &e);
@@ -111,6 +119,7 @@ struct LevenbergMarquardtOptimizer {
         }
 
         if (new_e < e) {
+          // Error decreased, decrease lambda
           result.converged = criteria.converged(delta);
           result.T_target_source = new_T;
           lambda /= lambda_factor;
@@ -118,6 +127,7 @@ struct LevenbergMarquardtOptimizer {
 
           break;
         } else {
+          // Failed to decrease error, increase lambda
           lambda *= lambda_factor;
         }
       }
