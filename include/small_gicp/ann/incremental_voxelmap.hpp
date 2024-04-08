@@ -40,7 +40,7 @@ public:
 
   /// @brief Constructor
   /// @param leaf_size  Voxel size
-  IncrementalVoxelMap(double leaf_size) : inv_leaf_size(1.0 / leaf_size), lru_horizon(100), lru_clear_cycle(10), lru_counter(0) {}
+  explicit IncrementalVoxelMap(double leaf_size) : inv_leaf_size(1.0 / leaf_size), lru_horizon(100), lru_clear_cycle(10), lru_counter(0) {}
 
   /// @brief Number of points in the voxelmap
   size_t size() const { return flat_voxels.size(); }

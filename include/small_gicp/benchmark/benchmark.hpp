@@ -95,7 +95,7 @@ std::string summarize(const Container& container, const Transform& transform) {
 
 struct KittiDataset {
 public:
-  KittiDataset(const std::string& dataset_path, size_t max_num_data = std::numeric_limits<size_t>::max()) {
+  explicit KittiDataset(const std::string& dataset_path, size_t max_num_data = 1000000) {
     std::vector<std::string> filenames;
     for (auto path : std::filesystem::directory_iterator(dataset_path)) {
       if (path.path().extension() != ".bin") {

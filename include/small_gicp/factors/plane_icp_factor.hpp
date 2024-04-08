@@ -41,15 +41,15 @@ struct PointToPlaneICPFactor {
     const auto& target_normal = traits::normal(target, target_index);
 
     const Eigen::Vector4d residual = traits::point(target, target_index) - transed_source_pt;
-    const Eigen::Vector4d error = target_normal.array() * residual.array();
+    const Eigen::Vector4d err = target_normal.array() * residual.array();
 
     Eigen::Matrix<double, 4, 6> J = Eigen::Matrix<double, 4, 6>::Zero();
     J.block<3, 3>(0, 0) = target_normal.template head<3>().asDiagonal() * T.linear() * skew(traits::point(source, source_index).template head<3>());
     J.block<3, 3>(0, 3) = target_normal.template head<3>().asDiagonal() * (-T.linear());
 
     *H = J.transpose() * J;
-    *b = J.transpose() * error;
-    *e = 0.5 * error.squaredNorm();
+    *b = J.transpose() * err;
+    *e = 0.5 * err.squaredNorm();
 
     return true;
   }

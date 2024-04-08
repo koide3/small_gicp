@@ -27,7 +27,7 @@ public:
     InputFrame::Ptr source;  // Source frame
   };
 
-  SmallGICPFlowEstimationTBB(const OdometryEstimationParams& params)
+  explicit SmallGICPFlowEstimationTBB(const OdometryEstimationParams& params)
   : OdometryEstimation(params),
     control(tbb::global_control::max_allowed_parallelism, params.num_threads),
     throughput(0.0) {
