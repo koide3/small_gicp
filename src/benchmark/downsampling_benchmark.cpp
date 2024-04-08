@@ -1,19 +1,21 @@
 #include <fmt/format.h>
 
-#include <pcl/point_types.h>
-#include <pcl/point_cloud.h>
-#include <pcl/filters/voxel_grid.h>
-#include <pcl/filters/approximate_voxel_grid.h>
-
 #include <small_gicp/util/downsampling.hpp>
 #include <small_gicp/util/downsampling_omp.hpp>
 #ifdef BUILD_WITH_TBB
 #include <small_gicp/util/downsampling_tbb.hpp>
 #endif
 #include <small_gicp/points/point_cloud.hpp>
+#include <small_gicp/benchmark/benchmark.hpp>
+
+#ifdef BUILD_WITH_PCL
+#include <pcl/point_types.h>
+#include <pcl/point_cloud.h>
+#include <pcl/filters/voxel_grid.h>
+#include <pcl/filters/approximate_voxel_grid.h>
 #include <small_gicp/pcl/pcl_point.hpp>
 #include <small_gicp/pcl/pcl_point_traits.hpp>
-#include <small_gicp/benchmark/benchmark.hpp>
+#endif
 
 namespace small_gicp {
 
@@ -35,6 +37,7 @@ void benchmark(const std::vector<PointCloudPtr>& raw_points, double leaf_size, c
   std::cout << fmt::format("{} [msec/scan]   {} [points]", times.str(), num_points.str()) << std::endl;
 }
 
+#ifdef BUILD_WITH_PCL
 template <typename VoxelGrid, typename PointCloudPtr>
 auto downsample_pcl(const PointCloudPtr& points, double leaf_size) {
   VoxelGrid voxelgrid;
@@ -45,6 +48,7 @@ auto downsample_pcl(const PointCloudPtr& points, double leaf_size) {
   voxelgrid.filter(*downsampled);
   return downsampled;
 }
+#endif
 
 }  // namespace small_gicp
 
@@ -85,38 +89,48 @@ int main(int argc, char** argv) {
   std::cout << "num_frames=" << kitti.points.size() << std::endl;
   std::cout << fmt::format("num_points={} [points]", summarize(kitti.points, [](const auto& pts) { return pts.size(); })) << std::endl;
 
-  const auto points_pcl = kitti.convert<pcl::PointCloud<pcl::PointXYZ>>(true);
+#ifdef BUILD_WITH_PCL
+  const auto points = kitti.convert<pcl::PointCloud<pcl::PointXYZ>>(true);
+#else
+  const auto points = kitti.convert<PointCloud>(true);
+#endif
 
+  // Warming up
   std::cout << "---" << std::endl;
   std::cout << "leaf_size=0.5(warmup)" << std::endl;
+#ifdef BUILD_WITH_PCL
   std::cout << fmt::format("{:25}: ", "pcl_voxelgrid") << std::flush;
-  benchmark(points_pcl, 0.5, [](const auto& points, double leaf_size) { return downsample_pcl<pcl::VoxelGrid<pcl::PointXYZ>>(points, leaf_size); });
+  benchmark(points, 0.5, [](const auto& points, double leaf_size) { return downsample_pcl<pcl::VoxelGrid<pcl::PointXYZ>>(points, leaf_size); });
   std::cout << fmt::format("{:25}: ", "pcl_approx_voxelgrid") << std::flush;
-  benchmark(points_pcl, 0.5, [](const auto& points, double leaf_size) { return downsample_pcl<pcl::ApproximateVoxelGrid<pcl::PointXYZ>>(points, leaf_size); });
+  benchmark(points, 0.5, [](const auto& points, double leaf_size) { return downsample_pcl<pcl::ApproximateVoxelGrid<pcl::PointXYZ>>(points, leaf_size); });
+#endif
   std::cout << fmt::format("{:25}: ", "small_voxelgrid") << std::flush;
-  benchmark(points_pcl, 0.5, [](const auto& points, double leaf_size) { return voxelgrid_sampling(*points, leaf_size); });
+  benchmark(points, 0.5, [](const auto& points, double leaf_size) { return voxelgrid_sampling(*points, leaf_size); });
+  std::cout << fmt::format("{:25}: ", "small_voxelgrid_omp") << std::flush;
+  benchmark(points, 0.5, [=](const auto& points, double leaf_size) { return voxelgrid_sampling_omp(*points, leaf_size, num_threads); });
 #ifdef BUILD_WITH_TBB
   std::cout << fmt::format("{:25}: ", "small_voxelgrid_tbb") << std::flush;
-  benchmark(points_pcl, 0.5, [](const auto& points, double leaf_size) { return voxelgrid_sampling_tbb(*points, leaf_size); });
+  benchmark(points, 0.5, [](const auto& points, double leaf_size) { return voxelgrid_sampling_tbb(*points, leaf_size); });
 #endif
-  std::cout << fmt::format("{:25}: ", "small_voxelgrid_omp") << std::flush;
-  benchmark(points_pcl, 0.5, [=](const auto& points, double leaf_size) { return voxelgrid_sampling_omp(*points, leaf_size, num_threads); });
 
+  // Benchmark
   for (double leaf_size = 0.1; leaf_size <= 1.51; leaf_size += 0.1) {
     std::cout << "---" << std::endl;
     std::cout << "leaf_size=" << leaf_size << std::endl;
+#ifdef BUILD_WITH_PCL
     std::cout << fmt::format("{:25}: ", "pcl_voxelgrid") << std::flush;
-    benchmark(points_pcl, leaf_size, [](const auto& points, double leaf_size) { return downsample_pcl<pcl::VoxelGrid<pcl::PointXYZ>>(points, leaf_size); });
+    benchmark(points, leaf_size, [](const auto& points, double leaf_size) { return downsample_pcl<pcl::VoxelGrid<pcl::PointXYZ>>(points, leaf_size); });
     std::cout << fmt::format("{:25}: ", "pcl_approx_voxelgrid") << std::flush;
-    benchmark(points_pcl, leaf_size, [](const auto& points, double leaf_size) { return downsample_pcl<pcl::ApproximateVoxelGrid<pcl::PointXYZ>>(points, leaf_size); });
+    benchmark(points, leaf_size, [](const auto& points, double leaf_size) { return downsample_pcl<pcl::ApproximateVoxelGrid<pcl::PointXYZ>>(points, leaf_size); });
+#endif
     std::cout << fmt::format("{:25}: ", "small_voxelgrid") << std::flush;
-    benchmark(points_pcl, leaf_size, [](const auto& points, double leaf_size) { return voxelgrid_sampling(*points, leaf_size); });
+    benchmark(points, leaf_size, [](const auto& points, double leaf_size) { return voxelgrid_sampling(*points, leaf_size); });
+    std::cout << fmt::format("{:25}: ", "small_voxelgrid_omp") << std::flush;
+    benchmark(points, leaf_size, [=](const auto& points, double leaf_size) { return voxelgrid_sampling_omp(*points, leaf_size, num_threads); });
 #ifdef BUILD_WITH_TBB
     std::cout << fmt::format("{:25}: ", "small_voxelgrid_tbb") << std::flush;
-    benchmark(points_pcl, leaf_size, [](const auto& points, double leaf_size) { return voxelgrid_sampling_tbb(*points, leaf_size); });
+    benchmark(points, leaf_size, [](const auto& points, double leaf_size) { return voxelgrid_sampling_tbb(*points, leaf_size); });
 #endif
-    std::cout << fmt::format("{:25}: ", "small_voxelgrid_omp") << std::flush;
-    benchmark(points_pcl, leaf_size, [=](const auto& points, double leaf_size) { return voxelgrid_sampling_omp(*points, leaf_size, num_threads); });
   }
 
   return 0;
