@@ -122,6 +122,7 @@ if(BUILD_BENCHMARKS)
     src/benchmark/odometry_benchmark_fast_gicp.cpp
     src/benchmark/odometry_benchmark_fast_vgicp.cpp
     src/benchmark/odometry_benchmark_small_gicp.cpp
+    src/benchmark/odometry_benchmark_small_gicp_pcl.cpp
     src/benchmark/odometry_benchmark_small_gicp_omp.cpp
     src/benchmark/odometry_benchmark_small_vgicp_omp.cpp
     src/benchmark/odometry_benchmark_small_gicp_tbb.cpp

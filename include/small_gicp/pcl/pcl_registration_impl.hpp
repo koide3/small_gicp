@@ -116,6 +116,8 @@ void RegistrationPCL<PointSource, PointTarget>::computeTransformation(PointCloud
   }
 
   Registration<GICPFactor, ParallelReductionOMP> registration;
+  registration.criteria.rotation_eps = rotation_epsilon_;
+  registration.criteria.translation_eps = transformation_epsilon_;
   registration.reduction.num_threads = num_threads_;
   registration.rejector.max_dist_sq = corr_dist_threshold_ * corr_dist_threshold_;
   registration.optimizer.verbose = verbose_;
