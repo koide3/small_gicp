@@ -75,7 +75,7 @@ namespace small_gicp {
 namespace traits {
 template <>
 struct Traits<MyPointCloud> {
-  // *** Setters ***
+  // *** Getters ***
   // The following getters are required for feeding this class to registration algorithms.
 
   // Number of points in the point cloud.
