@@ -23,7 +23,7 @@ option(ENABLE_COVERAGE "Enable coverage" OFF)
 
 # Dependency options
 set(BUILD_WITH_OPENMP CACHE STRING "Build with OpenMP" "auto")
-option(BUILD_WITH_TBB "Build with TBB" ON)
+option(BUILD_WITH_TBB "Build with TBB" OFF)
 option(BUILD_WITH_PCL "Build with PCL (required for benchmark and test only)" OFF)
 option(BUILD_WITH_FAST_GICP "Build with fast_gicp (required for benchmark and test only)" OFF)
 option(BUILD_WITH_IRIDESCENCE "Build with Iridescence (required for benchmark)" OFF)
