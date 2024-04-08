@@ -152,6 +152,7 @@ if(BUILD_BENCHMARKS)
   )
   target_include_directories(odometry_benchmark PUBLIC
     ${FAST_GICP_INCLUDE_DIR}
+    ${PCL_INCLUDE_DIRS}
   )
   target_link_libraries(odometry_benchmark PRIVATE
     fmt::fmt
@@ -160,7 +161,7 @@ if(BUILD_BENCHMARKS)
     $<TARGET_NAME_IF_EXISTS:Iridescence::Iridescence>
     $<TARGET_NAME_IF_EXISTS:TBB::tbb>
     $<TARGET_NAME_IF_EXISTS:TBB::tbbmalloc>
-    $<TARGET_NAME_IF_EXISTS:PCL::PCL>
+    ${PCL_LIBRARIES}
   )
 
   # KdTree construction benchmark
@@ -180,13 +181,16 @@ if(BUILD_BENCHMARKS)
     add_executable(downsampling_benchmark
       src/benchmark/downsampling_benchmark.cpp
     )
+    target_include_directories(downsampling_benchmark PRIVATE
+      ${PCL_INCLUDE_DIRS}
+    )
     target_link_libraries(downsampling_benchmark PRIVATE
       fmt::fmt
       Eigen3::Eigen
       $<TARGET_NAME_IF_EXISTS:OpenMP::OpenMP_CXX>
       $<TARGET_NAME_IF_EXISTS:TBB::tbb>
       $<TARGET_NAME_IF_EXISTS:TBB::tbbmalloc>
-      $<TARGET_NAME_IF_EXISTS:PCL::PCL>
+      ${PCL_LIBRARIES}
     )
   endif()
 endif()
@@ -199,12 +203,15 @@ if(BUILD_EXAMPLES)
   foreach(EXAMPLE_SOURCE ${EXAMPLE_SOURCES})
     get_filename_component(EXAMPLE_NAME ${EXAMPLE_SOURCE} NAME_WE)
     add_executable(${EXAMPLE_NAME} ${EXAMPLE_SOURCE})
+    target_include_directories(${EXAMPLE_NAME} PRIVATE
+      ${PCL_INCLUDE_DIRS}
+    )
     target_link_libraries(${EXAMPLE_NAME} PRIVATE
       small_gicp
       fmt::fmt
       TBB::tbb
       TBB::tbbmalloc
-      PCL::PCL
+      ${PCL_LIBRARIES}
     )
   endforeach()
 endif()
@@ -221,13 +228,16 @@ if(BUILD_TESTS)
   foreach(TEST_SOURCE ${TEST_SOURCES})
     get_filename_component(TEST_NAME ${TEST_SOURCE} NAME_WE)
     add_executable(${TEST_NAME} ${TEST_SOURCE})
+    target_include_directories(${TEST_NAME} PRIVATE
+      ${PCL_INCLUDE_DIRS}
+    )
     target_link_libraries(${TEST_NAME} PRIVATE
       small_gicp
       fmt::fmt
       GTest::gtest_main
       TBB::tbb
       TBB::tbbmalloc
-      PCL::PCL
+      ${PCL_LIBRARIES}
     )
 
     gtest_discover_tests(${TEST_NAME} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
