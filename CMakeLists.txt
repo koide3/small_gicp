@@ -1,24 +1,23 @@
 cmake_minimum_required(VERSION 3.16)
-project(small_gicp)
+project(small_gicp VERSION 0.0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build." FORCE)
   set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 endif()
 
-# Eigen is the sole mandatory dependency
-find_package(Eigen3 REQUIRED)
-find_package(OpenMP)
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+option(CMAKE_POSITION_INDEPENDENT_CODE "Generate position-independent code" ON)
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 option(BUILD_HELPER "Build helper library" ON)
 option(BUILD_TESTS "Build tests" OFF)
 option(BUILD_EXAMPLES "Build examples" OFF)
 option(BUILD_BENCHMARKS "Build benchmarks" OFF)
+set(BUILD_WITH_OPENMP CACHE STRING "Build with OpenMP" "auto")
 option(BUILD_WITH_TBB "Build with TBB" ON)
 option(BUILD_WITH_PCL "Build with PCL (required for benchmark and test only)" OFF)
 option(BUILD_WITH_FAST_GICP "Build with fast_gicp (required for benchmark and test only)" OFF)
@@ -27,10 +26,18 @@ option(BUILD_WITH_MARCH_NATIVE "Build with -march=native" OFF)
 option(ENABLE_COVERAGE "Enable coverage" OFF)
 option(BUILD_PYTHON_BINDINGS "Build python bindings" OFF)
 
+# Eigen is the sole mandatory dependency
+find_package(Eigen3 REQUIRED CONFIG)
+
+if(BUILD_WITH_OPENMP STREQUAL "auto")
+  find_package(OpenMP)
+  set(BUILD_WITH_OPENMP ${OpenMP_FOUND})
+elseif(BUILD_WITH_OPENMP)
+  find_package(OpenMP REQUIRED)
+endif()
+
 if(BUILD_WITH_MARCH_NATIVE)
   add_compile_options(-march=native)
-  set(CMAKE_C_FLAGS "-march=native ${CMAKE_C_FLAGS}")
-  set(CMAKE_CXX_FLAGS "-march=native ${CMAKE_CXX_FLAGS}")
 endif()
 
 ##############
@@ -50,46 +57,36 @@ if(ENABLE_COVERAGE)
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
 endif()
 
-#############
-## Install ##
-#############
-install(DIRECTORY include/ DESTINATION include)
-
 ###########
 ## Build ##
 ###########
 
+include_directories(include)
+
 # Helper library
 if(BUILD_HELPER)
-  add_library(small_gicp_helper SHARED
+  add_library(small_gicp
     src/small_gicp/registration/registration.cpp
     src/small_gicp/registration/registration_helper.cpp
   )
-  target_include_directories(small_gicp_helper PUBLIC
-    include
-    ${EIGEN3_INCLUDE_DIR}
+  target_include_directories(small_gicp PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
   )
-  target_link_libraries(small_gicp_helper
-    OpenMP::OpenMP_CXX
+  target_link_libraries(small_gicp PUBLIC
+    Eigen3::Eigen
+    $<TARGET_NAME_IF_EXISTS:OpenMP::OpenMP_CXX>
   )
-
-  install(TARGETS small_gicp_helper DESTINATION lib)
 endif()
-
-find_package(Python COMPONENTS Interpreter Development)
-find_package(pybind11 CONFIG)
 
 # Python bindings
 if(BUILD_PYTHON_BINDINGS)
-  pybind11_add_module(small_gicp src/python/python.cpp)
-  target_include_directories(small_gicp PUBLIC
-    include
-    ${EIGEN3_INCLUDE_DIR}
-  )
-  target_link_libraries(small_gicp PRIVATE
-    small_gicp_helper
-    OpenMP::OpenMP_CXX
-  )
+  find_package(Python COMPONENTS Interpreter Development REQUIRED)
+  find_package(pybind11 CONFIG REQUIRED)
+
+  pybind11_add_module(small_gicp_python src/python/python.cpp)
+  set_target_properties(small_gicp_python PROPERTIES OUTPUT_NAME small_gicp)
+  target_link_libraries(small_gicp_python PRIVATE small_gicp)
 endif()
 
 ###############
@@ -104,6 +101,13 @@ if(BUILD_BENCHMARKS)
   if (BUILD_WITH_PCL)
     find_package(PCL REQUIRED)
     add_compile_definitions(BUILD_WITH_PCL)
+    if (NOT TARGET PCL::PCL)
+      add_library(PCL::PCL INTERFACE IMPORTED)
+      set_target_properties(PCL::PCL PROPERTIES
+        INTERFACE_INCLUDE_DIRECTORIES "${PCL_INCLUDE_DIRS}"
+        INTERFACE_LINK_LIBRARIES "${PCL_LIBRARIES}"
+      )
+    endif()
   endif()
   if (BUILD_WITH_IRIDESCENCE)
     find_package(Iridescence REQUIRED)
@@ -132,34 +136,28 @@ if(BUILD_BENCHMARKS)
     src/benchmark/odometry_benchmark.cpp
   )
   target_include_directories(odometry_benchmark PUBLIC
-    include
-    ${PCL_INCLUDE_DIRS}
-    ${TBB_INCLUDE_DIRS}
-    ${EIGEN3_INCLUDE_DIR}
-    ${Iridescence_INCLUDE_DIRS}
     ${FAST_GICP_INCLUDE_DIR}
   )
-  target_link_libraries(odometry_benchmark
+  target_link_libraries(odometry_benchmark PRIVATE
     fmt::fmt
-    OpenMP::OpenMP_CXX
-    ${PCL_LIBRARIES}
-    ${TBB_LIBRARIES}
-    ${Iridescence_LIBRARIES}
+    Eigen3::Eigen
+    $<TARGET_NAME_IF_EXISTS:OpenMP::OpenMP_CXX>
+    Iridescence::Iridescence
+    TBB::tbb
+    TBB::tbbmalloc
+    PCL::PCL
   )
 
   # KdTree construction benchmark
   add_executable(kdtree_benchmark
     src/benchmark/kdtree_benchmark.cpp
   )
-  target_include_directories(kdtree_benchmark PUBLIC
-    include
-    ${TBB_INCLUDE_DIRS}
-    ${EIGEN3_INCLUDE_DIR}
-  )
-  target_link_libraries(kdtree_benchmark
+  target_link_libraries(kdtree_benchmark PRIVATE
     fmt::fmt
-    OpenMP::OpenMP_CXX
-    ${TBB_LIBRARIES}
+    Eigen3::Eigen
+    $<TARGET_NAME_IF_EXISTS:OpenMP::OpenMP_CXX>
+    TBB::tbb
+    TBB::tbbmalloc
   )
 
   if(BUILD_WITH_PCL)
@@ -167,17 +165,13 @@ if(BUILD_BENCHMARKS)
     add_executable(downsampling_benchmark
       src/benchmark/downsampling_benchmark.cpp
     )
-    target_include_directories(downsampling_benchmark PUBLIC
-      include
-      ${PCL_INCLUDE_DIRS}
-      ${TBB_INCLUDE_DIRS}
-      ${EIGEN3_INCLUDE_DIR}
-    )
-    target_link_libraries(downsampling_benchmark
+    target_link_libraries(downsampling_benchmark PRIVATE
       fmt::fmt
-      OpenMP::OpenMP_CXX
-      ${PCL_LIBRARIES}
-      ${TBB_LIBRARIES}
+      Eigen3::Eigen
+      $<TARGET_NAME_IF_EXISTS:OpenMP::OpenMP_CXX>
+      TBB::tbb
+      TBB::tbbmalloc
+      PCL::PCL
     )
   endif()
 endif()
@@ -194,18 +188,12 @@ if(BUILD_EXAMPLES)
   foreach(EXAMPLE_SOURCE ${EXAMPLE_SOURCES})
     get_filename_component(EXAMPLE_NAME ${EXAMPLE_SOURCE} NAME_WE)
     add_executable(${EXAMPLE_NAME} ${EXAMPLE_SOURCE})
-    target_include_directories(${EXAMPLE_NAME} PUBLIC
-      include
-      ${PCL_INCLUDE_DIRS}
-      ${TBB_INCLUDE_DIRS}
-      ${EIGEN3_INCLUDE_DIR}
-    )
-    target_link_libraries(${EXAMPLE_NAME}
-      small_gicp_helper
+    target_link_libraries(${EXAMPLE_NAME} PRIVATE
+      small_gicp
       fmt::fmt
-      OpenMP::OpenMP_CXX
-      ${PCL_LIBRARIES}
-      ${TBB_LIBRARIES}
+      TBB::tbb
+      TBB::tbbmalloc
+      PCL::PCL
     )
   endforeach()
 endif()
@@ -225,21 +213,73 @@ if(BUILD_TESTS)
   foreach(TEST_SOURCE ${TEST_SOURCES})
     get_filename_component(TEST_NAME ${TEST_SOURCE} NAME_WE)
     add_executable(${TEST_NAME} ${TEST_SOURCE})
-    target_include_directories(${TEST_NAME} PUBLIC
-      include
-      ${PCL_INCLUDE_DIRS}
-      ${TBB_INCLUDE_DIRS}
-      ${EIGEN3_INCLUDE_DIR}
-    )
-    target_link_libraries(${TEST_NAME}
-      small_gicp_helper
+    target_link_libraries(${TEST_NAME} PRIVATE
+      small_gicp
       fmt::fmt
-      OpenMP::OpenMP_CXX
       GTest::gtest_main
-      ${PCL_LIBRARIES}
-      ${TBB_LIBRARIES}
+      TBB::tbb
+      TBB::tbbmalloc
+      PCL::PCL
     )
 
     gtest_discover_tests(${TEST_NAME} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
   endforeach()
+endif()
+
+
+#############
+## Install ##
+#############
+
+include(GNUInstallDirs)
+install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+if(BUILD_HELPER)
+  install(TARGETS small_gicp
+    EXPORT small_gicp-targets
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  )
+  set(CMAKE_CONFIG_INSTALL_DIR
+    "${CMAKE_INSTALL_LIBDIR}/cmake/small_gicp"
+    CACHE PATH "Install directory for CMake config files"
+  )
+  include(CMakePackageConfigHelpers)
+  install(EXPORT small_gicp-targets
+    FILE small_gicp-targets.cmake
+    NAMESPACE small_gicp::
+    DESTINATION ${CMAKE_CONFIG_INSTALL_DIR}
+  )
+  configure_package_config_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/small_gicp-config.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/small_gicp-config.cmake"
+    INSTALL_DESTINATION ${CMAKE_CONFIG_INSTALL_DIR}
+  )
+  write_basic_package_version_file(
+    "${CMAKE_CURRENT_BINARY_DIR}/small_gicp-config-version.cmake"
+    VERSION ${VERSION}
+    COMPATIBILITY SameMajorVersion
+  )
+  install(FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/small_gicp-config.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/small_gicp-config-version.cmake"
+    DESTINATION ${CMAKE_CONFIG_INSTALL_DIR}
+  )
+  install(FILES
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindTBB.cmake"
+    DESTINATION ${CMAKE_CONFIG_INSTALL_DIR}
+  )
+endif()
+
+if(BUILD_PYTHON_BINDINGS)
+  if(DEFINED SKBUILD_PROJECT_NAME)
+    set(PYTHON_INSTALL_DIR .)
+  elseif(NOT DEFINED PYTHON_INSTALL_DIR)
+    set(PYTHON_INSTALL_DIR lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages)
+  endif()
+  install(TARGETS small_gicp_python small_gicp
+    LIBRARY DESTINATION ${PYTHON_INSTALL_DIR}
+    COMPONENT python
+  )
 endif()

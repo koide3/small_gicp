@@ -1,3 +1,37 @@
 [build-system]
-requires = ["setuptools>=42", "wheel", "pybind11>2.10.0"]
-build-backend = "setuptools.build_meta"
+requires = ["scikit-build-core >=0.4.3", "pybind11 >2.10.0"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "small_gicp"
+version = "0.0.1"
+authors = [{name = "Kenji Koide", email = "k.koide@aist.go.jp"}]
+description = "Efficient and parallelized algorithms for fine point cloud registration"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.7"
+
+[project.urls]
+Homepage = "https://github.com/koide3/small_gicp"
+
+[project.optional-dependencies]
+test = ["pytest>=6.0"]
+
+[tool.setuptools]
+zip_safe = false
+
+[tool.scikit-build]
+wheel.license-files = ["LICENSE"]
+install.components = ["python"]
+build-dir = "build/{wheel_tag}"
+wheel.py-api = "cp312" # Build stable ABI wheels for CPython 3.12+
+
+[tool.scikit-build.cmake.define]
+BUILD_PYTHON_BINDINGS = true
+BUILD_SHARED_LIBS = false
+
+[tool.cibuildwheel]
+build = "*"
+skip = "pp*" # Don't build for PyPy
+test-command = "pytest {project}/src --color=yes -v"
+build-verbosity = 1
