@@ -57,13 +57,6 @@ endif()
 if (BUILD_WITH_PCL)
   find_package(PCL REQUIRED)
   add_compile_definitions(BUILD_WITH_PCL)
-  if (NOT TARGET PCL::PCL)
-    add_library(PCL::PCL INTERFACE IMPORTED)
-    set_target_properties(PCL::PCL PROPERTIES
-      INTERFACE_INCLUDE_DIRECTORIES "${PCL_INCLUDE_DIRS}"
-      INTERFACE_LINK_LIBRARIES "${PCL_LIBRARIES}"
-    )
-  endif()
 endif()
 
 if (BUILD_WITH_IRIDESCENCE)
