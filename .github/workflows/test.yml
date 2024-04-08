@@ -23,6 +23,7 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get -y update
+          sudo apt-get upgrade -y
           sudo apt-get install --no-install-recommends -y
           sudo apt-get install --no-install-recommends -y build-essential cmake python3-pip pybind11-dev libeigen3-dev libfmt-dev libtbb-dev libomp-dev libpcl-dev libgtest-dev
           pip install -U setuptools pytest numpy scipy
