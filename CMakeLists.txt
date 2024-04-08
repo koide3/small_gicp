@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(small_gicp VERSION 0.0.1 LANGUAGES CXX)
+project(small_gicp VERSION 0.0.1)
 
 set(CMAKE_CXX_STANDARD 17)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
@@ -57,6 +57,13 @@ endif()
 if (BUILD_WITH_PCL)
   find_package(PCL REQUIRED)
   add_compile_definitions(BUILD_WITH_PCL)
+  if (NOT TARGET PCL::PCL)
+    add_library(PCL::PCL INTERFACE IMPORTED)
+    set_target_properties(PCL::PCL PROPERTIES
+      INTERFACE_INCLUDE_DIRECTORIES "${PCL_INCLUDE_DIRS}"
+      INTERFACE_LINK_LIBRARIES "${PCL_LIBRARIES}"
+    )
+  endif()
 endif()
 
 if (BUILD_WITH_IRIDESCENCE)
@@ -145,7 +152,6 @@ if(BUILD_BENCHMARKS)
   )
   target_include_directories(odometry_benchmark PUBLIC
     ${FAST_GICP_INCLUDE_DIR}
-    ${PCL_INCLUDE_DIRS}
   )
   target_link_libraries(odometry_benchmark PRIVATE
     fmt::fmt
@@ -154,7 +160,7 @@ if(BUILD_BENCHMARKS)
     $<TARGET_NAME_IF_EXISTS:Iridescence::Iridescence>
     $<TARGET_NAME_IF_EXISTS:TBB::tbb>
     $<TARGET_NAME_IF_EXISTS:TBB::tbbmalloc>
-    ${PCL_LIBRARIES}
+    $<TARGET_NAME_IF_EXISTS:PCL::PCL>
   )
 
   # KdTree construction benchmark
@@ -174,16 +180,13 @@ if(BUILD_BENCHMARKS)
     add_executable(downsampling_benchmark
       src/benchmark/downsampling_benchmark.cpp
     )
-    target_include_directories(downsampling_benchmark PRIVATE
-      ${PCL_INCLUDE_DIRS}
-    )
     target_link_libraries(downsampling_benchmark PRIVATE
       fmt::fmt
       Eigen3::Eigen
       $<TARGET_NAME_IF_EXISTS:OpenMP::OpenMP_CXX>
       $<TARGET_NAME_IF_EXISTS:TBB::tbb>
       $<TARGET_NAME_IF_EXISTS:TBB::tbbmalloc>
-      ${PCL_LIBRARIES}
+      PCL::PCL
     )
   endif()
 endif()
@@ -196,15 +199,12 @@ if(BUILD_EXAMPLES)
   foreach(EXAMPLE_SOURCE ${EXAMPLE_SOURCES})
     get_filename_component(EXAMPLE_NAME ${EXAMPLE_SOURCE} NAME_WE)
     add_executable(${EXAMPLE_NAME} ${EXAMPLE_SOURCE})
-    target_include_directories(${EXAMPLE_NAME} PRIVATE
-      ${PCL_INCLUDE_DIRS}
-    )
     target_link_libraries(${EXAMPLE_NAME} PRIVATE
       small_gicp
       fmt::fmt
       TBB::tbb
       TBB::tbbmalloc
-      ${PCL_LIBRARIES}
+      PCL::PCL
     )
   endforeach()
 endif()
@@ -221,16 +221,13 @@ if(BUILD_TESTS)
   foreach(TEST_SOURCE ${TEST_SOURCES})
     get_filename_component(TEST_NAME ${TEST_SOURCE} NAME_WE)
     add_executable(${TEST_NAME} ${TEST_SOURCE})
-    target_include_directories(${TEST_NAME} PRIVATE
-      ${PCL_INCLUDE_DIRS}
-    )
     target_link_libraries(${TEST_NAME} PRIVATE
       small_gicp
       fmt::fmt
       GTest::gtest_main
       TBB::tbb
       TBB::tbbmalloc
-      ${PCL_LIBRARIES}
+      PCL::PCL
     )
 
     gtest_discover_tests(${TEST_NAME} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
