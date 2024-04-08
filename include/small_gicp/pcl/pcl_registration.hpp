@@ -6,6 +6,7 @@
 #include <pcl/registration/registration.h>
 #include <small_gicp/ann/kdtree_omp.hpp>
 #include <small_gicp/ann/gaussian_voxelmap.hpp>
+#include <small_gicp/registration/registration_result.hpp>
 
 namespace small_gicp {
 
@@ -43,42 +44,61 @@ public:
   RegistrationPCL();
   virtual ~RegistrationPCL();
 
-  void setNumThreads(int n) { num_threads_ = n; }
-  void setCorrespondenceRandomness(int k) { k_correspondences_ = k; }
-  void setVoxelResolution(double r) { voxel_resolution_ = r; }
-  void setRotationEpsilon(double eps) { rotation_epsilon_ = eps; }
+  /// @brief Set the number of threads to use.
+  void setNumThreads(int n);
+  /// @brief Set the number of neighbors for covariance estimation.
+  /// @note  This is equivalent to `setNumNeighborsForCovariance`. Just exists for compatibility with pcl::GICP.
+  void setCorrespondenceRandomness(int k);
+  /// @brief Set the number of neighbors for covariance estimation.
+  void setNumNeighborsForCovariance(int k);
+  /// @brief Set the voxel resolution for VGICP.
+  void setVoxelResolution(double r);
+  /// @brief Set rotation epsilon for convergence check.
+  void setRotationEpsilon(double eps);
+  /// @brief Set registration type ("GICP" or "VGICP").
   void setRegistrationType(const std::string& type);
+  /// @brief Set the verbosity flag.
+  void setVerbosity(bool verbose);
 
-  const Eigen::Matrix<double, 6, 6>& getFinalHessian() const { return final_hessian_; }
+  /// @brief Get the final Hessian matrix ([rx, ry, rz, tx, ty, tz]).
+  const Eigen::Matrix<double, 6, 6>& getFinalHessian() const;
 
+  /// @brief Get the detailed registration result.
+  const RegistrationResult& getRegistrationResult() const;
+
+  /// @brief  Set the input source (aligned) point cloud.
   void setInputSource(const PointCloudSourceConstPtr& cloud) override;
+  /// @brief  Set the input target (fixed) point cloud.
   void setInputTarget(const PointCloudTargetConstPtr& cloud) override;
 
+  /// @brief Swap source and target point clouds and their augmented data (KdTrees, covariances, and voxelmaps).
   void swapSourceAndTarget();
+  /// @brief Clear source point cloud.
   void clearSource();
+  /// @brief Clear target point cloud.
   void clearTarget();
 
 protected:
   virtual void computeTransformation(PointCloudSource& output, const Matrix4& guess) override;
 
 protected:
-  int num_threads_;
-  int k_correspondences_;
-  double rotation_epsilon_;
-  double voxel_resolution_;
-  bool verbose_;
-  std::string registration_type_;
+  int num_threads_;                ///< Number of threads to use.
+  int k_correspondences_;          ///< Number of neighbors for covariance estimation.
+  double rotation_epsilon_;        ///< Rotation epsilon for convergence check.
+  double voxel_resolution_;        ///< Voxel resolution for VGICP.
+  std::string registration_type_;  ///< Registration type ("GICP" or "VGICP").
+  bool verbose_;                   ///< Verbosity flag.
 
-  std::shared_ptr<KdTreeOMP<pcl::PointCloud<PointSource>>> target_tree_;
-  std::shared_ptr<KdTreeOMP<pcl::PointCloud<PointSource>>> source_tree_;
+  std::shared_ptr<KdTreeOMP<pcl::PointCloud<PointSource>>> target_tree_;  ///< KdTree for target point cloud.
+  std::shared_ptr<KdTreeOMP<pcl::PointCloud<PointSource>>> source_tree_;  ///< KdTree for source point cloud.
 
-  std::shared_ptr<GaussianVoxelMap> target_voxelmap_;
-  std::shared_ptr<GaussianVoxelMap> source_voxelmap_;
+  std::shared_ptr<GaussianVoxelMap> target_voxelmap_;  ///< VoxelMap for target point cloud.
+  std::shared_ptr<GaussianVoxelMap> source_voxelmap_;  ///< VoxelMap for source point cloud.
 
-  std::vector<Eigen::Matrix4d> target_covs_;
-  std::vector<Eigen::Matrix4d> source_covs_;
+  std::vector<Eigen::Matrix4d> target_covs_;  ///< Covariances of target points
+  std::vector<Eigen::Matrix4d> source_covs_;  ///< Covariances of source points.
 
-  Eigen::Matrix<double, 6, 6> final_hessian_;
+  RegistrationResult result_;  ///< Registration result.
 };
 
 }  // namespace small_gicp
