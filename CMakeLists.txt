@@ -17,6 +17,7 @@ option(BUILD_HELPER "Build helper library" ON)
 option(BUILD_TESTS "Build tests" OFF)
 option(BUILD_EXAMPLES "Build examples" OFF)
 option(BUILD_BENCHMARKS "Build benchmarks" OFF)
+
 set(BUILD_WITH_OPENMP CACHE STRING "Build with OpenMP" "auto")
 option(BUILD_WITH_TBB "Build with TBB" ON)
 option(BUILD_WITH_PCL "Build with PCL (required for benchmark and test only)" OFF)
@@ -29,11 +30,46 @@ option(BUILD_PYTHON_BINDINGS "Build python bindings" OFF)
 # Eigen is the sole mandatory dependency
 find_package(Eigen3 REQUIRED CONFIG)
 
+if(BUILD_TESTS OR BUILD_EXAMPLES OR BUILD_BENCHMARKS)
+  find_package(fmt REQUIRED)
+  set(BUILD_HELPER ON CACHE BOOL "Helper library is required" FORCE)
+  set(BUILD_WITH_TBB ON CACHE BOOL "TBB is required" FORCE)
+  set(BUILD_WITH_PCL ON CACHE BOOL "PCL is required" FORCE)
+endif()
+
 if(BUILD_WITH_OPENMP STREQUAL "auto")
   find_package(OpenMP)
   set(BUILD_WITH_OPENMP ${OpenMP_FOUND})
 elseif(BUILD_WITH_OPENMP)
   find_package(OpenMP REQUIRED)
+endif()
+
+if (BUILD_WITH_TBB)
+  find_package(TBB REQUIRED)
+  add_compile_definitions(BUILD_WITH_TBB)
+endif()
+
+if (BUILD_WITH_PCL)
+  find_package(PCL REQUIRED)
+  add_compile_definitions(BUILD_WITH_PCL)
+  if (NOT TARGET PCL::PCL)
+    add_library(PCL::PCL INTERFACE IMPORTED)
+    set_target_properties(PCL::PCL PROPERTIES
+      INTERFACE_INCLUDE_DIRECTORIES "${PCL_INCLUDE_DIRS}"
+      INTERFACE_LINK_LIBRARIES "${PCL_LIBRARIES}"
+    )
+  endif()
+endif()
+
+if (BUILD_WITH_IRIDESCENCE)
+  find_package(Iridescence REQUIRED)
+  add_compile_definitions(BUILD_WITH_IRIDESCENCE)
+endif()
+
+if (BUILD_WITH_FAST_GICP)
+  # set(FAST_GICP_INCLUDE_DIR /home/koide/workspace/fast_gicp/include)
+  set(FAST_GICP_INCLUDE_DIR $ENV{FAST_GICP_INCLUDE_DIR})
+  add_compile_definitions(BUILD_WITH_FAST_GICP)
 endif()
 
 if(BUILD_WITH_MARCH_NATIVE)
@@ -93,32 +129,6 @@ endif()
 ## Benchmark ##
 ###############
 if(BUILD_BENCHMARKS)
-  find_package(fmt REQUIRED)
-  if (BUILD_WITH_TBB)
-    find_package(TBB REQUIRED)
-    add_compile_definitions(BUILD_WITH_TBB)
-  endif()
-  if (BUILD_WITH_PCL)
-    find_package(PCL REQUIRED)
-    add_compile_definitions(BUILD_WITH_PCL)
-    if (NOT TARGET PCL::PCL)
-      add_library(PCL::PCL INTERFACE IMPORTED)
-      set_target_properties(PCL::PCL PROPERTIES
-        INTERFACE_INCLUDE_DIRECTORIES "${PCL_INCLUDE_DIRS}"
-        INTERFACE_LINK_LIBRARIES "${PCL_LIBRARIES}"
-      )
-    endif()
-  endif()
-  if (BUILD_WITH_IRIDESCENCE)
-    find_package(Iridescence REQUIRED)
-    add_compile_definitions(BUILD_WITH_IRIDESCENCE)
-  endif()
-  if (BUILD_WITH_FAST_GICP)
-    # set(FAST_GICP_INCLUDE_DIR /home/koide/workspace/fast_gicp/include)
-    set(FAST_GICP_INCLUDE_DIR $ENV{FAST_GICP_INCLUDE_DIR})
-    add_compile_definitions(BUILD_WITH_FAST_GICP)
-  endif()
-
   # Odometry benchmark
   add_executable(odometry_benchmark
     src/small_gicp/benchmark/benchmark_odom.cpp
@@ -142,10 +152,10 @@ if(BUILD_BENCHMARKS)
     fmt::fmt
     Eigen3::Eigen
     $<TARGET_NAME_IF_EXISTS:OpenMP::OpenMP_CXX>
-    Iridescence::Iridescence
-    TBB::tbb
-    TBB::tbbmalloc
-    PCL::PCL
+    $<TARGET_NAME_IF_EXISTS:Iridescence::Iridescence>
+    $<TARGET_NAME_IF_EXISTS:TBB::tbb>
+    $<TARGET_NAME_IF_EXISTS:TBB::tbbmalloc>
+    $<TARGET_NAME_IF_EXISTS:PCL::PCL>
   )
 
   # KdTree construction benchmark
@@ -156,8 +166,8 @@ if(BUILD_BENCHMARKS)
     fmt::fmt
     Eigen3::Eigen
     $<TARGET_NAME_IF_EXISTS:OpenMP::OpenMP_CXX>
-    TBB::tbb
-    TBB::tbbmalloc
+    $<TARGET_NAME_IF_EXISTS:TBB::tbb>
+    $<TARGET_NAME_IF_EXISTS:TBB::tbbmalloc>
   )
 
   if(BUILD_WITH_PCL)
@@ -169,9 +179,9 @@ if(BUILD_BENCHMARKS)
       fmt::fmt
       Eigen3::Eigen
       $<TARGET_NAME_IF_EXISTS:OpenMP::OpenMP_CXX>
-      TBB::tbb
-      TBB::tbbmalloc
-      PCL::PCL
+      $<TARGET_NAME_IF_EXISTS:TBB::tbb>
+      $<TARGET_NAME_IF_EXISTS:TBB::tbbmalloc>
+      $<TARGET_NAME_IF_EXISTS:PCL::PCL>
     )
   endif()
 endif()
@@ -180,10 +190,6 @@ endif()
 ## Example ##
 #############
 if(BUILD_EXAMPLES)
-  find_package(fmt REQUIRED)
-  find_package(PCL REQUIRED)
-  find_package(TBB REQUIRED)
-
   file(GLOB EXAMPLE_SOURCES "src/example/*.cpp")
   foreach(EXAMPLE_SOURCE ${EXAMPLE_SOURCES})
     get_filename_component(EXAMPLE_NAME ${EXAMPLE_SOURCE} NAME_WE)
@@ -202,9 +208,6 @@ endif()
 ## Test ##
 ##########
 if(BUILD_TESTS)
-  find_package(fmt REQUIRED)
-  find_package(PCL REQUIRED)
-  find_package(TBB REQUIRED)
   find_package(GTest REQUIRED)
 
   enable_testing()
