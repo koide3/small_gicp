@@ -2,10 +2,12 @@
 #include <small_gicp/points/point_cloud.hpp>
 #include <small_gicp/ann/kdtree.hpp>
 #include <small_gicp/ann/kdtree_omp.hpp>
-#include <small_gicp/ann/kdtree_tbb.hpp>
 #include <small_gicp/util/downsampling.hpp>
-#include <small_gicp/util/downsampling_tbb.hpp>
 #include <small_gicp/benchmark/benchmark.hpp>
+
+#ifdef BUILD_WITH_TBB
+#include <small_gicp/ann/kdtree_tbb.hpp>
+#endif
 
 int main(int argc, char** argv) {
   using namespace small_gicp;
@@ -14,7 +16,7 @@ int main(int argc, char** argv) {
     std::cout << "USAGE: kdtree_benchmark <dataset_path>" << std::endl;
     std::cout << "OPTIONS:" << std::endl;
     std::cout << "  --num_threads <value> (default: 4)" << std::endl;
-    std::cout << "  --method <str> (small|tbb|omp)" << std::endl;
+    std::cout << "  --method <str> (small|omp|tbb)" << std::endl;
     return 0;
   }
 
@@ -43,30 +45,32 @@ int main(int argc, char** argv) {
   std::cout << "num_trials=" << num_trials << std::endl;
   std::cout << "method=" << method << std::endl;
 
+#ifdef BUILD_WITH_TBB
   tbb::global_control tbb_control(tbb::global_control::max_allowed_parallelism, num_threads);
+#endif
 
   KittiDataset kitti(dataset_path, 1);
   auto raw_points = std::make_shared<PointCloud>(kitti.points[0]);
   std::cout << "num_raw_points=" << raw_points->size() << std::endl;
 
   const auto search_voxel_resolution = [&](size_t target_num_points) {
-    std::pair<double, size_t> left = {0.1, voxelgrid_sampling_tbb(*raw_points, 0.1)->size()};
-    std::pair<double, size_t> right = {1.0, voxelgrid_sampling_tbb(*raw_points, 1.0)->size()};
+    std::pair<double, size_t> left = {0.1, voxelgrid_sampling(*raw_points, 0.1)->size()};
+    std::pair<double, size_t> right = {1.0, voxelgrid_sampling(*raw_points, 1.0)->size()};
 
     for (int i = 0; i < 20; i++) {
       if (left.second < target_num_points) {
         left.first *= 0.1;
-        left.second = voxelgrid_sampling_tbb(*raw_points, left.first)->size();
+        left.second = voxelgrid_sampling(*raw_points, left.first)->size();
         continue;
       }
       if (right.second > target_num_points) {
         right.first *= 10.0;
-        right.second = voxelgrid_sampling_tbb(*raw_points, right.first)->size();
+        right.second = voxelgrid_sampling(*raw_points, right.first)->size();
         continue;
       }
 
       const double mid = (left.first + right.first) * 0.5;
-      const size_t mid_num_points = voxelgrid_sampling_tbb(*raw_points, mid)->size();
+      const size_t mid_num_points = voxelgrid_sampling(*raw_points, mid)->size();
 
       if (std::abs(1.0 - static_cast<double>(mid_num_points) / target_num_points) < 0.001) {
         return mid;
@@ -89,7 +93,7 @@ int main(int argc, char** argv) {
   for (double target = 1.0; target > 0.05; target -= 0.1) {
     const double downsampling_resolution = search_voxel_resolution(raw_points->size() * target);
     downsampling_resolutions.emplace_back(downsampling_resolution);
-    downsampled.emplace_back(voxelgrid_sampling_tbb(*raw_points, downsampling_resolution));
+    downsampled.emplace_back(voxelgrid_sampling(*raw_points, downsampling_resolution));
     std::cout << "downsampling_resolution=" << downsampling_resolution << std::endl;
     std::cout << "num_points=" << downsampled.back()->size() << std::endl;
   }
@@ -103,11 +107,14 @@ int main(int argc, char** argv) {
 
     if (method == "small") {
       UnsafeKdTree<PointCloud> tree(*downsampled);
-    } else if (method == "tbb") {
-      UnsafeKdTreeTBB<PointCloud> tree(*downsampled);
     } else if (method == "omp") {
       UnsafeKdTreeOMP<PointCloud> tree(*downsampled, num_threads);
     }
+#ifdef BUILD_WITH_TBB
+    else if (method == "tbb") {
+      UnsafeKdTreeTBB<PointCloud> tree(*downsampled);
+    }
+#endif
   }
 
   Stopwatch sw;
@@ -127,18 +134,6 @@ int main(int argc, char** argv) {
       }
       std::cout << "kdtree_times=" << kdtree_times.str() << " [msec]" << std::endl;
     }
-  } else if (method == "tbb") {
-    for (size_t i = 0; i < downsampling_resolutions.size(); i++) {
-      Summarizer kdtree_tbb_times(true);
-      sw.start();
-      for (size_t j = 0; j < num_trials; j++) {
-        UnsafeKdTreeTBB<PointCloud> tree(*downsampled[i]);
-        sw.lap();
-        kdtree_tbb_times.push(sw.msec());
-      }
-
-      std::cout << "kdtree_tbb_times=" << kdtree_tbb_times.str() << " [msec]" << std::endl;
-    }
   } else if (method == "omp") {
     for (size_t i = 0; i < downsampling_resolutions.size(); i++) {
       Summarizer kdtree_omp_times(true);
@@ -152,6 +147,21 @@ int main(int argc, char** argv) {
       std::cout << "kdtree_omp_times=" << kdtree_omp_times.str() << " [msec]" << std::endl;
     }
   }
+#ifdef BUILD_WITH_TBB
+  else if (method == "tbb") {
+    for (size_t i = 0; i < downsampling_resolutions.size(); i++) {
+      Summarizer kdtree_tbb_times(true);
+      sw.start();
+      for (size_t j = 0; j < num_trials; j++) {
+        UnsafeKdTreeTBB<PointCloud> tree(*downsampled[i]);
+        sw.lap();
+        kdtree_tbb_times.push(sw.msec());
+      }
+
+      std::cout << "kdtree_tbb_times=" << kdtree_tbb_times.str() << " [msec]" << std::endl;
+    }
+  }
+#endif
 
   return 0;
 }

@@ -32,10 +32,10 @@ option(BUILD_WITH_MARCH_NATIVE "Build with -march=native" OFF)
 # Set mandatory dependencies of optional features
 if(BUILD_TESTS OR BUILD_EXAMPLES OR BUILD_BENCHMARKS)
   find_package(fmt REQUIRED)
-  set(BUILD_HELPER ON CACHE BOOL "Helper library is required" FORCE)
-  set(BUILD_WITH_TBB ON CACHE BOOL "TBB is required" FORCE)
 endif()
 if(BUILD_TESTS OR BUILD_EXAMPLES)
+  set(BUILD_HELPER ON CACHE BOOL "Helper library is required" FORCE)
+  set(BUILD_WITH_TBB ON CACHE BOOL "TBB is required" FORCE)
   set(BUILD_WITH_PCL ON CACHE BOOL "PCL is required" FORCE)
 endif()
 
@@ -176,20 +176,18 @@ if(BUILD_BENCHMARKS)
     $<TARGET_NAME_IF_EXISTS:TBB::tbbmalloc>
   )
 
-  if(BUILD_WITH_PCL)
-    # Downsampling benchmark
-    add_executable(downsampling_benchmark
-      src/benchmark/downsampling_benchmark.cpp
-    )
-    target_link_libraries(downsampling_benchmark PRIVATE
-      fmt::fmt
-      Eigen3::Eigen
-      $<TARGET_NAME_IF_EXISTS:OpenMP::OpenMP_CXX>
-      $<TARGET_NAME_IF_EXISTS:TBB::tbb>
-      $<TARGET_NAME_IF_EXISTS:TBB::tbbmalloc>
-      PCL::PCL
-    )
-  endif()
+  # Downsampling benchmark
+  add_executable(downsampling_benchmark
+    src/benchmark/downsampling_benchmark.cpp
+  )
+  target_link_libraries(downsampling_benchmark PRIVATE
+    fmt::fmt
+    Eigen3::Eigen
+    $<TARGET_NAME_IF_EXISTS:OpenMP::OpenMP_CXX>
+    $<TARGET_NAME_IF_EXISTS:TBB::tbb>
+    $<TARGET_NAME_IF_EXISTS:TBB::tbbmalloc>
+    $<TARGET_NAME_IF_EXISTS:PCL::PCL>
+  )
 endif()
 
 #############
