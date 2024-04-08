@@ -12,7 +12,7 @@ namespace small_gicp {
 
 class SmallVGICPOnlineOdometryEstimationOMP : public OnlineOdometryEstimation {
 public:
-  SmallVGICPOnlineOdometryEstimationOMP(const OdometryEstimationParams& params) : OnlineOdometryEstimation(params), T(Eigen::Isometry3d::Identity()) {}
+  explicit SmallVGICPOnlineOdometryEstimationOMP(const OdometryEstimationParams& params) : OnlineOdometryEstimation(params), T(Eigen::Isometry3d::Identity()) {}
 
   Eigen::Isometry3d estimate(const PointCloud::Ptr& points) override {
     Stopwatch sw;

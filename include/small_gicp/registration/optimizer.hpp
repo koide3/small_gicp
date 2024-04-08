@@ -136,6 +136,10 @@ struct LevenbergMarquardtOptimizer {
       result.H = H;
       result.b = b;
       result.error = e;
+
+      if (!success) {
+        break;
+      }
     }
 
     result.num_inliers = std::count_if(factors.begin(), factors.end(), [](const auto& factor) { return factor.inlier(); });

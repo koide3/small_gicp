@@ -50,16 +50,14 @@ inline Eigen::Matrix3d skew(const Eigen::Vector3d& x) {
 inline Eigen::Quaterniond so3_exp(const Eigen::Vector3d& omega) {
   double theta_sq = omega.dot(omega);
 
-  double theta;
   double imag_factor;
   double real_factor;
   if (theta_sq < 1e-10) {
-    theta = 0;
     double theta_quad = theta_sq * theta_sq;
     imag_factor = 0.5 - 1.0 / 48.0 * theta_sq + 1.0 / 3840.0 * theta_quad;
     real_factor = 1.0 - 1.0 / 8.0 * theta_sq + 1.0 / 384.0 * theta_quad;
   } else {
-    theta = std::sqrt(theta_sq);
+    double theta = std::sqrt(theta_sq);
     double half_theta = 0.5 * theta;
     imag_factor = std::sin(half_theta) / theta;
     real_factor = std::cos(half_theta);

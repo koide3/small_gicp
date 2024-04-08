@@ -10,7 +10,7 @@ namespace small_gicp {
 
 class PCLOnlineOdometryEstimation : public OnlineOdometryEstimation {
 public:
-  PCLOnlineOdometryEstimation(const OdometryEstimationParams& params) : OnlineOdometryEstimation(params), T(Eigen::Isometry3d::Identity()) {
+  explicit PCLOnlineOdometryEstimation(const OdometryEstimationParams& params) : OnlineOdometryEstimation(params), T(Eigen::Isometry3d::Identity()) {
     gicp.setCorrespondenceRandomness(params.num_neighbors);
     gicp.setMaxCorrespondenceDistance(params.max_correspondence_distance);
   }

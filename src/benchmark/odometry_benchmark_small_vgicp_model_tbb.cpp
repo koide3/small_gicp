@@ -14,7 +14,7 @@ namespace small_gicp {
 
 class SmallVGICPModelOnlineOdometryEstimationTBB : public OnlineOdometryEstimation {
 public:
-  SmallVGICPModelOnlineOdometryEstimationTBB(const OdometryEstimationParams& params)
+  explicit SmallVGICPModelOnlineOdometryEstimationTBB(const OdometryEstimationParams& params)
   : OnlineOdometryEstimation(params),
     control(tbb::global_control::max_allowed_parallelism, params.num_threads),
     T_world_lidar(Eigen::Isometry3d::Identity()) {}

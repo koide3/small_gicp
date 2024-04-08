@@ -23,12 +23,14 @@ public:
 
   /// @brief Constructor
   /// @param points  Input points
-  UnsafeKdTreeGeneric(const PointCloud& points) : points(points), index(3, *this, nanoflann::KDTreeSingleIndexAdaptorParams(10)) { index.buildIndex(); }
+  explicit UnsafeKdTreeGeneric(const PointCloud& points) : points(points), index(3, *this, nanoflann::KDTreeSingleIndexAdaptorParams(10)) { index.buildIndex(); }
 
   /// @brief Constructor
   /// @param points  Input points
   /// @params num_threads  Number of threads used for building the index (This argument is only valid for OMP implementation)
-  UnsafeKdTreeGeneric(const PointCloud& points, int num_threads) : points(points), index(3, *this, nanoflann::KDTreeSingleIndexAdaptorParams(10)) { index.buildIndex(num_threads); }
+  explicit UnsafeKdTreeGeneric(const PointCloud& points, int num_threads) : points(points), index(3, *this, nanoflann::KDTreeSingleIndexAdaptorParams(10)) {
+    index.buildIndex(num_threads);
+  }
 
   ~UnsafeKdTreeGeneric() {}
 
@@ -58,11 +60,11 @@ public:
 
   /// @brief Constructor
   /// @param points  Input points
-  KdTreeGeneric(const std::shared_ptr<const PointCloud>& points) : points(points), tree(*points) {}
+  explicit KdTreeGeneric(const std::shared_ptr<const PointCloud>& points) : points(points), tree(*points) {}
 
   /// @brief Constructor
   /// @param points  Input points
-  KdTreeGeneric(const std::shared_ptr<const PointCloud>& points, int num_threads) : points(points), tree(*points, num_threads) {}
+  explicit KdTreeGeneric(const std::shared_ptr<const PointCloud>& points, int num_threads) : points(points), tree(*points, num_threads) {}
 
   ~KdTreeGeneric() {}
 

@@ -23,7 +23,7 @@ public:
   /// @brief Constructor
   /// @param points  Points to initialize the point cloud
   template <typename T, int D, typename Allocator>
-  PointCloud(const std::vector<Eigen::Matrix<T, D, 1>, Allocator>& points) {
+  explicit PointCloud(const std::vector<Eigen::Matrix<T, D, 1>, Allocator>& points) {
     this->resize(points.size());
     for (size_t i = 0; i < points.size(); i++) {
       this->point(i) << points[i].template cast<double>().template head<3>(), 1.0;
