@@ -274,10 +274,6 @@ if(BUILD_HELPER)
     "${CMAKE_CURRENT_BINARY_DIR}/small_gicp-config-version.cmake"
     DESTINATION ${CMAKE_CONFIG_INSTALL_DIR}
   )
-  install(FILES
-    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindTBB.cmake"
-    DESTINATION ${CMAKE_CONFIG_INSTALL_DIR}
-  )
 endif()
 
 if(BUILD_PYTHON_BINDINGS)
