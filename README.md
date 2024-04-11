@@ -45,8 +45,7 @@ sudo make install
 
 ```bash
 cd small_gicp
-python3 setup.py build
-python3 setup.py install --user
+pip install . --user
 
 # [Optional] Install stubs for autocomplete (If you know a better way, let me know...)
 pip install pybind11-stubgen
