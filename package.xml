@@ -12,8 +12,6 @@
   <depend>eigen</depend>
   <depend>libomp-dev</depend>
   <depend>libpcl-all-dev</depend>
-  <depend>nanoflann</depend>
-  <depend>sophus</depend>
   <depend>tbb</depend>
 
   <export>
