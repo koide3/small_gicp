@@ -53,7 +53,7 @@ public:
     // Insert points to the voxelmap
     for (size_t i = 0; i < traits::size(points); i++) {
       const Eigen::Vector4d pt = T * traits::point(points, i);
-      const Eigen::Vector3i coord = fast_floor(pt * inv_leaf_size).head<3>();
+      const Eigen::Vector3i coord = fast_floor(pt * inv_leaf_size).template head<3>();
 
       auto found = voxels.find(coord);
       if (found == voxels.end()) {
@@ -94,7 +94,7 @@ public:
   /// @param sq_dist  Squared distance to the nearest neighbor
   /// @return         Number of found points (0 or 1)
   size_t nearest_neighbor_search(const Eigen::Vector4d& pt, size_t* index, double* sq_dist) const {
-    const Eigen::Vector3i coord = fast_floor(pt * inv_leaf_size).head<3>();
+    const Eigen::Vector3i coord = fast_floor(pt * inv_leaf_size).template head<3>();
     const auto found = voxels.find(coord);
     if (found == voxels.end()) {
       return 0;
@@ -119,7 +119,7 @@ public:
   /// @param k_sq_dists  Squared distances to nearest neighbors
   /// @return            Number of found points
   size_t knn_search(const Eigen::Vector4d& pt, size_t k, size_t* k_indices, double* k_sq_dists) const {
-    const Eigen::Vector3i coord = fast_floor(pt * inv_leaf_size).head<3>();
+    const Eigen::Vector3i coord = fast_floor(pt * inv_leaf_size).template head<3>();
     const auto found = voxels.find(coord);
     if (found == voxels.end()) {
       return 0;
