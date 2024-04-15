@@ -346,6 +346,9 @@ open3d.visualization.draw_geometries([target_o3d, source_o3d])
 
 ## [Benchmark](BENCHMARK.md)
 
+Processing speed comparison between small_gicp and Open3D ([youtube]((https://youtu.be/LNESzGXPr4c?feature=shared))).
+[![small_comp](https://github.com/koide3/small_gicp/assets/31344317/7959edd6-f0e4-4318-b4c1-a3f8755c407f)](https://youtu.be/LNESzGXPr4c?feature=shared)
+
 ### Downsampling
 
 - Single-threaded `small_gicp::voxelgrid_sampling` is about **1.3x faster** than `pcl::VoxelGrid`.
