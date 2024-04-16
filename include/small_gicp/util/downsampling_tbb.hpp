@@ -29,7 +29,7 @@ std::shared_ptr<OutputPointCloud> voxelgrid_sampling_tbb(const InputPointCloud& 
   const size_t coord_bit_mask = (1 << 21) - 1;         // Bit mask
   const int coord_offset = 1 << (coord_bit_size - 1);  // Coordinate offset to make values positive
 
-  std::vector<std::pair<std::uint64_t, size_t>> coord_pt(points.size());
+  std::vector<std::pair<std::uint64_t, size_t>> coord_pt(traits::size(points));
   tbb::parallel_for(tbb::blocked_range<size_t>(0, traits::size(points), 64), [&](const tbb::blocked_range<size_t>& range) {
     for (size_t i = range.begin(); i != range.end(); i++) {
       const Eigen::Array4i coord = fast_floor(traits::point(points, i) * inv_leaf_size) + coord_offset;
