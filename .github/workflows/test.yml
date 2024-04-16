@@ -35,3 +35,4 @@ jobs:
           cd ..
           pip install . --user
           pytest src/example/basic_registration.py
+          pytest src/test/python_test.py

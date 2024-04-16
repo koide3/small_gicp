@@ -34,6 +34,7 @@ RUN ctest -j$(nproc)
 WORKDIR /root/small_gicp
 RUN pip install .
 RUN pytest src/example/basic_registration.py
+RUN pytest src/test/python_test.py
 
 WORKDIR /
 
