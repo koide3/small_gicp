@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-NUM_THREADS = 4
+NUM_THREADS = 64
 
 import os
 os.environ['OMP_NUM_THREADS'] = '{}'.format(NUM_THREADS)
@@ -8,7 +8,8 @@ import time
 import numpy
 import pathos
 import small_gicp
-from tqdm import tqdm
+from scipy.spatial.transform import Rotation
+
 from pyridescence import *
 
 
@@ -42,7 +43,6 @@ class OdometryEstimation(object):
     self.start_timer()
     T = self.estimate_impl(points)
     self.stop_timer()
-    
     return T
   
 
@@ -88,7 +88,7 @@ def create_open3d_gicp():
     def estimate_impl(self, points):
       current_frame = open3d.geometry.PointCloud()
       current_frame.points = open3d.utility.Vector3dVector(points)
-      current_frame.estimate_covariances()
+      current_frame.estimate_covariances(open3d.geometry.KDTreeSearchParamKNN(20))
           
       if not self.last_frame:
         self.last_frame = current_frame
@@ -176,7 +176,7 @@ def create_simpleicp():
 
 def main():
   dataset_path = '/home/koide/datasets/kitti/velodyne_filtered'
-  filenames = sorted([dataset_path + '/' + x for x in os.listdir(dataset_path) if x.endswith('.bin')])[:500]
+  filenames = sorted([dataset_path + '/' + x for x in os.listdir(dataset_path) if x.endswith('.bin')])
  
   print('Loading and downsampling points')
   def preprocess(filename):
@@ -187,8 +187,8 @@ def main():
   with pathos.multiprocessing.ProcessingPool() as p:
     all_points = p.map(preprocess, filenames)
   
-  odom = create_open3d_gicp()
-  # odom = create_small_gicp(num_threads=NUM_THREADS)
+  # odom = create_open3d_gicp()
+  odom = create_small_gicp(num_threads=NUM_THREADS)
   # odom = create_probreg_cpd()
   
   viewer = guik.viewer()
@@ -197,6 +197,8 @@ def main():
   viewer.append_text('method={} ({} threads)'.format(odom.method_name(), NUM_THREADS))
   viewer.disable_vsync()
   viewer.use_orbit_camera_control(150.0)
+  
+  traj = []
   for i, points in enumerate(all_points):
     if i == 50:
       print('Warminup done')
@@ -207,6 +209,7 @@ def main():
       viewer.append_text(report)
 
     T_world_lidar = odom.estimate(points)
+    traj.append(T_world_lidar[:3, :].flatten().tolist())
     
     cloud_buffer = glk.create_pointcloud_buffer(points)
     viewer.update_drawable('current', cloud_buffer, guik.FlatOrange(T_world_lidar).add('point_scale', 2.0))
@@ -216,7 +219,7 @@ def main():
     if not viewer.spin_once():
       break
        
-  
+  numpy.savetxt('/tmp/traj_lidar.txt', traj)
   
 
 if __name__ == '__main__':
