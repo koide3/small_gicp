@@ -32,5 +32,20 @@ void define_voxelmap(py::module& m) {
       "insert",
       [](GaussianVoxelMap& voxelmap, const PointCloud& points, const Eigen::Matrix4d& T) { voxelmap.insert(points, Eigen::Isometry3d(T)); },
       py::arg("points"),
-      py::arg("T") = Eigen::Matrix4d::Identity());
+      py::arg("T") = Eigen::Matrix4d::Identity())
+    .def(
+      "set_lru",
+      [](GaussianVoxelMap& voxelmap, size_t horizon, size_t clear_cycle) {
+        voxelmap.lru_horizon = horizon;
+        voxelmap.lru_clear_cycle = clear_cycle;
+      },
+      py::arg("horizon") = 100,
+      py::arg("clear_cycle") = 10)
+    .def(
+      "voxel_points",
+      [](const GaussianVoxelMap& voxelmap) -> Eigen::MatrixXd {
+        auto points = traits::voxel_points(voxelmap);
+        return Eigen::Map<const Eigen::Matrix<double, -1, -1, Eigen::RowMajor>>(points[0].data(), points.size(), 4);
+      })
+    .def("voxel_covs", [](const GaussianVoxelMap& voxelmap) { return traits::voxel_covs(voxelmap); });
 }
