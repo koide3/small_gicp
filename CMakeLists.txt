@@ -126,7 +126,18 @@ if(BUILD_PYTHON_BINDINGS)
   find_package(Python COMPONENTS Interpreter Development REQUIRED)
   find_package(pybind11 CONFIG REQUIRED)
 
-  pybind11_add_module(small_gicp_python src/python/python.cpp)
+  pybind11_add_module(small_gicp_python
+    src/python/pointcloud.cpp
+    src/python/kdtree.cpp
+    src/python/voxelmap.cpp
+    src/python/preprocess.cpp
+    src/python/result.cpp
+    src/python/align.cpp
+    src/python/factors.cpp
+    src/python/misc.cpp
+
+    src/python/python.cpp
+  )
   set_target_properties(small_gicp_python PROPERTIES OUTPUT_NAME small_gicp)
   target_link_libraries(small_gicp_python PRIVATE small_gicp)
 endif()
