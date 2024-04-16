@@ -263,7 +263,7 @@ Example A : Perform registration with numpy arrays
 # - downsampling_resolution     : Downsampling resolution
 # - max_correspondence_distance : Maximum correspondence distance
 # - num_threads                 : Number of threads
-result = small_gicp.align_points(target_raw_numpy, source_raw_numpy, downsampling_resolution=0.25)
+result = small_gicp.align(target_raw_numpy, source_raw_numpy, downsampling_resolution=0.25)
 
 result.T_target_source  # Estimated transformation (4x4 numpy array)
 result.converged        # If true, the optimization converged successfully
@@ -279,13 +279,13 @@ Example B : Perform preprocessing and registration separately
 ```python
 # Preprocess point clouds
 # Arguments
-# - points_numpy                : Nx4 or Nx3 numpy array of the target point cloud
+# - points                      : Nx4 or Nx3 numpy array of the target point cloud
 # Optional arguments
 # - downsampling_resolution     : Downsampling resolution
 # - num_neighbors               : Number of neighbors for normal and covariance estimation
 # - num_threads                 : Number of threads
-target, target_tree = small_gicp.preprocess_points(points_numpy=target_raw_numpy, downsampling_resolution=0.25)
-source, source_tree = small_gicp.preprocess_points(points_numpy=source_raw_numpy, downsampling_resolution=0.25)
+target, target_tree = small_gicp.preprocess_points(target_raw_numpy, downsampling_resolution=0.25)
+source, source_tree = small_gicp.preprocess_points(source_raw_numpy, downsampling_resolution=0.25)
 
 # `target` and `source` are small_gicp.PointCloud with the following methods
 target.size()           # Number of points
@@ -345,6 +345,9 @@ open3d.visualization.draw_geometries([target_o3d, source_o3d])
 </details>
 
 ## [Benchmark](BENCHMARK.md)
+
+Processing speed comparison between small_gicp and Open3D ([youtube]((https://youtu.be/LNESzGXPr4c?feature=shared))).
+[![small_comp](https://github.com/koide3/small_gicp/assets/31344317/7959edd6-f0e4-4318-b4c1-a3f8755c407f)](https://youtu.be/LNESzGXPr4c?feature=shared)
 
 ### Downsampling
 

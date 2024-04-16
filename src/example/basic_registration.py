@@ -20,7 +20,7 @@ def example_numpy1(target_raw_numpy : numpy.ndarray, source_raw_numpy : numpy.nd
   # - downsampling_resolution     : Downsampling resolution
   # - max_correspondence_distance : Maximum correspondence distance
   # - num_threads                 : Number of threads
-  result = small_gicp.align_points(target_raw_numpy, source_raw_numpy, downsampling_resolution=0.25)
+  result = small_gicp.align(target_raw_numpy, source_raw_numpy, downsampling_resolution=0.25)
 
   return result.T_target_source
 
@@ -30,13 +30,13 @@ def example_numpy2(target_raw_numpy : numpy.ndarray, source_raw_numpy : numpy.nd
 
   # Preprocess point clouds
   # Arguments
-  # - points_numpy                : Nx4 or Nx3 numpy array of the target point cloud
+  # - points                      : Nx4 or Nx3 numpy array of the target point cloud
   # Optional arguments
   # - downsampling_resolution     : Downsampling resolution
   # - num_neighbors               : Number of neighbors for normal and covariance estimation
   # - num_threads                 : Number of threads
-  target, target_tree = small_gicp.preprocess_points(points_numpy=target_raw_numpy, downsampling_resolution=0.25)
-  source, source_tree = small_gicp.preprocess_points(points_numpy=source_raw_numpy, downsampling_resolution=0.25)
+  target, target_tree = small_gicp.preprocess_points(target_raw_numpy, downsampling_resolution=0.25)
+  source, source_tree = small_gicp.preprocess_points(source_raw_numpy, downsampling_resolution=0.25)
 
   # Align point clouds
   # Arguments

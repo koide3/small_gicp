@@ -114,6 +114,7 @@ public:
   std::conditional_t<HasCovs, std::vector<Eigen::Matrix4d>, Empty> covs;
 };
 
+using FlatContainerPoints = FlatContainer<false, false>;
 using FlatContainerNormal = FlatContainer<true, false>;
 using FlatContainerCov = FlatContainer<false, true>;
 using FlatContainerNormalCov = FlatContainer<true, true>;

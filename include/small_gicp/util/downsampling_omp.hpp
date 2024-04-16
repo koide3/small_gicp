@@ -29,7 +29,7 @@ std::shared_ptr<OutputPointCloud> voxelgrid_sampling_omp(const InputPointCloud& 
   const size_t coord_bit_mask = (1 << 21) - 1;         // Bit mask
   const int coord_offset = 1 << (coord_bit_size - 1);  // Coordinate offset to make values positive
 
-  std::vector<std::pair<std::uint64_t, size_t>> coord_pt(points.size());
+  std::vector<std::pair<std::uint64_t, size_t>> coord_pt(traits::size(points));
 #pragma omp parallel for num_threads(num_threads) schedule(guided, 32)
   for (size_t i = 0; i < traits::size(points); i++) {
     const Eigen::Array4i coord = fast_floor(traits::point(points, i) * inv_leaf_size) + coord_offset;
