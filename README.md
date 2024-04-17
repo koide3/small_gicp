@@ -57,7 +57,7 @@ pybind11-stubgen -o . --ignore-invalid=all small_gicp
 
 The following examples assume `using namespace small_gicp` is placed somewhere.
 
-### Using helper library ([01_basic_resigtration.cpp](src/example/01_basic_registration.cpp))
+### Using helper library ([01_basic_registration.cpp](src/example/01_basic_registration.cpp))
 
 The helper library (`registration_helper.hpp`) enables easily processing point clouds represented as `std::vector<Eigen::Vector(3|4)(f|d)>`.
 <details><summary>Expand</summary>
@@ -113,7 +113,7 @@ Eigen::Matrix<double, 6, 6> H = result.H;      // Final Hessian matrix (6x6)
 
 </details>
 
-### Using PCL interface ([02_basic_resigtration_pcl.cpp](src/example/02_basic_resigtration_pcl.cpp))
+### Using PCL interface ([02_basic_registration_pcl.cpp](src/example/02_basic_registration_pcl.cpp))
 
 The PCL interface allows using small_gicp as a drop-in replacement for `pcl::Registration`. It is also possible to directly feed `pcl::PointCloud` to algorithms implemented in small_gicp.
 
