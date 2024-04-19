@@ -4,6 +4,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <vector>
 #include <Eigen/Core>
 
 namespace small_gicp {
