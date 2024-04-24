@@ -11,8 +11,10 @@
   <buildtool_depend>cmake</buildtool_depend>
   <depend>eigen</depend>
   <depend>libomp-dev</depend>
-  <depend>libpcl-all-dev</depend>
-  <depend>tbb</depend>
+
+  <!-- optional -->
+  <!-- <depend>libpcl-all-dev</depend> -->
+  <!-- <depend>tbb</depend> -->
 
   <export>
     <build_type>cmake</build_type>
