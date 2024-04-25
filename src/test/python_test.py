@@ -162,7 +162,7 @@ def test_factors(load_points):
       sum_b += b
       sum_e += e
 
-    assert numpy.max(numpy.abs(result.H - sum_H) / result.H) < 0.05
+  assert numpy.max(numpy.abs(result.H - sum_H) / result.H) < 0.05
 
 # Registration test
 def test_registration(load_points):
