@@ -102,10 +102,12 @@ void define_align(py::module& m) {
       KdTreeOMP<PointCloud>::ConstPtr target_tree,
       const Eigen::Matrix4d& init_T_target_source,
       double max_correspondence_distance,
-      int num_threads) {
+      int num_threads,
+      int max_iterations) {
       Registration<GICPFactor, ParallelReductionOMP> registration;
       registration.rejector.max_dist_sq = max_correspondence_distance * max_correspondence_distance;
       registration.reduction.num_threads = num_threads;
+      registration.optimizer.max_iterations = max_iterations;
 
       if (target_tree == nullptr) {
         target_tree = std::make_shared<KdTreeOMP<PointCloud>>(target, num_threads);
@@ -117,15 +119,23 @@ void define_align(py::module& m) {
     py::arg("target_tree") = nullptr,
     py::arg("init_T_target_source") = Eigen::Matrix4d::Identity(),
     py::arg("max_correspondence_distance") = 1.0,
-    py::arg("num_threads") = 1);
+    py::arg("num_threads") = 1,
+    py::arg("max_iterations") = 20);
 
   // align
   m.def(
     "align",
-    [](const GaussianVoxelMap& target_voxelmap, const PointCloud& source, const Eigen::Matrix4d& init_T_target_source, double max_correspondence_distance, int num_threads) {
+    [](
+      const GaussianVoxelMap& target_voxelmap,
+      const PointCloud& source,
+      const Eigen::Matrix4d& init_T_target_source,
+      double max_correspondence_distance,
+      int num_threads,
+      int max_iterations) {
       Registration<GICPFactor, ParallelReductionOMP> registration;
       registration.rejector.max_dist_sq = max_correspondence_distance * max_correspondence_distance;
       registration.reduction.num_threads = num_threads;
+      registration.optimizer.max_iterations = max_iterations;
 
       return registration.align(target_voxelmap, source, target_voxelmap, Eigen::Isometry3d(init_T_target_source));
     },
@@ -133,5 +143,6 @@ void define_align(py::module& m) {
     py::arg("source"),
     py::arg("init_T_target_source") = Eigen::Matrix4d::Identity(),
     py::arg("max_correspondence_distance") = 1.0,
-    py::arg("num_threads") = 1);
+    py::arg("num_threads") = 1,
+    py::arg("max_iterations") = 20);
 }

@@ -138,6 +138,32 @@ def test_voxelmap(load_points):
   assert voxelmap.size() > 0
   assert voxelmap.size() == len(voxelmap)
 
+# Factor test
+def test_factors(load_points):
+  gt_T_target_source, target_raw_numpy, source_raw_numpy = load_points
+
+  target, target_tree = small_gicp.preprocess_points(target_raw_numpy, downsampling_resolution=0.25)
+  source, source_tree = small_gicp.preprocess_points(source_raw_numpy, downsampling_resolution=0.25)
+
+  result = small_gicp.align(target, source, target_tree, gt_T_target_source)
+  result = small_gicp.align(target, source, target_tree, result.T_target_source)
+
+  factors = [small_gicp.GICPFactor()]
+  rejector = small_gicp.DistanceRejector()
+
+  sum_H = numpy.zeros((6, 6))
+  sum_b = numpy.zeros(6)
+  sum_e = 0.0
+
+  for i in range(source.size()):
+    succ, H, b, e = factors[0].linearize(target, source, target_tree, result.T_target_source, i, rejector)
+    if succ:
+      sum_H += H
+      sum_b += b
+      sum_e += e
+
+  assert numpy.max(numpy.abs(result.H - sum_H) / result.H) < 0.05
+
 # Registration test
 def test_registration(load_points):
   gt_T_target_source, target_raw_numpy, source_raw_numpy = load_points
