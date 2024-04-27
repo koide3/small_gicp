@@ -29,6 +29,8 @@ jobs:
           python-version: '3.12'
           cache: 'pip'
       
+      - run: pip install numpy scipy pytest
+      
       - run: pip install .
 
-      - run: pytest src/test/python_test.py
+      - run: python -m pytest src/test/python_test.py
