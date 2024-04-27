@@ -30,7 +30,7 @@ struct ParallelReductionOMP {
     std::vector<double> es(num_threads, 0.0);
 
 #pragma omp parallel for num_threads(num_threads) schedule(guided, 8)
-    for (size_t i = 0; i < factors.size(); i++) {
+    for (std::int64_t i = 0; i < factors.size(); i++) {
       Eigen::Matrix<double, 6, 6> H;
       Eigen::Matrix<double, 6, 1> b;
       double e;
@@ -59,7 +59,7 @@ struct ParallelReductionOMP {
     double sum_e = 0.0;
 
 #pragma omp parallel for num_threads(num_threads) schedule(guided, 8) reduction(+ : sum_e)
-    for (size_t i = 0; i < factors.size(); i++) {
+    for (std::int64_t i = 0; i < factors.size(); i++) {
       sum_e += factors[i].error(target, source, T);
     }
     return sum_e;

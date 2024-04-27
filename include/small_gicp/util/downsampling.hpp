@@ -40,9 +40,9 @@ std::shared_ptr<OutputPointCloud> voxelgrid_sampling(const InputPointCloud& poin
 
     // Compute voxel coord bits (0|1bit, z|21bit, y|21bit, x|21bit)
     const std::uint64_t bits =                                 //
-      ((coord[0] & coord_bit_mask) << (coord_bit_size * 0)) |  //
-      ((coord[1] & coord_bit_mask) << (coord_bit_size * 1)) |  //
-      ((coord[2] & coord_bit_mask) << (coord_bit_size * 2));
+      (static_cast<std::uint64_t>(coord[0] & coord_bit_mask) << (coord_bit_size * 0)) |  //
+      (static_cast<std::uint64_t>(coord[1] & coord_bit_mask) << (coord_bit_size * 1)) |  //
+      (static_cast<std::uint64_t>(coord[2] & coord_bit_mask) << (coord_bit_size * 2));
     coord_pt[i] = {bits, i};
   }
 

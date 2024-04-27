@@ -28,6 +28,7 @@ wheel.py-api = "cp312" # Build stable ABI wheels for CPython 3.12+
 
 [tool.scikit-build.cmake.define]
 BUILD_PYTHON_BINDINGS = true
+BUILD_HELPER = false
 BUILD_SHARED_LIBS = false
 
 [tool.cibuildwheel]
