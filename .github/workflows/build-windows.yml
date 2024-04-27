@@ -1,0 +1,34 @@
+name: Build(Windows)
+
+on:
+  push:
+    branches: [ master, win ]
+    paths-ignore: '**.md'
+  pull_request:
+    branches: [ master ]
+    paths-ignore: '**.md'
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: microsoft/setup-msbuild@v2
+
+      - uses: crazy-max/ghaction-chocolatey@v3
+        with:
+          args: install cmake eigen
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+      
+      - run: pip install .
+
+      - run: pytest src/test/python_test.py
