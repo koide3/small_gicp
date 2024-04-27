@@ -2,7 +2,7 @@ name: Build(Windows)
 
 on:
   push:
-    branches: [ master, win ]
+    branches: [ master ]
     paths-ignore: '**.md'
   pull_request:
     branches: [ master ]
@@ -33,4 +33,4 @@ jobs:
       
       - run: pip install .
 
-      - run: python -m pytest src/test/python_test.py
+      - run: python -m pytest src/test/python_test.py -v
