@@ -82,7 +82,7 @@ if(BUILD_WITH_MARCH_NATIVE)
   add_compile_options(-march=native)
 endif()
 
-if(WIN32)
+if(MSVC)
   add_compile_definitions(_USE_MATH_DEFINES)
   add_compile_options(/openmp:llvm)
 endif()
@@ -155,7 +155,6 @@ if(BUILD_PYTHON_BINDINGS)
     $<TARGET_NAME_IF_EXISTS:OpenMP::OpenMP_CXX>
   )
   set_target_properties(small_gicp_python PROPERTIES OUTPUT_NAME small_gicp)
-  # target_link_libraries(small_gicp_python PRIVATE small_gicp)
 endif()
 
 ###############
