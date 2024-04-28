@@ -40,7 +40,20 @@ if(BUILD_TESTS OR BUILD_EXAMPLES)
 endif()
 
 # Eigen is the sole mandatory dependency
-find_package(Eigen3 REQUIRED CONFIG)
+find_package(Eigen3)
+
+if(NOT EIGEN3_FOUND)
+  message(STATUS "System Eigen not found. Download Eigen 3.3.9.")
+  include(FetchContent)
+  FetchContent_Populate(
+    Eigen3
+    URL https://gitlab.com/libeigen/eigen/-/archive/3.3.9/eigen-3.3.9.tar.gz
+  )
+  add_library(Eigen3::Eigen INTERFACE IMPORTED GLOBAL)
+  set_target_properties(Eigen3::Eigen PROPERTIES
+    INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_BINARY_DIR}/Eigen3-src"
+  )
+endif()
 
 if(BUILD_WITH_OPENMP STREQUAL "auto")
   find_package(OpenMP)
