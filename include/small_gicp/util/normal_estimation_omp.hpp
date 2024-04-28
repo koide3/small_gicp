@@ -20,7 +20,7 @@ template <typename Setter, typename PointCloud, typename KdTree>
 void estimate_local_features_omp(PointCloud& cloud, KdTree& kdtree, int num_neighbors, int num_threads) {
   traits::resize(cloud, traits::size(cloud));
 #pragma omp parallel for num_threads(num_threads)
-  for (size_t i = 0; i < traits::size(cloud); i++) {
+  for (std::int64_t i = 0; i < traits::size(cloud); i++) {
     estimate_local_features<Setter>(cloud, kdtree, num_neighbors, i);
   }
 }

@@ -82,6 +82,11 @@ if(BUILD_WITH_MARCH_NATIVE)
   add_compile_options(-march=native)
 endif()
 
+if(MSVC)
+  add_compile_definitions(_USE_MATH_DEFINES)
+  add_compile_options(/openmp:llvm)
+endif()
+
 ##############
 ## Coverage ##
 ##############
@@ -127,6 +132,9 @@ if(BUILD_PYTHON_BINDINGS)
   find_package(pybind11 CONFIG REQUIRED)
 
   pybind11_add_module(small_gicp_python
+    src/small_gicp/registration/registration.cpp
+    src/small_gicp/registration/registration_helper.cpp
+
     src/python/pointcloud.cpp
     src/python/kdtree.cpp
     src/python/voxelmap.cpp
@@ -138,8 +146,15 @@ if(BUILD_PYTHON_BINDINGS)
 
     src/python/python.cpp
   )
+  target_include_directories(small_gicp_python PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+  )
+  target_link_libraries(small_gicp_python PUBLIC
+    Eigen3::Eigen
+    $<TARGET_NAME_IF_EXISTS:OpenMP::OpenMP_CXX>
+  )
   set_target_properties(small_gicp_python PROPERTIES OUTPUT_NAME small_gicp)
-  target_link_libraries(small_gicp_python PRIVATE small_gicp)
 endif()
 
 ###############
@@ -293,7 +308,7 @@ if(BUILD_PYTHON_BINDINGS)
   elseif(NOT DEFINED PYTHON_INSTALL_DIR)
     set(PYTHON_INSTALL_DIR lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages)
   endif()
-  install(TARGETS small_gicp_python small_gicp
+  install(TARGETS small_gicp_python
     LIBRARY DESTINATION ${PYTHON_INSTALL_DIR}
     COMPONENT python
   )

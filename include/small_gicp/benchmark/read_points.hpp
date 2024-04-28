@@ -50,7 +50,7 @@ static void write_points(const std::string& filename, const std::vector<Eigen::V
 /// @param filename  Filename
 /// @return          Points
 static std::vector<Eigen::Vector4f> read_ply(const std::string& filename) {
-  std::ifstream ifs(filename);
+  std::ifstream ifs(filename, std::ios::binary);
   if (!ifs) {
     std::cerr << "error: failed to open " << filename << std::endl;
     return {};

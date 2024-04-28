@@ -31,7 +31,7 @@ std::shared_ptr<OutputPointCloud> voxelgrid_sampling_omp(const InputPointCloud& 
 
   std::vector<std::pair<std::uint64_t, size_t>> coord_pt(traits::size(points));
 #pragma omp parallel for num_threads(num_threads) schedule(guided, 32)
-  for (size_t i = 0; i < traits::size(points); i++) {
+  for (std::int64_t i = 0; i < traits::size(points); i++) {
     const Eigen::Array4i coord = fast_floor(traits::point(points, i) * inv_leaf_size) + coord_offset;
     if ((coord < 0).any() || (coord > coord_bit_mask).any()) {
       std::cerr << "warning: voxel coord is out of range!!" << std::endl;
@@ -40,9 +40,9 @@ std::shared_ptr<OutputPointCloud> voxelgrid_sampling_omp(const InputPointCloud& 
     }
     // Compute voxel coord bits (0|1bit, z|21bit, y|21bit, x|21bit)
     const std::uint64_t bits =                                 //
-      ((coord[0] & coord_bit_mask) << (coord_bit_size * 0)) |  //
-      ((coord[1] & coord_bit_mask) << (coord_bit_size * 1)) |  //
-      ((coord[2] & coord_bit_mask) << (coord_bit_size * 2));
+      (static_cast<std::uint64_t>(coord[0] & coord_bit_mask) << (coord_bit_size * 0)) |  //
+      (static_cast<std::uint64_t>(coord[1] & coord_bit_mask) << (coord_bit_size * 1)) |  //
+      (static_cast<std::uint64_t>(coord[2] & coord_bit_mask) << (coord_bit_size * 2));
     coord_pt[i] = {bits, i};
   }
 
@@ -61,7 +61,7 @@ std::shared_ptr<OutputPointCloud> voxelgrid_sampling_omp(const InputPointCloud& 
   std::atomic_uint64_t num_points = 0;
 
 #pragma omp parallel for num_threads(num_threads) schedule(guided, 4)
-  for (size_t block_begin = 0; block_begin < traits::size(points); block_begin += block_size) {
+  for (std::int64_t block_begin = 0; block_begin < traits::size(points); block_begin += block_size) {
     std::vector<Eigen::Vector4d> sub_points;
     sub_points.reserve(block_size);
 
