@@ -41,13 +41,13 @@ cmake .. -DCMAKE_BUILD_TYPE=Release && make -j
 sudo make install
 ```
 
-### Python
+### Python (Linux / Windows)
 
 ```bash
 cd small_gicp
 pip install . --user
 
-# [Optional] Install stubs for autocomplete (If you know a better way, let me know...)
+# [Optional (linux)] Install stubs for autocomplete (If you know a better way, let me know...)
 pip install pybind11-stubgen
 cd ~/.local/lib/python3.10/site-packages
 pybind11-stubgen -o . --ignore-invalid=all small_gicp
