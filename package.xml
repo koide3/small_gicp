@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">  
+  <name>small_gicp</name>
+  <version>0.1.0</version>
+  <description>Efficient and parallelized algorithms for point cloud registration</description>
+
+  <maintainer email="k.koide@aist.go.jp">Kenji Koide</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>cmake</buildtool_depend>
+  <depend>eigen</depend>
+  <depend>libomp-dev</depend>
+
+  <!-- optional -->
+  <!-- <depend>libpcl-all-dev</depend> -->
+  <!-- <depend>tbb</depend> -->
+
+  <export>
+    <build_type>cmake</build_type>
+  </export>
+</package>
