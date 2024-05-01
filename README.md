@@ -171,8 +171,8 @@ estimate_covariances_omp(*target, num_neighbors, num_threads);
 estimate_covariances_omp(*source, num_neighbors, num_threads);
 
 // Create KdTree for target and source.
-auto target_tree = std::make_shared<KdTreeOMP<pcl::PointCloud<pcl::PointCovariance>>>(target, num_threads);
-auto source_tree = std::make_shared<KdTreeOMP<pcl::PointCloud<pcl::PointCovariance>>>(source, num_threads);
+auto target_tree = std::make_shared<KdTree<pcl::PointCloud<pcl::PointCovariance>>>(target, KdTreeBuilderOMP(num_threads));
+auto source_tree = std::make_shared<KdTree<pcl::PointCloud<pcl::PointCovariance>>>(source, KdTreeBuilderOMP(num_threads));
 
 Registration<GICPFactor, ParallelReductionOMP> registration;
 registration.reduction.num_threads = num_threads;
@@ -214,8 +214,8 @@ target = voxelgrid_sampling_omp(*target, downsampling_resolution, num_threads);
 source = voxelgrid_sampling_omp(*source, downsampling_resolution, num_threads);
 
 // Create KdTree
-auto target_tree = std::make_shared<KdTreeOMP<PointCloud>>(target, num_threads);
-auto source_tree = std::make_shared<KdTreeOMP<PointCloud>>(source, num_threads);
+auto target_tree = std::make_shared<KdTree<PointCloud>>(target, KdTreeBuilderOMP(num_threads));
+auto source_tree = std::make_shared<KdTree<PointCloud>>(source, KdTreeBuilderOMP(num_threads));
 
 // Estimate point covariances
 estimate_covariances_omp(*target, *target_tree, num_neighbors, num_threads);
