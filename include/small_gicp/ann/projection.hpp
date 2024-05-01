@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
+#include <array>
 #include <Eigen/Core>
 #include <Eigen/Eigen>
 
