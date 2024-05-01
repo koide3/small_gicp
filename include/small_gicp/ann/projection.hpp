@@ -34,7 +34,9 @@ public:
     Eigen::Vector4d sum_sq = Eigen::Vector4d::Zero();
 
     const size_t step = N < setting.max_scan_count ? 1 : N / setting.max_scan_count;
-    for (auto itr = first; itr < last; itr += step) {
+    const size_t num_steps = N / step;
+    for (int i = 0; i < num_steps; i++) {
+      const auto itr = first + step * i;
       const Eigen::Vector4d pt = traits::point(points, *itr);
       sum_pt += pt;
       sum_sq += pt.cwiseProduct(pt);
@@ -71,7 +73,9 @@ public:
     Eigen::Matrix4d sum_sq = Eigen::Matrix4d::Zero();
 
     const size_t step = N < setting.max_scan_count ? 1 : N / setting.max_scan_count;
-    for (auto itr = first; itr < last; itr += step) {
+    const size_t num_steps = N / step;
+    for (int i = 0; i < num_steps; i++) {
+      const auto itr = first + step * i;
       const Eigen::Vector4d pt = traits::point(points, *itr);
       sum_pt += pt;
       sum_sq += pt * pt.transpose();

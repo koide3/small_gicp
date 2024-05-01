@@ -5,6 +5,12 @@
 #include <atomic>
 #include <small_gicp/ann/kdtree.hpp>
 
+#ifdef _MSC_VER
+#pragma message("warning: Task-based OpenMP parallelism causes run-time memory errors with Eigen matrices.")
+#pragma message("warning: Thus, OpenMP-based multi-threading for KdTree construction is disabled on MSVC.")
+#endif
+
+
 namespace small_gicp {
 
 /// @brief Kd-tree builder with OpenMP.
@@ -23,14 +29,17 @@ public:
     std::atomic_uint64_t node_count = 0;
     kdtree.nodes.resize(traits::size(points));
 
+#ifndef _MSC_VER
 #pragma omp parallel num_threads(num_threads)
     {
 #pragma omp single nowait
       {
-        //
         kdtree.root = create_node(kdtree, node_count, points, kdtree.indices.begin(), kdtree.indices.begin(), kdtree.indices.end());
       }
     }
+#else
+    kdtree.root = create_node(kdtree, node_count, points, kdtree.indices.begin(), kdtree.indices.begin(), kdtree.indices.end());
+#endif
 
     kdtree.nodes.resize(node_count);
   }
@@ -74,11 +83,16 @@ public:
     node.node_type.sub.thresh = proj(traits::point(points, *median_itr));
 
     // Create left and right child nodes.
+#ifndef _MSC_VER
 #pragma omp task default(shared) if (N > 512)
     node.left = create_node(kdtree, node_count, points, global_first, first, median_itr);
 #pragma omp task default(shared) if (N > 512)
     node.right = create_node(kdtree, node_count, points, global_first, median_itr, last);
 #pragma omp taskwait
+#else
+    node.left = create_node(kdtree, node_count, points, global_first, first, median_itr);
+    node.right = create_node(kdtree, node_count, points, global_first, median_itr, last);
+#endif
 
     return node_index;
   }
