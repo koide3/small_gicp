@@ -59,7 +59,7 @@ void define_preprocess(py::module& m) {
     "estimate_normals",
     [](PointCloud::Ptr points, std::shared_ptr<KdTree<PointCloud>> tree, int num_neighbors, int num_threads) {
       if (tree == nullptr) {
-        tree = std::make_shared<KdTree<PointCloud>>(points, num_threads);
+        tree = std::make_shared<KdTree<PointCloud>>(points, KdTreeBuilderOMP(num_threads));
       }
 
       if (num_threads == 1) {
@@ -78,7 +78,7 @@ void define_preprocess(py::module& m) {
     "estimate_covariances",
     [](PointCloud::Ptr points, std::shared_ptr<KdTree<PointCloud>> tree, int num_neighbors, int num_threads) {
       if (tree == nullptr) {
-        tree = std::make_shared<KdTree<PointCloud>>(points, num_threads);
+        tree = std::make_shared<KdTree<PointCloud>>(points, KdTreeBuilderOMP(num_threads));
       }
 
       if (num_threads == 1) {
@@ -97,7 +97,7 @@ void define_preprocess(py::module& m) {
     "estimate_normals_covariances",
     [](PointCloud::Ptr points, std::shared_ptr<KdTree<PointCloud>> tree, int num_neighbors, int num_threads) {
       if (tree == nullptr) {
-        tree = std::make_shared<KdTree<PointCloud>>(points, num_threads);
+        tree = std::make_shared<KdTree<PointCloud>>(points, KdTreeBuilderOMP(num_threads));
       }
 
       if (num_threads == 1) {

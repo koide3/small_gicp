@@ -17,7 +17,10 @@ using namespace small_gicp;
 void define_kdtree(py::module& m) {
   // KdTree
   py::class_<KdTree<PointCloud>, std::shared_ptr<KdTree<PointCloud>>>(m, "KdTree")  //
-    .def(py::init<PointCloud::ConstPtr, int>(), py::arg("points"), py::arg("num_threads") = 1)
+    .def(
+      py::init([](const PointCloud::ConstPtr& points, int num_threads) { return std::make_shared<KdTree<PointCloud>>(points, KdTreeBuilderOMP(num_threads)); }),
+      py::arg("points"),
+      py::arg("num_threads") = 1)
     .def(
       "nearest_neighbor_search",
       [](const KdTree<PointCloud>& kdtree, const Eigen::Vector3d& pt) {
