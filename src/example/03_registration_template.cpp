@@ -33,8 +33,8 @@ void example1(const std::vector<Eigen::Vector4f>& target_points, const std::vect
   source = voxelgrid_sampling_omp(*source, downsampling_resolution, num_threads);
 
   // Create KdTree
-  auto target_tree = std::make_shared<KdTreeOMP<PointCloud>>(target, num_threads);
-  auto source_tree = std::make_shared<KdTreeOMP<PointCloud>>(source, num_threads);
+  auto target_tree = std::make_shared<KdTree<PointCloud>>(target, KdTreeBuilderOMP(num_threads));
+  auto source_tree = std::make_shared<KdTree<PointCloud>>(source, KdTreeBuilderOMP(num_threads));
 
   // Estimate point covariances
   estimate_covariances_omp(*target, *target_tree, num_neighbors, num_threads);

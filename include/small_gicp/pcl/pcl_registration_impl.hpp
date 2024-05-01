@@ -44,7 +44,7 @@ void RegistrationPCL<PointSource, PointTarget>::setInputSource(const PointCloudS
   }
 
   pcl::Registration<PointSource, PointTarget, Scalar>::setInputSource(cloud);
-  source_tree_ = std::make_shared<KdTreeOMP<pcl::PointCloud<PointSource>>>(input_, num_threads_);
+  source_tree_ = std::make_shared<KdTree<pcl::PointCloud<PointSource>>>(input_, KdTreeBuilderOMP(num_threads_));
   source_covs_.clear();
   source_voxelmap_.reset();
 }
@@ -56,7 +56,7 @@ void RegistrationPCL<PointSource, PointTarget>::setInputTarget(const PointCloudT
   }
 
   pcl::Registration<PointSource, PointTarget, Scalar>::setInputTarget(cloud);
-  target_tree_ = std::make_shared<KdTreeOMP<pcl::PointCloud<PointTarget>>>(target_, num_threads_);
+  target_tree_ = std::make_shared<KdTree<pcl::PointCloud<PointTarget>>>(target_, KdTreeBuilderOMP(num_threads_));
   target_covs_.clear();
   target_voxelmap_.reset();
 }

@@ -19,7 +19,7 @@ public:
 
     // Preprocess input points (kdtree construction & covariance estimation)
     // Note that input points here is already downsampled
-    auto tree = std::make_shared<KdTreeOMP<PointCloud>>(points, params.num_threads);
+    auto tree = std::make_shared<KdTree<PointCloud>>(points, KdTreeBuilderOMP(params.num_threads));
     estimate_covariances_omp(*points, *tree, params.num_neighbors, params.num_threads);
 
     if (target_points == nullptr) {
@@ -55,8 +55,8 @@ public:
 private:
   Summarizer reg_times;
 
-  PointCloud::Ptr target_points;           // Last point cloud to be registration target
-  KdTreeOMP<PointCloud>::Ptr target_tree;  // KdTree of the last point cloud
+  PointCloud::Ptr target_points;        // Last point cloud to be registration target
+  KdTree<PointCloud>::Ptr target_tree;  // KdTree of the last point cloud
 
   Eigen::Isometry3d T_world_lidar;  // T_world_lidar
 };

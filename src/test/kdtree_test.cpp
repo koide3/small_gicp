@@ -185,16 +185,16 @@ TEST_P(KdTreeTest, KnnTest) {
     auto kdtree_pcl = std::make_shared<KdTree<pcl::PointCloud<pcl::PointXYZ>>>(points_pcl);
     test_kdtree(*points_pcl, *kdtree_pcl);
   } else if (method == "TBB") {
-    auto kdtree = std::make_shared<KdTreeTBB<PointCloud>>(points);
+    auto kdtree = std::make_shared<KdTree<PointCloud>>(points, KdTreeBuilderTBB());
     test_kdtree(*points, *kdtree);
 
-    auto kdtree_pcl = std::make_shared<KdTreeTBB<pcl::PointCloud<pcl::PointXYZ>>>(points_pcl);
+    auto kdtree_pcl = std::make_shared<KdTree<pcl::PointCloud<pcl::PointXYZ>>>(points_pcl, KdTreeBuilderTBB());
     test_kdtree(*points_pcl, *kdtree_pcl);
   } else if (method == "OMP") {
-    auto kdtree = std::make_shared<KdTreeOMP<PointCloud>>(points, 4);
+    auto kdtree = std::make_shared<KdTree<PointCloud>>(points, KdTreeBuilderOMP(4));
     test_kdtree(*points, *kdtree);
 
-    auto kdtree_pcl = std::make_shared<KdTreeOMP<pcl::PointCloud<pcl::PointXYZ>>>(points_pcl, 4);
+    auto kdtree_pcl = std::make_shared<KdTree<pcl::PointCloud<pcl::PointXYZ>>>(points_pcl, KdTreeBuilderOMP(4));
     test_kdtree(*points_pcl, *kdtree_pcl);
   } else if (method == "IVOX") {
     auto voxelmap = std::make_shared<IncrementalVoxelMap<FlatContainerNormalCov>>(1.0);

@@ -18,7 +18,7 @@ public:
     Stopwatch sw;
     sw.start();
 
-    auto tree = std::make_shared<KdTreeOMP<PointCloud>>(points, params.num_threads);
+    auto tree = std::make_shared<KdTree<PointCloud>>(points, KdTreeBuilderOMP(params.num_threads));
     estimate_covariances_omp(*points, *tree, params.num_neighbors, params.num_threads);
 
     auto voxelmap = std::make_shared<GaussianVoxelMap>(params.voxel_resolution);

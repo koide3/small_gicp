@@ -57,9 +57,9 @@ void define_preprocess(py::module& m) {
   // estimate_normals
   m.def(
     "estimate_normals",
-    [](PointCloud::Ptr points, std::shared_ptr<KdTreeOMP<PointCloud>> tree, int num_neighbors, int num_threads) {
+    [](PointCloud::Ptr points, std::shared_ptr<KdTree<PointCloud>> tree, int num_neighbors, int num_threads) {
       if (tree == nullptr) {
-        tree = std::make_shared<KdTreeOMP<PointCloud>>(points, num_threads);
+        tree = std::make_shared<KdTree<PointCloud>>(points, num_threads);
       }
 
       if (num_threads == 1) {
@@ -76,9 +76,9 @@ void define_preprocess(py::module& m) {
   // estimate_covariances
   m.def(
     "estimate_covariances",
-    [](PointCloud::Ptr points, std::shared_ptr<KdTreeOMP<PointCloud>> tree, int num_neighbors, int num_threads) {
+    [](PointCloud::Ptr points, std::shared_ptr<KdTree<PointCloud>> tree, int num_neighbors, int num_threads) {
       if (tree == nullptr) {
-        tree = std::make_shared<KdTreeOMP<PointCloud>>(points, num_threads);
+        tree = std::make_shared<KdTree<PointCloud>>(points, num_threads);
       }
 
       if (num_threads == 1) {
@@ -95,9 +95,9 @@ void define_preprocess(py::module& m) {
   // estimate_normals_covariances
   m.def(
     "estimate_normals_covariances",
-    [](PointCloud::Ptr points, std::shared_ptr<KdTreeOMP<PointCloud>> tree, int num_neighbors, int num_threads) {
+    [](PointCloud::Ptr points, std::shared_ptr<KdTree<PointCloud>> tree, int num_neighbors, int num_threads) {
       if (tree == nullptr) {
-        tree = std::make_shared<KdTreeOMP<PointCloud>>(points, num_threads);
+        tree = std::make_shared<KdTree<PointCloud>>(points, num_threads);
       }
 
       if (num_threads == 1) {
@@ -114,7 +114,7 @@ void define_preprocess(py::module& m) {
   // preprocess_points (numpy)
   m.def(
     "preprocess_points",
-    [](const Eigen::MatrixXd& points_numpy, double downsampling_resolution, int num_neighbors, int num_threads) -> std::pair<PointCloud::Ptr, KdTreeOMP<PointCloud>::Ptr> {
+    [](const Eigen::MatrixXd& points_numpy, double downsampling_resolution, int num_neighbors, int num_threads) -> std::pair<PointCloud::Ptr, KdTree<PointCloud>::Ptr> {
       if (points_numpy.cols() != 3 && points_numpy.cols() != 4) {
         std::cerr << "points_numpy must be Nx3 or Nx4" << std::endl;
         return {nullptr, nullptr};
@@ -131,7 +131,7 @@ void define_preprocess(py::module& m) {
       }
 
       auto downsampled = voxelgrid_sampling_omp(*points, downsampling_resolution, num_threads);
-      auto kdtree = std::make_shared<KdTreeOMP<PointCloud>>(downsampled, num_threads);
+      auto kdtree = std::make_shared<KdTree<PointCloud>>(downsampled, KdTreeBuilderOMP(num_threads));
       estimate_normals_covariances_omp(*downsampled, *kdtree, num_neighbors, num_threads);
       return {downsampled, kdtree};
     },
@@ -143,14 +143,14 @@ void define_preprocess(py::module& m) {
   // preprocess_points
   m.def(
     "preprocess_points",
-    [](const PointCloud& points, double downsampling_resolution, int num_neighbors, int num_threads) -> std::pair<PointCloud::Ptr, KdTreeOMP<PointCloud>::Ptr> {
+    [](const PointCloud& points, double downsampling_resolution, int num_neighbors, int num_threads) -> std::pair<PointCloud::Ptr, KdTree<PointCloud>::Ptr> {
       if (points.empty()) {
         std::cerr << "warning: points is empty" << std::endl;
         return {nullptr, nullptr};
       }
 
       auto downsampled = voxelgrid_sampling_omp(points, downsampling_resolution, num_threads);
-      auto kdtree = std::make_shared<KdTreeOMP<PointCloud>>(downsampled, num_threads);
+      auto kdtree = std::make_shared<KdTree<PointCloud>>(downsampled, KdTreeBuilderOMP(num_threads));
       estimate_normals_covariances_omp(*downsampled, *kdtree, num_neighbors, num_threads);
       return {downsampled, kdtree};
     },
