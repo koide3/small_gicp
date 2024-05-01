@@ -20,7 +20,7 @@ public:
     kdtree.indices.resize(traits::size(points));
     std::iota(kdtree.indices.begin(), kdtree.indices.end(), 0);
 
-    std::atomic_uint64_t node_count = 0;
+    size_t node_count = 0;
     kdtree.nodes.resize(traits::size(points));
 
 #pragma omp parallel num_threads(num_threads)
@@ -41,19 +41,16 @@ public:
   /// @param last             Last point index iterator to be scanned.
   /// @return                 Index of the created node.
   template <typename PointCloud, typename KdTree, typename IndexConstIterator>
-  NodeIndexType create_node(
-    KdTree& kdtree,
-    std::atomic_uint64_t& node_count,
-    const PointCloud& points,
-    IndexConstIterator global_first,
-    IndexConstIterator first,
-    IndexConstIterator last) const {
+  NodeIndexType create_node(KdTree& kdtree, size_t& node_count, const PointCloud& points, IndexConstIterator global_first, IndexConstIterator first, IndexConstIterator last)
+    const {
+    NodeIndexType node_index;
+#pragma omp atomic capture
+    node_index = node_count++;
+    auto& node = kdtree.nodes[node_index];
+
     const size_t N = std::distance(first, last);
     // Create a leaf node.
     if (N < max_leaf_size) {
-      const NodeIndexType node_index = node_count++;
-      auto& node = kdtree.nodes[node_index];
-
       // std::sort(first, last);
       node.node_type.lr.first = std::distance(global_first, first);
       node.node_type.lr.last = std::distance(global_first, last);
@@ -68,8 +65,6 @@ public:
     std::nth_element(first, median_itr, last, [&](size_t i, size_t j) { return proj(traits::point(points, i)) < proj(traits::point(points, j)); });
 
     // Create a non-leaf node.
-    const NodeIndexType node_index = node_count++;
-    auto& node = kdtree.nodes[node_index];
     node.node_type.sub.proj = proj;
     node.node_type.sub.thresh = proj(traits::point(points, *median_itr));
 
