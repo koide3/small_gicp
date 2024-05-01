@@ -25,7 +25,7 @@ public:
 
 #pragma omp parallel num_threads(num_threads)
     {
-#pragma omp single
+#pragma omp single nowait
       {
         //
         kdtree.root = create_node(kdtree, node_count, points, kdtree.indices.begin(), kdtree.indices.begin(), kdtree.indices.end());
