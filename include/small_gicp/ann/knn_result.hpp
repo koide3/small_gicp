@@ -31,7 +31,7 @@ public:
   /// @param indices        Buffer to store indices (must be larger than k=max(N, num_neighbors))
   /// @param distances      Buffer to store distances (must be larger than k=max(N, num_neighbors))
   /// @param num_neighbors  Number of neighbors to search (must be -1 for static case N > 0)
-  KnnResult(size_t* indices, double* distances, int num_neighbors = -1) : num_neighbors(num_neighbors), indices(indices), distances(distances) {
+  explicit KnnResult(size_t* indices, double* distances, int num_neighbors = -1) : num_neighbors(num_neighbors), indices(indices), distances(distances) {
     if constexpr (N > 0) {
       if (num_neighbors >= 0) {
         std::cerr << "warning: Specifying dynamic num_neighbors=" << num_neighbors << " for a static KNN result container (N=" << N << ")" << std::endl;
@@ -87,9 +87,9 @@ public:
   }
 
 public:
-  const int num_neighbors;
-  size_t* indices;    ///< Indices of neighbors
-  double* distances;  ///< Distances to neighbors
+  const int num_neighbors;  ///< Maximum number of neighbors to search
+  size_t* indices;          ///< Indices of neighbors
+  double* distances;        ///< Distances to neighbors
 };
 
 }  // namespace small_gicp
