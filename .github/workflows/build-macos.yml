@@ -27,10 +27,10 @@ jobs:
 
       - run: pip install numpy scipy pytest
       
-      - run: brew --prefix
+      - run: ls /opt/homebrew
 
       - run: pip install .
         env:
-          OpenMP_ROOT: $(brew --prefix)/opt/libomp
+          OpenMP_ROOT: /opt/homebrew/opt/libomp
 
       - run: python -m pytest src/test/python_test.py -v
