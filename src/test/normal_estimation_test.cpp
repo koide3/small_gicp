@@ -237,7 +237,7 @@ TEST_F(NormalEstimationTest, NormalEstimationTestPCL) {
   EXPECT_TRUE(check_normals(*point_normals));
 
   // Covariance estimation
-  auto point_covs = pcl::make_shared<pcl::PointCloud<pcl::PointNormalCovariance>>();
+  auto point_covs = pcl::make_shared<pcl::PointCloud<pcl::PointCovariance>>();
   copy_points(*point_covs);
 
   estimate_covariances(*point_covs, num_neighbors);

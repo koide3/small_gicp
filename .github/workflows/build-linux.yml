@@ -34,7 +34,7 @@ jobs:
       - name: Docker build
         uses: docker/build-push-action@v2
         with:
-          file: ${{github.workspace}}/docker/Dockerfile.build.${{ matrix.TOOLCHAIN }}
+          file: ${{github.workspace}}/docker/Dockerfile.pytest.${{ matrix.TOOLCHAIN }}
           build-args: BASE_IMAGE=ubuntu:${{ matrix.DISTRO }}
           context: .
           push: false
