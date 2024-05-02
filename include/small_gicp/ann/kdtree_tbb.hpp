@@ -24,7 +24,7 @@ public:
   }
 
   /// @brief Create a Kd-tree node from the given point indices.
-  /// @param global_first     Global first point index (i.e., this->indices.begin()).
+  /// @param global_first     Global first point index iterator (i.e., this->indices.begin()).
   /// @param first            First point index iterator to be scanned.
   /// @param last             Last point index iterator to be scanned.
   /// @return                 Index of the created node.
@@ -38,7 +38,7 @@ public:
     IndexConstIterator last) const {
     const size_t N = std::distance(first, last);
     // Create a leaf node.
-    if (N < max_leaf_size) {
+    if (N <= max_leaf_size) {
       const NodeIndexType node_index = node_count++;
       auto& node = kdtree.nodes[node_index];
 
@@ -49,7 +49,7 @@ public:
       return node_index;
     }
 
-    // Find the axis to split the input points.
+    // Find the best axis to split the input points.
     using Projection = typename KdTree::Projection;
     const auto proj = Projection::find_axis(points, first, last, projection_setting);
     const auto median_itr = first + N / 2;

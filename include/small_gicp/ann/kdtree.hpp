@@ -88,7 +88,7 @@ public:
   }
 
   /// @brief Create a Kd-tree node from the given point indices.
-  /// @param global_first     Global first point index (i.e., this->indices.begin()).
+  /// @param global_first     Global first point index iterator (i.e., this->indices.begin()).
   /// @param first            First point index iterator to be scanned.
   /// @param last             Last point index iterator to be scanned.
   /// @return                 Index of the created node.
@@ -97,7 +97,7 @@ public:
     const {
     const size_t N = std::distance(first, last);
     // Create a leaf node.
-    if (N < max_leaf_size) {
+    if (N <= max_leaf_size) {
       const NodeIndexType node_index = node_count++;
       auto& node = kdtree.nodes[node_index];
 
@@ -108,7 +108,7 @@ public:
       return node_index;
     }
 
-    // Find the axis to split the input points.
+    // Find the best axis to split the input points.
     using Projection = typename KdTree::Projection;
     const auto proj = Projection::find_axis(points, first, last, projection_setting);
     const auto median_itr = first + N / 2;
@@ -159,7 +159,7 @@ public:
   /// @param k_indices    Index of the nearest neighbor
   /// @param k_sq_dists   Squared distance to the nearest neighbor
   /// @param setting      KNN search setting
-  /// @return             Number of found neighbors
+  /// @return             Number of found neighbors (0 or 1)
   size_t nearest_neighbor_search(const Eigen::Vector4d& query, size_t* k_indices, double* k_sq_dists, const KnnSetting& setting = KnnSetting()) const {
     return knn_search<1>(query, k_indices, k_sq_dists, setting);
   }
@@ -172,13 +172,9 @@ public:
   /// @param  setting     KNN search setting
   /// @return             Number of found neighbors
   size_t knn_search(const Eigen::Vector4d& query, int k, size_t* k_indices, double* k_sq_dists, const KnnSetting& setting = KnnSetting()) const {
-    KnnResult<-1> result(k);
+    KnnResult<-1> result(k_indices, k_sq_dists, k);
     knn_search(query, root, result, setting);
-
-    const int num_found = result.num_found();
-    std::copy(result.indices.begin(), result.indices.begin() + num_found, k_indices);
-    std::copy(result.distances.begin(), result.distances.begin() + num_found, k_sq_dists);
-    return num_found;
+    return result.num_found();
   }
 
   /// @brief Find k-nearest neighbors. This method uses fixed and static memory allocation. Might be faster for small k.
@@ -189,13 +185,9 @@ public:
   /// @return            Number of found neighbors
   template <int N>
   size_t knn_search(const Eigen::Vector4d& query, size_t* k_indices, double* k_sq_dists, const KnnSetting& setting = KnnSetting()) const {
-    KnnResult<N> result(-1);
+    KnnResult<N> result(k_indices, k_sq_dists);
     knn_search(query, root, result, setting);
-
-    const int num_found = result.num_found();
-    std::copy(result.indices.begin(), result.indices.begin() + num_found, k_indices);
-    std::copy(result.distances.begin(), result.distances.begin() + num_found, k_sq_dists);
-    return num_found;
+    return result.num_found();
   }
 
 private:
@@ -229,12 +221,12 @@ private:
       other_child = node.left;
     }
 
-    // Recursively search the best child node.
+    // Check the best child node first.
     if (!knn_search(query, best_child, result, setting)) {
       return false;
     }
 
-    // Check if the other child node needs to be searched.
+    // Check if the other child node needs to be tested.
     if (result.worst_distance() > cut_sq_dist) {
       return knn_search(query, other_child, result, setting);
     }
