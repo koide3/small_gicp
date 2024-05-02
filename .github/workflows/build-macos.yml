@@ -17,7 +17,7 @@ jobs:
       matrix:
         OS: [macos-13, macos-14]
 
-    runs-on: macos-${{ matrix.OS }}
+    runs-on: ${{ matrix.OS }}
     steps:
       - uses: actions/checkout@v4
 
