@@ -15,7 +15,7 @@ jobs:
   build:
     strategy:
       matrix:
-        OS: [macos-13, macos-14]
+        OS: [macos-14]
 
     runs-on: ${{ matrix.OS }}
     steps:
