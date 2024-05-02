@@ -12,13 +12,12 @@ on:
   workflow_dispatch:
 
 jobs:
-  strategy:
-    matrix:
-      VERSION: [13, 14]
-
   build:
-    runs-on: macos-${{ matrix.VERSION }}
+    strategy:
+      matrix:
+        VERSION: [13, 14]
 
+    runs-on: macos-${{ matrix.VERSION }}
     steps:
       - uses: actions/checkout@v4
 
