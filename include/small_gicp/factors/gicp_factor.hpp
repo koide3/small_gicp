@@ -22,7 +22,7 @@ struct GICPFactor {
   /// @param T            Linearization point
   /// @param source_index Source point index
   /// @param rejector     Correspondence rejector
-  /// @param H            Linearized precision matrix
+  /// @param H            Linearized information matrix
   /// @param b            Linearized information vector
   /// @param e            Error at the linearization point
   /// @return

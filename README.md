@@ -21,7 +21,7 @@ This library uses some C++17 features. The PCL interface is not compatible with 
 
 ## Dependencies
 
-- [Mandatory] [Eigen](https://eigen.tuxfamily.org/), [nanoflann](https://github.com/jlblancoc/nanoflann) ([bundled1](include/small_gicp/ann/nanoflann.hpp), [bundled2](include/small_gicp/ann/nanoflann_omp.hpp), [bundled3](include/small_gicp/ann/nanoflann_tbb.hpp)), [Sophus](https://github.com/strasdat/Sophus) ([bundled](include/small_gicp/util/lie.hpp))
+- [Mandatory] [Eigen](https://eigen.tuxfamily.org/), [nanoflann](https://github.com/jlblancoc/nanoflann) ([bundled](include/small_gicp/ann/kdtree.hpp)), [Sophus](https://github.com/strasdat/Sophus) ([bundled](include/small_gicp/util/lie.hpp))
 - [Optional] [OpenMP](https://www.openmp.org/), [Intel TBB](https://www.intel.com/content/www/us/en/developer/tools/oneapi/onetbb.html), [PCL](https://pointclouds.org/), [Iridescence](https://github.com/koide3/iridescence)
 
 ## Installation

@@ -24,7 +24,7 @@ struct RegistrationResult {
   size_t iterations;   ///< Number of optimization iterations
   size_t num_inliers;  ///< Number of inliear points
 
-  Eigen::Matrix<double, 6, 6> H;  ///< Final precision matrix
+  Eigen::Matrix<double, 6, 6> H;  ///< Final information matrix
   Eigen::Matrix<double, 6, 1> b;  ///< Final information vector
   double error;                   ///< Final error
 };
