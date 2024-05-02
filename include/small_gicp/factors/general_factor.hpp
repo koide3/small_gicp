@@ -16,7 +16,7 @@ struct NullFactor {
   /// @param source       Source point cloud
   /// @param target_tree  Nearest neighbor search for the target point cloud
   /// @param T            Linearization point
-  /// @param H            [in/out] Linearized precision matrix.
+  /// @param H            [in/out] Linearized information matrix.
   /// @param b            [in/out] Linearized information vector.
   /// @param e            [in/out] Error at the linearization point.
   template <typename TargetPointCloud, typename SourcePointCloud, typename TargetTree>

@@ -33,7 +33,7 @@ void define_factors(py::module& m) {
         ICPFactor& factor,
         const PointCloud& target,
         const PointCloud& source,
-        const KdTreeOMP<PointCloud>& kdtree,
+        const KdTree<PointCloud>& kdtree,
         const Eigen::Matrix4d& T,
         size_t source_index,
         const DistanceRejector& rejector) -> std::tuple<bool, Eigen::Matrix<double, 6, 6>, Eigen::Matrix<double, 6, 1>, double> {
@@ -53,7 +53,7 @@ void define_factors(py::module& m) {
         PointToPlaneICPFactor& factor,
         const PointCloud& target,
         const PointCloud& source,
-        const KdTreeOMP<PointCloud>& kdtree,
+        const KdTree<PointCloud>& kdtree,
         const Eigen::Matrix4d& T,
         size_t source_index,
         const DistanceRejector& rejector) -> std::tuple<bool, Eigen::Matrix<double, 6, 6>, Eigen::Matrix<double, 6, 1>, double> {
@@ -73,7 +73,7 @@ void define_factors(py::module& m) {
         GICPFactor& factor,
         const PointCloud& target,
         const PointCloud& source,
-        const KdTreeOMP<PointCloud>& kdtree,
+        const KdTree<PointCloud>& kdtree,
         const Eigen::Matrix4d& T,
         size_t source_index,
         const DistanceRejector& rejector) -> std::tuple<bool, Eigen::Matrix<double, 6, 6>, Eigen::Matrix<double, 6, 1>, double> {

@@ -99,7 +99,7 @@ void define_align(py::module& m) {
     [](
       const PointCloud::ConstPtr& target,
       const PointCloud::ConstPtr& source,
-      KdTreeOMP<PointCloud>::ConstPtr target_tree,
+      KdTree<PointCloud>::ConstPtr target_tree,
       const Eigen::Matrix4d& init_T_target_source,
       double max_correspondence_distance,
       int num_threads,
@@ -110,7 +110,7 @@ void define_align(py::module& m) {
       registration.optimizer.max_iterations = max_iterations;
 
       if (target_tree == nullptr) {
-        target_tree = std::make_shared<KdTreeOMP<PointCloud>>(target, num_threads);
+        target_tree = std::make_shared<KdTree<PointCloud>>(target, KdTreeBuilderOMP(num_threads));
       }
       return registration.align(*target, *source, *target_tree, Eigen::Isometry3d(init_T_target_source));
     },

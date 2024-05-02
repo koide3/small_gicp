@@ -16,7 +16,7 @@ struct SerialReduction {
   /// @param rejector     Correspondence rejector
   /// @param T            Linearization point
   /// @param factors      Factors to be linearized
-  /// @return             Sum of the linearized systems (Precision matrix, information vector, and error)
+  /// @return             Sum of the linearized systems (information matrix, information vector, and error)
   template <typename TargetPointCloud, typename SourcePointCloud, typename TargetTree, typename CorrespondenceRejector, typename Factor>
   std::tuple<Eigen::Matrix<double, 6, 6>, Eigen::Matrix<double, 6, 1>, double> linearize(
     const TargetPointCloud& target,

@@ -23,7 +23,7 @@ public:
     Stopwatch sw;
     sw.start();
 
-    auto tree = std::make_shared<KdTreeTBB<PointCloud>>(points);
+    auto tree = std::make_shared<KdTree<PointCloud>>(points, KdTreeBuilderTBB());
     estimate_covariances_tbb(*points, *tree, params.num_neighbors);
 
     if (target_points == nullptr) {
@@ -57,7 +57,7 @@ private:
   Summarizer reg_times;
 
   PointCloud::Ptr target_points;
-  KdTreeTBB<PointCloud>::Ptr target_tree;
+  KdTree<PointCloud>::Ptr target_tree;
 
   Eigen::Isometry3d T;
 };

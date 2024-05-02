@@ -21,7 +21,7 @@ This library uses some C++17 features. The PCL interface is not compatible with 
 
 ## Dependencies
 
-- [Mandatory] [Eigen](https://eigen.tuxfamily.org/), [nanoflann](https://github.com/jlblancoc/nanoflann) ([bundled1](include/small_gicp/ann/nanoflann.hpp), [bundled2](include/small_gicp/ann/nanoflann_omp.hpp), [bundled3](include/small_gicp/ann/nanoflann_tbb.hpp)), [Sophus](https://github.com/strasdat/Sophus) ([bundled](include/small_gicp/util/lie.hpp))
+- [Mandatory] [Eigen](https://eigen.tuxfamily.org/), [nanoflann](https://github.com/jlblancoc/nanoflann) ([bundled](include/small_gicp/ann/kdtree.hpp)), [Sophus](https://github.com/strasdat/Sophus) ([bundled](include/small_gicp/util/lie.hpp))
 - [Optional] [OpenMP](https://www.openmp.org/), [Intel TBB](https://www.intel.com/content/www/us/en/developer/tools/oneapi/onetbb.html), [PCL](https://pointclouds.org/), [Iridescence](https://github.com/koide3/iridescence)
 
 ## Installation
@@ -171,8 +171,8 @@ estimate_covariances_omp(*target, num_neighbors, num_threads);
 estimate_covariances_omp(*source, num_neighbors, num_threads);
 
 // Create KdTree for target and source.
-auto target_tree = std::make_shared<KdTreeOMP<pcl::PointCloud<pcl::PointCovariance>>>(target, num_threads);
-auto source_tree = std::make_shared<KdTreeOMP<pcl::PointCloud<pcl::PointCovariance>>>(source, num_threads);
+auto target_tree = std::make_shared<KdTree<pcl::PointCloud<pcl::PointCovariance>>>(target, KdTreeBuilderOMP(num_threads));
+auto source_tree = std::make_shared<KdTree<pcl::PointCloud<pcl::PointCovariance>>>(source, KdTreeBuilderOMP(num_threads));
 
 Registration<GICPFactor, ParallelReductionOMP> registration;
 registration.reduction.num_threads = num_threads;
@@ -214,8 +214,8 @@ target = voxelgrid_sampling_omp(*target, downsampling_resolution, num_threads);
 source = voxelgrid_sampling_omp(*source, downsampling_resolution, num_threads);
 
 // Create KdTree
-auto target_tree = std::make_shared<KdTreeOMP<PointCloud>>(target, num_threads);
-auto source_tree = std::make_shared<KdTreeOMP<PointCloud>>(source, num_threads);
+auto target_tree = std::make_shared<KdTree<PointCloud>>(target, KdTreeBuilderOMP(num_threads));
+auto source_tree = std::make_shared<KdTree<PointCloud>>(source, KdTreeBuilderOMP(num_threads));
 
 // Estimate point covariances
 estimate_covariances_omp(*target, *target_tree, num_neighbors, num_threads);
@@ -334,8 +334,8 @@ Example D: Example with Open3D
 target_o3d = open3d.io.read_point_cloud('small_gicp/data/target.ply').paint_uniform_color([0, 1, 0])
 source_o3d = open3d.io.read_point_cloud('small_gicp/data/source.ply').paint_uniform_color([0, 0, 1])
 
-target, target_tree = small_gicp.preprocess_points(points_numpy=numpy.asarray(target_o3d.points), downsampling_resolution=0.25)
-source, source_tree = small_gicp.preprocess_points(points_numpy=numpy.asarray(source_o3d.points), downsampling_resolution=0.25)
+target, target_tree = small_gicp.preprocess_points(numpy.asarray(target_o3d.points), downsampling_resolution=0.25)
+source, source_tree = small_gicp.preprocess_points(numpy.asarray(source_o3d.points), downsampling_resolution=0.25)
 result = small_gicp.align(target, source, target_tree)
 
 source_o3d.transform(result.T_target_source)

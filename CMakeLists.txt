@@ -267,12 +267,12 @@ if(BUILD_TESTS)
       TBB::tbb
       TBB::tbbmalloc
       PCL::PCL
+      OpenMP::OpenMP_CXX
     )
 
     gtest_discover_tests(${TEST_NAME} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
   endforeach()
 endif()
-
 
 #############
 ## Install ##

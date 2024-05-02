@@ -108,11 +108,11 @@ int main(int argc, char** argv) {
     if (method == "small") {
       UnsafeKdTree<PointCloud> tree(*downsampled);
     } else if (method == "omp") {
-      UnsafeKdTreeOMP<PointCloud> tree(*downsampled, num_threads);
+      UnsafeKdTree<PointCloud> tree(*downsampled, KdTreeBuilderOMP(num_threads));
     }
 #ifdef BUILD_WITH_TBB
     else if (method == "tbb") {
-      UnsafeKdTreeTBB<PointCloud> tree(*downsampled);
+      UnsafeKdTree<PointCloud> tree(*downsampled, KdTreeBuilderTBB());
     }
 #endif
   }
@@ -139,7 +139,7 @@ int main(int argc, char** argv) {
       Summarizer kdtree_omp_times(true);
       sw.start();
       for (size_t j = 0; j < num_trials; j++) {
-        UnsafeKdTreeOMP<PointCloud> tree(*downsampled[i], num_threads);
+        UnsafeKdTree<PointCloud> tree(*downsampled[i], KdTreeBuilderOMP(num_threads));
         sw.lap();
         kdtree_omp_times.push(sw.msec());
       }
@@ -153,7 +153,7 @@ int main(int argc, char** argv) {
       Summarizer kdtree_tbb_times(true);
       sw.start();
       for (size_t j = 0; j < num_trials; j++) {
-        UnsafeKdTreeTBB<PointCloud> tree(*downsampled[i]);
+        UnsafeKdTree<PointCloud> tree(*downsampled[i], KdTreeBuilderTBB());
         sw.lap();
         kdtree_tbb_times.push(sw.msec());
       }

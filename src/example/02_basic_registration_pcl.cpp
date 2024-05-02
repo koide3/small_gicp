@@ -56,8 +56,8 @@ void example2(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& raw_target, const 
   estimate_covariances_omp(*source, num_neighbors, num_threads);
 
   // Create KdTree for target and source.
-  auto target_tree = std::make_shared<KdTreeOMP<pcl::PointCloud<pcl::PointCovariance>>>(target, num_threads);
-  auto source_tree = std::make_shared<KdTreeOMP<pcl::PointCloud<pcl::PointCovariance>>>(source, num_threads);
+  auto target_tree = std::make_shared<KdTree<pcl::PointCloud<pcl::PointCovariance>>>(target, KdTreeBuilderOMP(num_threads));
+  auto source_tree = std::make_shared<KdTree<pcl::PointCloud<pcl::PointCovariance>>>(source, KdTreeBuilderOMP(num_threads));
 
   Registration<GICPFactor, ParallelReductionOMP> registration;
   registration.reduction.num_threads = num_threads;
