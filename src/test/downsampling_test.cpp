@@ -1,3 +1,5 @@
+#include <unordered_set>
+
 #include <gtest/gtest.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
@@ -75,11 +77,13 @@ INSTANTIATE_TEST_SUITE_P(DownsamplingTest, DownsamplingTest, testing::Values("SM
 TEST_P(DownsamplingTest, EmptyTest) {
   auto empty_points = std::make_shared<PointCloud>();
   auto empty_downsampled = downsample(*empty_points, 0.1);
-  EXPECT_EQ(empty_downsampled && empty_downsampled->size(), 0) << "Empty test small: " + GetParam();
+  EXPECT_TRUE(empty_downsampled);
+  EXPECT_EQ(empty_downsampled->size(), 0) << "Empty test small: " + GetParam();
 
   auto empty_points_pcl = pcl::make_shared<pcl::PointCloud<pcl::PointXYZ>>();
   auto empty_downsampled_pcl = downsample(*empty_points_pcl, 0.1);
-  EXPECT_EQ(empty_downsampled_pcl && empty_downsampled_pcl->size(), 0) << "Empty test pcl: " + GetParam();
+  EXPECT_TRUE(empty_downsampled_pcl);
+  EXPECT_EQ(empty_downsampled_pcl->size(), 0) << "Empty test pcl: " + GetParam();
 }
 
 // Check if downsampling results are mostly identical to those of pcl::VoxelGrid
@@ -90,5 +94,44 @@ TEST_P(DownsamplingTest, DownsampleTest) {
     auto result_pcl = downsample(*points_pcl, resolutions[i]);
     EXPECT_LT(std::abs(1.0 - static_cast<double>(result_pcl->size()) / downsampled_pcl[i]->size()), 0.9) << "Downsampled size check (pcl): " + GetParam();
     EXPECT_EQ(result->size(), result_pcl->size()) << "Size check (small vs pcl): " + GetParam();
+  }
+}
+
+// Check if random sampling works correctly for empty points
+TEST_P(DownsamplingTest, EmptyRandamSamplingTest) {
+  std::mt19937 mt;
+
+  auto empty_points = std::make_shared<PointCloud>();
+  auto empty_downsampled = random_sampling(*empty_points, 1000, mt);
+  EXPECT_TRUE(empty_downsampled);
+  EXPECT_EQ(empty_downsampled->size(), 0) << "Empty test small: " + GetParam();
+
+  auto empty_points_pcl = pcl::make_shared<pcl::PointCloud<pcl::PointXYZ>>();
+  auto empty_downsampled_pcl = random_sampling(*empty_points_pcl, 1000, mt);
+  EXPECT_TRUE(empty_downsampled_pcl);
+  EXPECT_EQ(empty_downsampled_pcl->size(), 0) << "Empty test pcl: " + GetParam();
+}
+
+// Test random sampling
+TEST_P(DownsamplingTest, RandamSamplingTest) {
+  std::mt19937 mt;
+
+  auto downsampled = voxelgrid_sampling(*points, 0.1);
+
+  const std::vector<size_t> num_points = {0, 100, 1000};
+  for (size_t N : num_points) {
+    auto result = random_sampling(*downsampled, N, mt);
+    EXPECT_TRUE(result);
+    EXPECT_EQ(result->size(), N) << "Size check (small): " + GetParam();
+
+    std::unordered_set<size_t> indices;
+    for (size_t i = 0; i < N; i++) {
+      const auto found = std::find_if(downsampled->points.begin(), downsampled->points.end(), [&](const auto& p) { return (p - result->points[i]).norm() < 1.0e-6; });
+      EXPECT_NE(found, downsampled->points.end()) << "Existence check (small): " + GetParam();
+
+      const size_t index = std::distance(downsampled->points.begin(), found);
+      EXPECT_EQ(indices.count(index), 0) << "Uniqueness check (small): " + GetParam();
+      indices.insert(index);
+    }
   }
 }
