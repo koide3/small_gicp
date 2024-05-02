@@ -12,8 +12,12 @@ on:
   workflow_dispatch:
 
 jobs:
+  strategy:
+    matrix:
+      VERSION: [13, 14]
+
   build:
-    runs-on: macos-latest
+    runs-on: macos-${{ matrix.VERSION }}
 
     steps:
       - uses: actions/checkout@v4
@@ -28,7 +32,5 @@ jobs:
       - run: pip install numpy scipy pytest
       
       - run: pip install .
-        env:
-          OpenMP_ROOT: /opt/homebrew/opt/libomp
 
       - run: python -m pytest src/test/python_test.py -v
