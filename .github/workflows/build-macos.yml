@@ -27,6 +27,8 @@ jobs:
 
       - run: pip install numpy scipy pytest
       
+      - run: brew --prefix
+
       - run: pip install .
         env:
           OpenMP_ROOT: $(brew --prefix)/opt/libomp
