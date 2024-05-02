@@ -1,4 +1,4 @@
-name: windows
+name: macos
 
 on:
   push:
@@ -13,18 +13,18 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: macos-14-large
 
     steps:
       - uses: actions/checkout@v4
-
-      - uses: microsoft/setup-msbuild@v2
 
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
           cache: 'pip'
-      
+
+      - run: brew install eigen libomp
+
       - run: pip install numpy scipy pytest
       
       - run: pip install .
