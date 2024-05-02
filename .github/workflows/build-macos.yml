@@ -15,9 +15,9 @@ jobs:
   build:
     strategy:
       matrix:
-        VERSION: [13, 14]
+        OS: [macos-13, macos-14]
 
-    runs-on: macos-${{ matrix.VERSION }}
+    runs-on: macos-${{ matrix.OS }}
     steps:
       - uses: actions/checkout@v4
 
@@ -31,5 +31,7 @@ jobs:
       - run: pip install numpy scipy pytest
       
       - run: pip install .
+        env:
+          OpenMP_ROOT: /opt/homebrew/opt/libomp
 
       - run: python -m pytest src/test/python_test.py -v
