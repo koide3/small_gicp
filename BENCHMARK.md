@@ -48,7 +48,7 @@ All benchmarks were conducted on the KITTI 00 sequence.
 
 ```bash
 cd small_gicp/scripts
-./run_downsampling_benchmark.sh
+./run_downsampling_benchmark.sh /path/to/kitti/velodyne
 python3 plot_downsampling.py
 ```
 
@@ -67,12 +67,13 @@ python3 plot_downsampling.py
 
 ```bash
 cd small_gicp/scripts
-./run_kdtree_benchmark.sh
+./run_kdtree_benchmark.sh /path/to/kitti/velodyne
 python3 plot_kdtree.py
 ```
 
 - Multi-threaded implementation (TBB and OMP) can be up to **4x faster** than the single-threaded one (All the implementations are based on nanoflann).
-- The processing speed gets faster as the number of threads increases, but the speed gain is not monotonic sometimes (because of the scheduling algorithm or some CPU(AMD 5995WX)-specific issues?).
+- ~~The processing speed gets faster as the number of threads increases, but the speed gain is not monotonic sometimes (because of the scheduling algorithm or some CPU(AMD 5995WX)-specific issues?)~~.
+- The new KdTree implementation shows a good scalability thanks to its well balanced task assignment.
 - This benchmark only compares the construction time (query time is not included). 
 
 ![kdtree_time](docs/assets/kdtree_time.png)
@@ -81,7 +82,7 @@ python3 plot_kdtree.py
 
 ```bash
 cd small_gicp/scripts
-./run_odometry_benchmark.sh
+./run_odometry_benchmark.sh /path/to/kitti/velodyne
 python3 plot_odometry.py
 ```
 
