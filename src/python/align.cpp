@@ -30,7 +30,7 @@ void define_align(py::module& m) {
       const std::string& registration_type,
       double voxel_resolution,
       double downsampling_resolution,
-      double max_corresponding_distance,
+      double max_correspondence_distance,
       int num_threads) {
       if (target_points.cols() != 3 && target_points.cols() != 4) {
         std::cerr << "target_points must be Nx3 or Nx4" << std::endl;
@@ -57,7 +57,7 @@ void define_align(py::module& m) {
 
       setting.voxel_resolution = voxel_resolution;
       setting.downsampling_resolution = downsampling_resolution;
-      setting.max_correspondence_distance = max_corresponding_distance;
+      setting.max_correspondence_distance = max_correspondence_distance;
       setting.num_threads = num_threads;
 
       std::vector<Eigen::Vector4d> target(target_points.rows());
@@ -90,8 +90,35 @@ void define_align(py::module& m) {
     py::arg("registration_type") = "GICP",
     py::arg("voxel_resolution") = 1.0,
     py::arg("downsampling_resolution") = 0.25,
-    py::arg("max_corresponding_distance") = 1.0,
-    py::arg("num_threads") = 1);
+    py::arg("max_correspondence_distance") = 1.0,
+    py::arg("num_threads") = 1,
+    R"pbdoc(
+        Align two point clouds using various ICP-like algorithms.
+
+        Parameters
+        ----------
+        target_points : NDArray[np.float64]
+            Nx3 or Nx4 matrix representing the target point cloud.
+        source_points : NDArray[np.float64]
+            Nx3 or Nx4 matrix representing the source point cloud.
+        init_T_target_source : np.ndarray[np.float64]
+            4x4 matrix representing the initial transformation from target to source.
+        registration_type : str = 'GICP'
+            Type of registration algorithm to use ('ICP', 'PLANE_ICP', 'GICP', 'VGICP').
+        voxel_resolution : float = 1.0
+            Resolution of voxels used for downsampling.
+        downsampling_resolution : float = 0.25
+            Resolution for downsampling the point clouds.
+        max_correspondence_distance : float = 1.0
+            Maximum distance for matching points between point clouds.
+        num_threads : int = 1
+            Number of threads to use for parallel processing.
+
+        Returns
+        -------
+        RegistrationResult
+            Object containing the final transformation matrix and convergence status.
+        )pbdoc");
 
   // align
   m.def(
@@ -101,26 +128,60 @@ void define_align(py::module& m) {
       const PointCloud::ConstPtr& source,
       KdTree<PointCloud>::ConstPtr target_tree,
       const Eigen::Matrix4d& init_T_target_source,
+      const std::string& registration_type,
       double max_correspondence_distance,
-      int num_threads,
-      int max_iterations) {
-      Registration<GICPFactor, ParallelReductionOMP> registration;
-      registration.rejector.max_dist_sq = max_correspondence_distance * max_correspondence_distance;
-      registration.reduction.num_threads = num_threads;
-      registration.optimizer.max_iterations = max_iterations;
+      int num_threads) {
+      RegistrationSetting setting;
+      if (registration_type == "ICP") {
+        setting.type = RegistrationSetting::ICP;
+      } else if (registration_type == "PLANE_ICP") {
+        setting.type = RegistrationSetting::PLANE_ICP;
+      } else if (registration_type == "GICP") {
+        setting.type = RegistrationSetting::GICP;
+      } else {
+        std::cerr << "invalid registration type:" << registration_type << std::endl;
+        return RegistrationResult(Eigen::Isometry3d::Identity());
+      }
+      setting.max_correspondence_distance = max_correspondence_distance;
+      setting.num_threads = num_threads;
 
       if (target_tree == nullptr) {
         target_tree = std::make_shared<KdTree<PointCloud>>(target, KdTreeBuilderOMP(num_threads));
       }
-      return registration.align(*target, *source, *target_tree, Eigen::Isometry3d(init_T_target_source));
+      return align(*target, *source, *target_tree, Eigen::Isometry3d(init_T_target_source), setting);
     },
     py::arg("target"),
     py::arg("source"),
     py::arg("target_tree") = nullptr,
     py::arg("init_T_target_source") = Eigen::Matrix4d::Identity(),
+    py::arg("registration_type") = "GICP",
     py::arg("max_correspondence_distance") = 1.0,
     py::arg("num_threads") = 1,
-    py::arg("max_iterations") = 20);
+    R"pbdoc(
+    Align two point clouds using specified ICP-like algorithms, utilizing point cloud and KD-tree inputs.
+
+    Parameters
+    ----------
+    target : PointCloud::ConstPtr
+        Pointer to the target point cloud.
+    source : PointCloud::ConstPtr
+        Pointer to the source point cloud.
+    target_tree : KdTree<PointCloud>::ConstPtr, optional
+        Pointer to the KD-tree of the target for nearest neighbor search. If nullptr, a new tree is built.
+    init_T_target_source : NDArray[np.float64]
+        4x4 matrix representing the initial transformation from target to source.
+    registration_type : str = 'GICP'
+        Type of registration algorithm to use ('ICP', 'PLANE_ICP', 'GICP').
+    max_corresponding_distance : float = 1.0
+        Maximum distance for corresponding point pairs.
+    num_threads : int = 1
+        Number of threads to use for computation.
+
+    Returns
+    -------
+    RegistrationResult
+        Object containing the final transformation matrix and convergence status.
+    )pbdoc");
 
   // align
   m.def(
@@ -144,5 +205,28 @@ void define_align(py::module& m) {
     py::arg("init_T_target_source") = Eigen::Matrix4d::Identity(),
     py::arg("max_correspondence_distance") = 1.0,
     py::arg("num_threads") = 1,
-    py::arg("max_iterations") = 20);
+    py::arg("max_iterations") = 20,
+    R"pbdoc(
+    Align two point clouds using voxel-based GICP algorithm, utilizing a Gaussian Voxel Map.
+
+    Parameters
+    ----------
+    target_voxelmap : GaussianVoxelMap
+        Voxel map constructed from the target point cloud.
+    source : PointCloud
+        Source point cloud to align to the target.
+    init_T_target_source : NDArray[np.float64]
+        4x4 matrix representing the initial transformation from target to source.
+    max_correspondence_distance : float = 1.0
+        Maximum distance for corresponding point pairs.
+    num_threads : int = 1
+        Number of threads to use for computation.
+    max_iterations : int = 20
+        Maximum number of iterations for the optimization algorithm.
+
+    Returns
+    -------
+    RegistrationResult
+        Object containing the final transformation matrix and convergence status.
+    )pbdoc");
 }
