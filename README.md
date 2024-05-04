@@ -254,6 +254,7 @@ Example A : Perform registration with numpy arrays
 
 ```python
 # Align two point clouds using various ICP-like algorithms.
+# 
 # Parameters
 # ----------
 # target_points : NDArray[np.float64]
@@ -272,6 +273,7 @@ Example A : Perform registration with numpy arrays
 #     Maximum distance for matching points between point clouds.
 # num_threads : int = 1
 #     Number of threads to use for parallel processing.
+# 
 # Returns
 # -------
 # RegistrationResult
@@ -291,6 +293,7 @@ Example B : Perform preprocessing and registration separately
 
 ```python
 # Preprocess point cloud (downsampling, kdtree construction, and normal/covariance estimation)
+#
 # Parameters
 # ----------
 # points : NDArray[np.float64]
@@ -301,6 +304,7 @@ Example B : Perform preprocessing and registration separately
 #     Number of neighbor points to usefor point normal/covariance estimation.
 # num_threads : int = 1
 #     Number of threads to use for parallel processing.
+# 
 # Returns
 # -------
 # PointCloud
@@ -316,29 +320,29 @@ target.points()         # Nx4 numpy array   [x, y, z, 1] x N
 target.normals()        # Nx4 numpy array   [nx, ny, nz, 0] x N
 target.covs()           # Array of 4x4 covariance matrices
 
-# Align two point clouds using various ICP-like algorithms.
-# Parameters
-# ----------
-# target : PointCloud
-#     Target point cloud.
-# source : PointCloud
-#     Source point cloud
-# target_tree : PointCloud
-#     KdTree for the target point cloud (optional).
-# init_T_target_source : np.ndarray[np.float64]
-#     4x4 matrix representing the initial transformation from target to source.
-# registration_type : str = 'GICP'
-#     Type of registration algorithm to use ('ICP', 'PLANE_ICP', 'GICP', 'VGICP').
-# downsampling_resolution : float = 0.25
-#     Resolution for downsampling the point clouds.
-# max_correspondence_distance : float = 1.0
-#     Maximum distance for matching points between point clouds.
-# num_threads : int = 1
-#     Number of threads to use for parallel processing.
-# Returns
-# -------
-# RegistrationResult
-#     Object containing the final transformation matrix and convergence status.
+#  Align two point clouds using specified ICP-like algorithms, utilizing point cloud and KD-tree inputs.
+#
+#  Parameters
+#  ----------
+#  target : PointCloud::ConstPtr
+#      Pointer to the target point cloud.
+#  source : PointCloud::ConstPtr
+#      Pointer to the source point cloud.
+#  target_tree : KdTree<PointCloud>::ConstPtr, optional
+#      Pointer to the KD-tree of the target for nearest neighbor search. If nullptr, a new tree is built.
+#  init_T_target_source : NDArray[np.float64]
+#      4x4 matrix representing the initial transformation from target to source.
+#  registration_type : str = 'GICP'
+#      Type of registration algorithm to use ('ICP', 'PLANE_ICP', 'GICP').
+#  max_correspondence_distance : float = 1.0
+#      Maximum distance for corresponding point pairs.
+#  num_threads : int = 1
+#      Number of threads to use for computation.
+# 
+#  Returns
+#  -------
+#  RegistrationResult
+#      Object containing the final transformation matrix and convergence status.
 result = small_gicp.align(target, source, target_tree)
 ```
 
