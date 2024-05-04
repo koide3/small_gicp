@@ -172,7 +172,7 @@ void define_align(py::module& m) {
         4x4 matrix representing the initial transformation from target to source.
     registration_type : str = 'GICP'
         Type of registration algorithm to use ('ICP', 'PLANE_ICP', 'GICP').
-    max_corresponding_distance : float = 1.0
+    max_correspondence_distance : float = 1.0
         Maximum distance for corresponding point pairs.
     num_threads : int = 1
         Number of threads to use for computation.
