@@ -55,11 +55,11 @@ public:
     IndexConstIterator first,
     IndexConstIterator last) const {
     const size_t N = std::distance(first, last);
+    const NodeIndexType node_index = node_count++;
+    auto& node = kdtree.nodes[node_index];
+
     // Create a leaf node.
     if (N <= max_leaf_size) {
-      const NodeIndexType node_index = node_count++;
-      auto& node = kdtree.nodes[node_index];
-
       // std::sort(first, last);
       node.node_type.lr.first = std::distance(global_first, first);
       node.node_type.lr.last = std::distance(global_first, last);
@@ -74,8 +74,6 @@ public:
     std::nth_element(first, median_itr, last, [&](size_t i, size_t j) { return proj(traits::point(points, i)) < proj(traits::point(points, j)); });
 
     // Create a non-leaf node.
-    const NodeIndexType node_index = node_count++;
-    auto& node = kdtree.nodes[node_index];
     node.node_type.sub.proj = proj;
     node.node_type.sub.thresh = proj(traits::point(points, *median_itr));
 

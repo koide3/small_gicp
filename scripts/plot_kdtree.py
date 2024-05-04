@@ -54,14 +54,14 @@ def main():
   fig, axes = pyplot.subplots(1, 2, figsize=(12, 3))
   
   num_threads = [1, 2, 3, 4, 5, 6, 7, 8, 16, 32, 64, 128]
-  axes[0].plot(num_points, results['small_1'], label='kdtree (nanoflann)', marker='o', linestyle='--')
-  for idx in [1, 3, 5, 7, 8]:
+  axes[0].plot(num_points, results['small_1'], label='kdtree (single-thread)', marker='o', linestyle='--')
+  for idx in [1, 2, 3, 5, 7, 8, 9]:
     N = num_threads[idx]
     axes[0].plot(num_points, results['omp_{}'.format(N)], label='kdtree_omp (%d threads)' % N, marker='s')
-    axes[0].plot(num_points, results['tbb_{}'.format(N)], label='kdtree_tbb (%d threads)' % N, marker='^')
+    # axes[0].plot(num_points, results['tbb_{}'.format(N)], label='kdtree_tbb (%d threads)' % N, marker='^')
 
   baseline = numpy.array(results['small_1'])
-  axes[1].plot([num_threads[0], num_threads[-1]], [1.0, 1.0], label='kdtree (nanoflann)', linestyle='--')
+  axes[1].plot([num_threads[0], num_threads[-1]], [1.0, 1.0], label='kdtree (single-thread)', linestyle='--')
   for idx in [5]:
     threads = num_threads[idx]
     N = num_points[idx]
