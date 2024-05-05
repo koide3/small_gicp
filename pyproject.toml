@@ -36,11 +36,13 @@ before-all = "yum install -y eigen3-devel libomp-devel"
 
 [tool.cibuildwheel.macos]
 before-all = "brew install eigen libomp"
+environment = { OpenMP_ROOT="/opt/homebrew/opt/libomp" }
 
 [tool.cibuildwheel.windows]
 before-all = "choco install eigen -y"
 
 [tool.cibuildwheel]
+manylinux-x86_64-image = "manylinux_2_28"
 build = "*"
 skip = "pp*" # Don't build for PyPy
 test-command = "pytest {project}/src --color=yes -v"
