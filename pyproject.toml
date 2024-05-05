@@ -31,6 +31,15 @@ BUILD_PYTHON_BINDINGS = true
 BUILD_HELPER = false
 BUILD_SHARED_LIBS = false
 
+[tool.cibuildwheel.linux]
+before-all = "yum install -y eigen3-devel libomp-devel"
+
+[tool.cibuildwheel.macos]
+before-all = "brew install eigen libomp"
+
+[tool.cibuildwheel.windows]
+before-all = "choco install eigen -y"
+
 [tool.cibuildwheel]
 build = "*"
 skip = "pp*" # Don't build for PyPy
