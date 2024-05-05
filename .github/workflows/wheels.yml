@@ -18,7 +18,7 @@ jobs:
 
       - uses: actions/setup-python@v5
 
-      - if: ${{ matrix.os }} == 'windows-latest'
+      - if: ${{ matrix.os == 'windows-latest' }}
         uses: microsoft/setup-msbuild@v2
 
       - name: Install cibuildwheel
