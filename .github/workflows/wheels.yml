@@ -1,0 +1,44 @@
+name: Build
+
+on:
+  push:
+    branches: [ wheels ]
+    paths-ignore: '**.md'
+
+jobs:
+  build_wheels:
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-14]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+
+      - name: Install cibuildwheel
+        run: python -m pip install cibuildwheel==2.17.0
+
+      - name: Install OpenMP (linux)
+        if: ${{ matrix.os }} == 'ubuntu-latest'
+        run: sudo apt-get update -y && sudo apt-get install -y libomp-dev
+
+      - name: Install OpenMP (macos)
+        if: ${{ matrix.os }} == 'macos-14'
+        run: brew install libomp
+
+      - uses: microsoft/setup-msbuild@v2
+        if: ${{ matrix.os }} == 'windows-latest'
+
+      - name: Build wheels
+        run: python -m cibuildwheel --output-dir wheelhouse
+        # to supply options, put them in 'env', like:
+        # env:
+        #   CIBW_SOME_OPTION: value
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
+          path: ./wheelhouse/*.whl
