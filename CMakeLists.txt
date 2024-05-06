@@ -40,9 +40,9 @@ if(BUILD_TESTS OR BUILD_EXAMPLES)
 endif()
 
 # Eigen is the sole mandatory dependency
-find_package(Eigen3)
+find_package(Eigen3 CONFIG)
 
-if(NOT EIGEN3_FOUND)
+if(NOT Eigen3_FOUND)
   message(STATUS "System Eigen not found. Download Eigen 3.3.9.")
   include(FetchContent)
   FetchContent_Populate(
