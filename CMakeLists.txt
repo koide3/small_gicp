@@ -40,14 +40,14 @@ if(BUILD_TESTS OR BUILD_EXAMPLES)
 endif()
 
 # Eigen is the sole mandatory dependency
-find_package(Eigen3)
+find_package(Eigen3 CONFIG)
 
-if(NOT EIGEN3_FOUND)
-  message(STATUS "System Eigen not found. Download Eigen 3.3.9.")
+if(NOT Eigen3_FOUND)
+  message(STATUS "System Eigen not found. Download Eigen 3.4.0.")
   include(FetchContent)
   FetchContent_Populate(
     Eigen3
-    URL https://gitlab.com/libeigen/eigen/-/archive/3.3.9/eigen-3.3.9.tar.gz
+    URL https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz
   )
   add_library(Eigen3::Eigen INTERFACE IMPORTED GLOBAL)
   set_target_properties(Eigen3::Eigen PROPERTIES
