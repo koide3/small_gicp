@@ -51,7 +51,7 @@ if(NOT Eigen3_FOUND)
   )
   add_library(Eigen3::Eigen INTERFACE IMPORTED GLOBAL)
   set_target_properties(Eigen3::Eigen PROPERTIES
-    INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_BINARY_DIR}/Eigen3-src"
+    INTERFACE_INCLUDE_DIRECTORIES "${eigen3_SOURCE_DIR}"
   )
 endif()
 
