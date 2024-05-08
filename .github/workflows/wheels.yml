@@ -16,16 +16,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - name: Set up QEMU
+        if: runner.os == 'Linux'
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
 
-      - if: ${{ matrix.os == 'windows-latest' }}
+      - if: runner.os == 'Windows'
         uses: microsoft/setup-msbuild@v2
+
+      - uses: actions/setup-python@v5
 
       - name: Install pytest and cibuildwheel
         run: python -m pip install cibuildwheel==2.17.0
 
       - name: Build wheels
         run: python -m cibuildwheel --output-dir wheelhouse
+        env:
+          CIBW_ARCHS_LINUX: auto aarch64
+          CIBW_ARCHS_MACOS: x86_64 universal2 arm64
 
       - uses: actions/upload-artifact@v4
         with:
