@@ -29,7 +29,7 @@ BUILD_HELPER = false
 BUILD_SHARED_LIBS = false
 
 [tool.cibuildwheel.linux]
-before-all = "yum install -y eigen3-devel libomp-devel"
+before-all = "yum install -y libomp-devel"
 
 [tool.cibuildwheel.macos]
 before-all = "brew install eigen libomp"
@@ -43,5 +43,5 @@ manylinux-x86_64-image = "manylinux_2_28"
 build = "*"
 skip = "pp* *-win32" # Don't build for PyPy and Win32
 test-requires = "pytest numpy scipy"
-test-command = "pytest {project}/src --color=yes -v"
+test-command = "cd {project} && pytest {project}/src --color=yes -v"
 build-verbosity = 1
