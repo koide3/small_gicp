@@ -42,7 +42,7 @@ test-command = "cd /d {project} && pytest {project}/src --color=yes -v"
 [tool.cibuildwheel]
 manylinux-x86_64-image = "manylinux_2_28"
 build = "*"
-skip = "pp* *-win32 *_i686" # Don't build for PyPy, Win32, i686
+skip = "pp* *-win32 *_i686 *musllinux*" # Don't build for PyPy, Win32, i686
 test-requires = "pytest numpy scipy"
 test-command = "cd {project} && pytest {project}/src --color=yes -v"
 build-verbosity = 1
