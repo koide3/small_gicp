@@ -44,6 +44,6 @@ before-all = "choco install eigen -y"
 [tool.cibuildwheel]
 manylinux-x86_64-image = "manylinux_2_28"
 build = "*"
-skip = "pp*" # Don't build for PyPy
-test-command = "pytest {project}/src --color=yes -v"
+skip = "pp* *-win32" # Don't build for PyPy and Win32
+test-command = "python -m pytest {project}/src --color=yes -v"
 build-verbosity = 1
