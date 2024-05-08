@@ -1,4 +1,4 @@
-name: windows
+name: macos
 
 on:
   push:
@@ -13,20 +13,25 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    strategy:
+      matrix:
+        OS: [macos-14]
 
+    runs-on: ${{ matrix.OS }}
     steps:
       - uses: actions/checkout@v4
-
-      - uses: microsoft/setup-msbuild@v2
 
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
           cache: 'pip'
-      
+
+      - run: brew install eigen libomp
+
       - run: pip install numpy scipy pytest
       
       - run: pip install .
+        env:
+          OpenMP_ROOT: /opt/homebrew/opt/libomp
 
       - run: python -m pytest src/test/python_test.py -v
