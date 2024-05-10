@@ -34,7 +34,6 @@ jobs:
       - name: Build wheels
         run: python -m cibuildwheel --output-dir wheelhouse
         env:
-          SKBUILD_BUILD_OPTIONS: '-j2'
           CIBW_BUILD: ${{ matrix.pyver }}-*
           CIBW_ARCHS_LINUX: auto aarch64
           # CIBW_ARCHS_LINUX: x86_64
@@ -74,7 +73,6 @@ jobs:
           path: dist
           merge-multiple: true
 
-      - if: false
-        uses: pypa/gh-action-pypi-publish@release/v1
+      - uses: pypa/gh-action-pypi-publish@release/v1
         with:
           repository-url: https://test.pypi.org/legacy/
