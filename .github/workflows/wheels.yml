@@ -34,6 +34,7 @@ jobs:
       - name: Build wheels
         run: python -m cibuildwheel --output-dir wheelhouse
         env:
+          SKBUILD_BUILD_OPTIONS: '-j2'
           CIBW_BUILD: ${{ matrix.pyver }}-*
           CIBW_ARCHS_LINUX: auto aarch64
           # CIBW_ARCHS_LINUX: x86_64
