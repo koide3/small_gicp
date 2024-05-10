@@ -4,6 +4,11 @@
 
 #include <algorithm>
 
+#ifdef _MSC_VER
+#pragma message("warning: Task-based OpenMP parallelism is not well supported on windows.")
+#pragma message("warning: Thus, OpenMP-based downsampling is only partially parallelized on windows.")
+#endif
+
 namespace small_gicp {
 
 template <typename RandomAccessIterator, typename Compare>
@@ -28,11 +33,15 @@ void merge_sort_omp_impl(RandomAccessIterator first, RandomAccessIterator last, 
 
 template <typename RandomAccessIterator, typename Compare>
 void merge_sort_omp(RandomAccessIterator first, RandomAccessIterator last, const Compare& comp, int num_threads) {
+#ifndef _MSC_VER
 #pragma omp parallel num_threads(num_threads)
   {
 #pragma omp single nowait
     { merge_sort_omp_impl(first, last, comp); }
   }
+#else
+  std::stable_sort(first, last, comp);
+#endif
 }
 
 template <typename RandomAccessIterator, typename Compare>
@@ -65,11 +74,15 @@ void quick_sort_omp_impl(RandomAccessIterator first, RandomAccessIterator last, 
 
 template <typename RandomAccessIterator, typename Compare>
 void quick_sort_omp(RandomAccessIterator first, RandomAccessIterator last, const Compare& comp, int num_threads) {
+#ifndef _MSC_VER
 #pragma omp parallel num_threads(num_threads)
   {
 #pragma omp single nowait
     { quick_sort_omp_impl(first, last, comp); }
   }
+#else
+  std::sort(first, last, comp);
+#endif
 }
 
 }  // namespace small_gicp
