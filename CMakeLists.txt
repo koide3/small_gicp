@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(small_gicp VERSION 0.0.1 LANGUAGES C CXX)
+project(small_gicp VERSION 0.0.6 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
@@ -51,7 +51,7 @@ if(NOT Eigen3_FOUND)
   )
   add_library(Eigen3::Eigen INTERFACE IMPORTED GLOBAL)
   set_target_properties(Eigen3::Eigen PROPERTIES
-    INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_BINARY_DIR}/Eigen3-src"
+    INTERFACE_INCLUDE_DIRECTORIES "${eigen3_SOURCE_DIR}"
   )
 endif()
 
@@ -141,7 +141,7 @@ endif()
 
 # Python bindings
 if(BUILD_PYTHON_BINDINGS)
-  find_package(Python COMPONENTS Interpreter Development REQUIRED)
+  find_package(Python COMPONENTS Interpreter Development)
   find_package(pybind11 CONFIG REQUIRED)
 
   pybind11_add_module(small_gicp_python
