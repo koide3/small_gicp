@@ -2,7 +2,7 @@ name: Build
 
 on:
   push:
-    branches: [ wheels ]
+    branches: [ master ]
     paths-ignore: '**.md'
 
 jobs:
@@ -63,8 +63,7 @@ jobs:
     environment: pypi
     permissions:
       id-token: write
-    # or, alternatively, upload to PyPI on every tag starting with 'v' (remove on: release above to use this)
-    # if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     steps:
       - uses: actions/download-artifact@v4
         with:
