@@ -39,6 +39,7 @@ struct RegistrationSetting {
   double rotation_eps = 0.1 * M_PI / 180.0;  ///< Rotation tolerance for convergence check [rad]
   double translation_eps = 1e-3;             ///< Translation tolerance for convergence check
   int num_threads = 4;                       ///< Number of threads
+  int max_iterations = 20;                   ///< Maximum number of iterations
 };
 
 /// @brief Align point clouds

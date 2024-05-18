@@ -31,7 +31,8 @@ void define_align(py::module& m) {
       double voxel_resolution,
       double downsampling_resolution,
       double max_correspondence_distance,
-      int num_threads) {
+      int num_threads,
+      int max_iterations) {
       if (target_points.cols() != 3 && target_points.cols() != 4) {
         std::cerr << "target_points must be Nx3 or Nx4" << std::endl;
         return RegistrationResult(Eigen::Isometry3d::Identity());
@@ -92,6 +93,7 @@ void define_align(py::module& m) {
     py::arg("downsampling_resolution") = 0.25,
     py::arg("max_correspondence_distance") = 1.0,
     py::arg("num_threads") = 1,
+    py::arg("max_iterations") = 20,
     R"pbdoc(
         Align two point clouds using various ICP-like algorithms.
 
@@ -113,7 +115,8 @@ void define_align(py::module& m) {
             Maximum distance for matching points between point clouds.
         num_threads : int = 1
             Number of threads to use for parallel processing.
-
+        max_iterations : int = 20
+            Maximum number of iterations for the optimization algorithm.
         Returns
         -------
         RegistrationResult
@@ -130,7 +133,8 @@ void define_align(py::module& m) {
       const Eigen::Matrix4d& init_T_target_source,
       const std::string& registration_type,
       double max_correspondence_distance,
-      int num_threads) {
+      int num_threads,
+      int max_iterations) {
       RegistrationSetting setting;
       if (registration_type == "ICP") {
         setting.type = RegistrationSetting::ICP;
@@ -157,6 +161,7 @@ void define_align(py::module& m) {
     py::arg("registration_type") = "GICP",
     py::arg("max_correspondence_distance") = 1.0,
     py::arg("num_threads") = 1,
+    py::arg("max_iterations") = 20,
     R"pbdoc(
     Align two point clouds using specified ICP-like algorithms, utilizing point cloud and KD-tree inputs.
 
@@ -176,7 +181,8 @@ void define_align(py::module& m) {
         Maximum distance for corresponding point pairs.
     num_threads : int = 1
         Number of threads to use for computation.
-
+    max_iterations : int = 20
+        Maximum number of iterations for the optimization algorithm.
     Returns
     -------
     RegistrationResult
