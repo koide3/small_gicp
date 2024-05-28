@@ -43,6 +43,14 @@ sudo make install
 
 ### Python (Linux / Windows)
 
+#### Install from PyPI
+
+```bash
+pip install small_gicp --user
+```
+
+#### Install from source
+
 ```bash
 cd small_gicp
 pip install . --user
