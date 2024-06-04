@@ -12,8 +12,13 @@ namespace small_gicp {
 
 /// @brief GICP (distribution-to-distribution) per-point error factor.
 struct GICPFactor {
+  struct Setting {};
+
   /// @brief Constructor
-  GICPFactor() : target_index(std::numeric_limits<size_t>::max()), source_index(std::numeric_limits<size_t>::max()), mahalanobis(Eigen::Matrix4d::Zero()) {}
+  GICPFactor(const Setting& setting = Setting())
+  : target_index(std::numeric_limits<size_t>::max()),
+    source_index(std::numeric_limits<size_t>::max()),
+    mahalanobis(Eigen::Matrix4d::Zero()) {}
 
   /// @brief Linearize the factor
   /// @param target       Target point cloud
@@ -25,7 +30,7 @@ struct GICPFactor {
   /// @param H            Linearized information matrix
   /// @param b            Linearized information vector
   /// @param e            Error at the linearization point
-  /// @return
+  /// @return             True if the point is inlier
   template <typename TargetPointCloud, typename SourcePointCloud, typename TargetTree, typename CorrespondenceRejector>
   bool linearize(
     const TargetPointCloud& target,

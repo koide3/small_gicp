@@ -12,7 +12,9 @@ namespace small_gicp {
 
 /// @brief Point-to-point per-point error factor.
 struct ICPFactor {
-  ICPFactor() : target_index(std::numeric_limits<size_t>::max()), source_index(std::numeric_limits<size_t>::max()) {}
+  struct Setting {};
+
+  ICPFactor(const Setting& setting = Setting()) : target_index(std::numeric_limits<size_t>::max()), source_index(std::numeric_limits<size_t>::max()) {}
 
   template <typename TargetPointCloud, typename SourcePointCloud, typename TargetTree, typename CorrespondenceRejector>
   bool linearize(

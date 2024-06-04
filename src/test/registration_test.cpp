@@ -12,6 +12,7 @@
 #include <small_gicp/factors/icp_factor.hpp>
 #include <small_gicp/factors/gicp_factor.hpp>
 #include <small_gicp/factors/plane_icp_factor.hpp>
+#include <small_gicp/factors/robust_kernel.hpp>
 #include <small_gicp/registration/reduction_omp.hpp>
 #include <small_gicp/registration/reduction_tbb.hpp>
 #include <small_gicp/registration/registration.hpp>
@@ -283,7 +284,7 @@ TEST_F(RegistrationTest, PCLInterfaceTest) {
 INSTANTIATE_TEST_SUITE_P(
   RegistrationTest,
   RegistrationTest,
-  testing::Combine(testing::Values("ICP", "PLANE_ICP", "GICP", "VGICP"), testing::Values("SERIAL", "TBB", "OMP")),
+  testing::Combine(testing::Values("ICP", "PLANE_ICP", "GICP", "VGICP", "HUBER_GICP", "CAUCHY_GICP"), testing::Values("SERIAL", "TBB", "OMP")),
   [](const auto& info) {
     std::stringstream sst;
     sst << std::get<0>(info.param) << "_" << std::get<1>(info.param);
@@ -338,7 +339,29 @@ TEST_P(RegistrationTest, RegistrationTest) {
       Registration<GICPFactor, ParallelReductionOMP> reg;
       test_registration_vgicp(reg);
     }
+  } else if (factor == "HUBER_GICP") {
+    if (reduction == "SERIAL") {
+      Registration<RobustFactor<Huber, GICPFactor>, SerialReduction> reg;
+      test_registration(reg);
+    } else if (reduction == "TBB") {
+      Registration<RobustFactor<Huber, GICPFactor>, ParallelReductionTBB> reg;
+      test_registration(reg);
+    } else if (reduction == "OMP") {
+      Registration<RobustFactor<Huber, GICPFactor>, ParallelReductionOMP> reg;
+      test_registration(reg);
+    }
+  } else if (factor == "CAUCHY_GICP") {
+    if (reduction == "SERIAL") {
+      Registration<RobustFactor<Cauchy, GICPFactor>, SerialReduction> reg;
+      test_registration(reg);
+    } else if (reduction == "TBB") {
+      Registration<RobustFactor<Cauchy, GICPFactor>, ParallelReductionTBB> reg;
+      test_registration(reg);
+    } else if (reduction == "OMP") {
+      Registration<RobustFactor<Cauchy, GICPFactor>, ParallelReductionOMP> reg;
+      test_registration(reg);
+    }
   } else {
-    std::cerr << "error: unknown factor type " << factor << std::endl;
+    EXPECT_TRUE(false) << "error: unknown factor type " << factor;
   }
 }

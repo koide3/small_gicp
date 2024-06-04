@@ -15,7 +15,7 @@ namespace small_gicp {
 
 /// @brief Point cloud registration.
 template <
-  typename Factor,
+  typename PointFactor,
   typename Reduction,
   typename GeneralFactor = NullFactor,
   typename CorrespondenceRejector = DistanceRejector,
@@ -38,13 +38,16 @@ public:
       std::cerr << "warning: source point cloud is too small. |source|=" << traits::size(source) << std::endl;
     }
 
-    std::vector<Factor> factors(traits::size(source));
+    std::vector<PointFactor> factors(traits::size(source), PointFactor(point_factor));
     return optimizer.optimize(target, source, target_tree, rejector, criteria, reduction, init_T, factors, general_factor);
   }
 
 public:
+  using PointFactorSetting = typename PointFactor::Setting;
+
   TerminationCriteria criteria;     ///< Termination criteria
   CorrespondenceRejector rejector;  ///< Correspondence rejector
+  PointFactorSetting point_factor;  ///< Factor setting
   GeneralFactor general_factor;     ///< General factor
   Reduction reduction;              ///< Reduction
   Optimizer optimizer;              ///< Optimizer
