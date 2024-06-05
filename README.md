@@ -41,7 +41,7 @@ cmake .. -DCMAKE_BUILD_TYPE=Release && make -j
 sudo make install
 ```
 
-### Python (Linux / Windows)
+### Python (Linux / Windows / MacOS)
 
 #### Install from PyPI
 
