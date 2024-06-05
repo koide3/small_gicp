@@ -1,6 +1,6 @@
 .PHONY: help
 help:
-	@echo "make cpp|py"
+	@echo "make cpp|py|all"
 
 .PHONY: cpp
 cpp:
@@ -10,5 +10,8 @@ cpp:
 .PHONY: py
 py:
 	@echo "Building Python documentation..."
-	pip wheel .. -w ./wheel
+	mkdir -p build && cd build && cmake ../../ -DBUILD_PYTHON_BINDINGS=ON && make -j
 	sphinx-build -b singlehtml . ./html_py/
+
+.PHONY: all
+all: cpp py

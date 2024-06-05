@@ -12,7 +12,7 @@ author = 'k.koide'
 
 import os
 import sys
-sys.path.insert(0, os.path.abspath('./wheel/'))
+sys.path.insert(0, os.path.abspath('./build/'))
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
