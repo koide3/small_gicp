@@ -7,12 +7,13 @@
 
 namespace small_gicp {
 
+/// @brief Proxy class to access PCL point cloud with external covariance matrices.
 template <typename PointT>
 struct PointCloudProxy {
   PointCloudProxy(const pcl::PointCloud<PointT>& cloud, std::vector<Eigen::Matrix4d>& covs) : cloud(cloud), covs(covs) {}
 
-  const pcl::PointCloud<PointT>& cloud;
-  std::vector<Eigen::Matrix4d>& covs;
+  const pcl::PointCloud<PointT>& cloud; ///< Point cloud
+  std::vector<Eigen::Matrix4d>& covs;   ///< Covariance matrices
 };
 
 namespace traits {

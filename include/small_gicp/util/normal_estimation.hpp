@@ -7,10 +7,13 @@
 
 namespace small_gicp {
 
+/// @brief Computes point normals from eigenvectors and sets them to the point cloud.
 template <typename PointCloud>
 struct NormalSetter {
+  /// @brief Handle invalid case (too few points).
   static void set_invalid(PointCloud& cloud, size_t i) { traits::set_normal(cloud, i, Eigen::Vector4d::Zero()); }
 
+  /// @brief Compute and set the normal to the point cloud.
   static void set(PointCloud& cloud, size_t i, const Eigen::Matrix3d& eigenvectors) {
     const Eigen::Vector4d normal = (Eigen::Vector4d() << eigenvectors.col(0).normalized(), 0.0).finished();
     if (traits::point(cloud, i).dot(normal) > 0) {
@@ -21,14 +24,17 @@ struct NormalSetter {
   }
 };
 
+/// @brief Computes point covariances from eigenvectors and sets them to the point cloud.
 template <typename PointCloud>
 struct CovarianceSetter {
+  /// @brief Handle invalid case (too few points).
   static void set_invalid(PointCloud& cloud, size_t i) {
     Eigen::Matrix4d cov = Eigen::Matrix4d::Identity();
     cov(3, 3) = 0.0;
     traits::set_cov(cloud, i, cov);
   }
 
+  /// @brief Compute and set the covariance to the point cloud.
   static void set(PointCloud& cloud, size_t i, const Eigen::Matrix3d& eigenvectors) {
     const Eigen::Vector3d values(1e-3, 1.0, 1.0);
     Eigen::Matrix4d cov = Eigen::Matrix4d::Zero();
@@ -37,13 +43,16 @@ struct CovarianceSetter {
   }
 };
 
+/// @brief Computes point normals and covariances from eigenvectors and sets them to the point cloud.
 template <typename PointCloud>
 struct NormalCovarianceSetter {
+  /// @brief Handle invalid case (too few points).
   static void set_invalid(PointCloud& cloud, size_t i) {
     NormalSetter<PointCloud>::set_invalid(cloud, i);
     CovarianceSetter<PointCloud>::set_invalid(cloud, i);
   }
 
+  /// @brief Compute and set the normal and covariance to the point cloud.
   static void set(PointCloud& cloud, size_t i, const Eigen::Matrix3d& eigenvectors) {
     NormalSetter<PointCloud>::set(cloud, i, eigenvectors);
     CovarianceSetter<PointCloud>::set(cloud, i, eigenvectors);

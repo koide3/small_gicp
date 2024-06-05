@@ -8,26 +8,32 @@
 
 namespace small_gicp {
 
-/// @brief Flat point container
-/// @note  IncrementalVoxelMap combined with FlastContainer is mostly the same as iVox.
+/// @brief Point container with a flat vector.
+/// @note  IncrementalVoxelMap combined with FlastContainer is mostly the same as linear iVox.
 ///        Bai et al., "Faster-LIO: Lightweight Tightly Coupled Lidar-Inertial Odometry Using Parallel Sparse Incremental Voxels", IEEE RA-L, 2022
-/// @tparam HasNormals  If true, normals are stored
-/// @tparam HasCovs     If true, covariances are stored
+/// @tparam HasNormals  If true, store normals.
+/// @tparam HasCovs     If true, store covariances.
 template <bool HasNormals = false, bool HasCovs = false>
 struct FlatContainer {
 public:
+  /// @brief FlatContainer setting.
   struct Setting {
-    double min_sq_dist_in_cell = 0.1 * 0.1;  ///< Minimum squared distance between points in a cell
-    size_t max_num_points_in_cell = 10;      ///< Maximum number of points in a cell
+    double min_sq_dist_in_cell = 0.1 * 0.1;  ///< Minimum squared distance between points in a cell.
+    size_t max_num_points_in_cell = 10;      ///< Maximum number of points in a cell.
   };
 
-  /// @brief Constructor
+  /// @brief Constructor.
   FlatContainer() { points.reserve(5); }
 
-  /// @brief Number of points
+  /// @brief Number of points.
   size_t size() const { return points.size(); }
 
-  /// @brief Add a point to the container
+  /// @brief Add a point to the container.
+  /// @param setting         Setting
+  /// @param transformed_pt  Transformed point (== T * points[i])
+  /// @param points          Point cloud
+  /// @param i               Index of the point
+  /// @param T               Transformation matrix
   template <typename PointCloud>
   void add(const Setting& setting, const Eigen::Vector4d& transformed_pt, const PointCloud& points, size_t i, const Eigen::Isometry3d& T) {
     if (
@@ -46,10 +52,10 @@ public:
     }
   }
 
-  /// @brief Finalize the container (Nothing to do for FlatContainer)
+  /// @brief Finalize the container (Nothing to do for FlatContainer).
   void finalize() {}
 
-  /// @brief Find the nearest neighbor
+  /// @brief Find the nearest neighbor.
   /// @param pt           Query point
   /// @param k_index      Index of the nearest neighbor
   /// @param k_sq_dist    Squared distance to the nearest neighbor
@@ -76,7 +82,7 @@ public:
     return 1;
   }
 
-  /// @brief Find k nearest neighbors
+  /// @brief Find k nearest neighbors.
   /// @param pt           Query point
   /// @param k            Number of neighbors
   /// @param k_index      Indices of nearest neighbors
@@ -109,14 +115,18 @@ public:
 public:
   struct Empty {};
 
-  std::vector<Eigen::Vector4d> points;
-  std::conditional_t<HasNormals, std::vector<Eigen::Vector4d>, Empty> normals;
-  std::conditional_t<HasCovs, std::vector<Eigen::Matrix4d>, Empty> covs;
+  std::vector<Eigen::Vector4d> points;                                          ///< Points
+  std::conditional_t<HasNormals, std::vector<Eigen::Vector4d>, Empty> normals;  ///< Normals (Empty if HasNormals is false)
+  std::conditional_t<HasCovs, std::vector<Eigen::Matrix4d>, Empty> covs;        ///< Covariances (Empty if HasCovs is false)
 };
 
+/// @brief FlatContainer that stores only points.
 using FlatContainerPoints = FlatContainer<false, false>;
+/// @brief FlatContainer with normals.
 using FlatContainerNormal = FlatContainer<true, false>;
+/// @brief FlatContainer with covariances.
 using FlatContainerCov = FlatContainer<false, true>;
+/// @brief FlatContainer with normals and covariances.
 using FlatContainerNormalCov = FlatContainer<true, true>;
 
 namespace traits {

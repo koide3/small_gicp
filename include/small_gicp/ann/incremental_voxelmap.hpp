@@ -16,11 +16,11 @@
 
 namespace small_gicp {
 
-/// @brief Voxel meta information
+/// @brief Voxel meta information.
 struct VoxelInfo {
 public:
-  /// @brief Constructor
-  /// @param coord Voxel coordinate
+  /// @brief Constructor.
+  /// @param coord Integer voxel coordinates
   /// @param lru   LRU counter for caching
   VoxelInfo(const Eigen::Vector3i& coord, size_t lru) : lru(lru), coord(coord) {}
 
@@ -31,21 +31,21 @@ public:
 
 /// @brief Incremental voxelmap.
 ///        This class supports incremental point cloud insertion and LRU-based voxel deletion.
-/// @note  This class can be used as a point cloud as well as a neighbor search.
+/// @note  This class can be used as a point cloud as well as a neighbor search structure.
 template <typename VoxelContents>
 struct IncrementalVoxelMap {
 public:
   using Ptr = std::shared_ptr<IncrementalVoxelMap>;
   using ConstPtr = std::shared_ptr<const IncrementalVoxelMap>;
 
-  /// @brief Constructor
+  /// @brief Constructor.
   /// @param leaf_size  Voxel size
   explicit IncrementalVoxelMap(double leaf_size) : inv_leaf_size(1.0 / leaf_size), lru_horizon(100), lru_clear_cycle(10), lru_counter(0) {}
 
-  /// @brief Number of points in the voxelmap
+  /// @brief Number of points in the voxelmap.
   size_t size() const { return flat_voxels.size(); }
 
-  /// @brief Insert points to the voxelmap
+  /// @brief Insert points to the voxelmap.
   /// @param points Point cloud
   /// @param T      Transformation matrix
   template <typename PointCloud>
@@ -88,7 +88,7 @@ public:
     }
   }
 
-  /// @brief Find the nearest neighbor
+  /// @brief Find the nearest neighbor.
   /// @param pt       Query point
   /// @param index    Index of the nearest neighbor
   /// @param sq_dist  Squared distance to the nearest neighbor
@@ -139,9 +139,10 @@ public:
     return num_found;
   }
 
+  /// @brief Calculate the global point index from the voxel index and the point index.
   inline size_t calc_index(const size_t voxel_id, const size_t point_id) const { return (voxel_id << point_id_bits) | point_id; }
-  inline size_t voxel_id(const size_t i) const { return i >> point_id_bits; }                ///< Extract the point ID from an index
-  inline size_t point_id(const size_t i) const { return i & ((1ull << point_id_bits) - 1); }  ///< Extract the voxel ID from an index
+  inline size_t voxel_id(const size_t i) const { return i >> point_id_bits; }                ///< Extract the point ID from a global index.
+  inline size_t point_id(const size_t i) const { return i & ((1ull << point_id_bits) - 1); }  ///< Extract the voxel ID from a global index.
 
 public:
   static_assert(sizeof(size_t) == 8, "size_t must be 64-bit");
@@ -149,13 +150,13 @@ public:
   static constexpr int voxel_id_bits = 64 - point_id_bits;  ///< Use the remaining bits for voxel id
   const double inv_leaf_size;                               ///< Inverse of the voxel size
 
-  size_t lru_horizon;      ///< LRU horizon size
-  size_t lru_clear_cycle;  ///< LRU clear cycle
-  size_t lru_counter;      ///< LRU counter
+  size_t lru_horizon;      ///< LRU horizon size. Voxels that have not been accessed for lru_horizon steps are deleted.
+  size_t lru_clear_cycle;  ///< LRU clear cycle. Voxel deletion is performed every lru_clear_cycle steps.
+  size_t lru_counter;      ///< LRU counter. Incremented every step.
 
-  typename VoxelContents::Setting voxel_setting;                                  ///< Voxel setting
-  std::vector<std::shared_ptr<std::pair<VoxelInfo, VoxelContents>>> flat_voxels;  ///< Voxel contents
-  std::unordered_map<Eigen::Vector3i, size_t, XORVector3iHash> voxels;            ///< Voxel index map
+  typename VoxelContents::Setting voxel_setting;                                  ///< Voxel setting.
+  std::vector<std::shared_ptr<std::pair<VoxelInfo, VoxelContents>>> flat_voxels;  ///< Voxel contents.
+  std::unordered_map<Eigen::Vector3i, size_t, XORVector3iHash> voxels;            ///< Voxel index map.
 };
 
 namespace traits {
