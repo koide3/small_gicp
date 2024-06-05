@@ -30,11 +30,14 @@ void define_result(py::module& m) {
         sst << "error= " << result.error << "\n";
         return sst.str();
       })
-    .def_property_readonly("T_target_source", [](const RegistrationResult& result) -> Eigen::Matrix4d { return result.T_target_source.matrix(); })
-    .def_readonly("converged", &RegistrationResult::converged)
-    .def_readonly("iterations", &RegistrationResult::iterations)
-    .def_readonly("num_inliers", &RegistrationResult::num_inliers)
-    .def_readonly("H", &RegistrationResult::H)
-    .def_readonly("b", &RegistrationResult::b)
-    .def_readonly("error", &RegistrationResult::error);
+    .def_property_readonly(
+      "T_target_source",
+      [](const RegistrationResult& result) -> Eigen::Matrix4d { return result.T_target_source.matrix(); },
+      "Final transformation matrix")
+    .def_readonly("converged", &RegistrationResult::converged, "Convergence flag")
+    .def_readonly("iterations", &RegistrationResult::iterations, "Number of iterations")
+    .def_readonly("num_inliers", &RegistrationResult::num_inliers, "Number of inliers")
+    .def_readonly("H", &RegistrationResult::H, "Final Hessian matrix")
+    .def_readonly("b", &RegistrationResult::b, "Final information vector")
+    .def_readonly("error", &RegistrationResult::error, "Final error");
 }

@@ -20,12 +20,12 @@ using namespace small_gicp;
 
 void define_factors(py::module& m) {
   // DistanceRejector
-  py::class_<DistanceRejector>(m, "DistanceRejector")  //
+  py::class_<DistanceRejector>(m, "DistanceRejector", "Correspondence rejection based on the distance between points.")
     .def(py::init<>())
-    .def("set_max_distance", [](DistanceRejector& rejector, double dist) { rejector.max_dist_sq = dist * dist; });
+    .def("set_max_distance", [](DistanceRejector& rejector, double dist) { rejector.max_dist_sq = dist * dist; }, py::arg("dist"), "Set the maximum distance.");
 
   // ICPFactor
-  py::class_<ICPFactor>(m, "ICPFactor")  //
+  py::class_<ICPFactor>(m, "ICPFactor", "ICP per-point factor")
     .def(py::init<>())
     .def(
       "linearize",
@@ -42,10 +42,17 @@ void define_factors(py::module& m) {
         double e = 0.0;
         bool succ = factor.linearize(target, source, kdtree, Eigen::Isometry3d(T), source_index, rejector, &H, &b, &e);
         return std::make_tuple(succ, H, b, e);
-      });
+      },
+      py::arg("target"),
+      py::arg("source"),
+      py::arg("kdtree"),
+      py::arg("T"),
+      py::arg("source_index"),
+      py::arg("rejector"),
+      "Linearize the factor. Returns a tuple of success, Hessian, gradient, and error.");
 
   // PointToPlaneICPFactor
-  py::class_<PointToPlaneICPFactor>(m, "PointToPlaneICPFactor")  //
+  py::class_<PointToPlaneICPFactor>(m, "PointToPlaneICPFactor", "Point-to-plane ICP per-point factor")
     .def(py::init<>())
     .def(
       "linearize",
@@ -62,10 +69,17 @@ void define_factors(py::module& m) {
         double e = 0.0;
         bool succ = factor.linearize(target, source, kdtree, Eigen::Isometry3d(T), source_index, rejector, &H, &b, &e);
         return std::make_tuple(succ, H, b, e);
-      });
+      },
+      py::arg("target"),
+      py::arg("source"),
+      py::arg("kdtree"),
+      py::arg("T"),
+      py::arg("source_index"),
+      py::arg("rejector"),
+      "Linearize the factor. Returns a tuple of success, Hessian, gradient, and error.");
 
   // GICPFactor
-  py::class_<GICPFactor>(m, "GICPFactor")  //
+  py::class_<GICPFactor>(m, "GICPFactor", "Generalized ICP per-point factor")  //
     .def(py::init<>())
     .def(
       "linearize",
@@ -82,5 +96,12 @@ void define_factors(py::module& m) {
         double e = 0.0;
         bool succ = factor.linearize(target, source, kdtree, Eigen::Isometry3d(T), source_index, rejector, &H, &b, &e);
         return std::make_tuple(succ, H, b, e);
-      });
+      },
+      py::arg("target"),
+      py::arg("source"),
+      py::arg("kdtree"),
+      py::arg("T"),
+      py::arg("source_index"),
+      py::arg("rejector"),
+      "Linearize the factor. Returns a tuple of success, Hessian, gradient, and error.");
 }

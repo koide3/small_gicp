@@ -16,7 +16,7 @@ using namespace small_gicp;
 
 void define_kdtree(py::module& m) {
   // KdTree
-  py::class_<KdTree<PointCloud>, std::shared_ptr<KdTree<PointCloud>>>(m, "KdTree")  //
+  py::class_<KdTree<PointCloud>, std::shared_ptr<KdTree<PointCloud>>>(m, "KdTree", "KdTree")  //
     .def(
       py::init([](const PointCloud::ConstPtr& points, int num_threads) { return std::make_shared<KdTree<PointCloud>>(points, KdTreeBuilderOMP(num_threads)); }),
       py::arg("points"),
@@ -28,11 +28,18 @@ void define_kdtree(py::module& m) {
         double k_sq_dist = std::numeric_limits<double>::max();
         const size_t found = traits::nearest_neighbor_search(kdtree, Eigen::Vector4d(pt.x(), pt.y(), pt.z(), 1.0), &k_index, &k_sq_dist);
         return std::make_tuple(found, k_index, k_sq_dist);
-      })
-    .def("knn_search", [](const KdTree<PointCloud>& kdtree, const Eigen::Vector3d& pt, int k) {
-      std::vector<size_t> k_indices(k, -1);
-      std::vector<double> k_sq_dists(k, std::numeric_limits<double>::max());
-      const size_t found = traits::knn_search(kdtree, Eigen::Vector4d(pt.x(), pt.y(), pt.z(), 1.0), k, k_indices.data(), k_sq_dists.data());
-      return std::make_pair(k_indices, k_sq_dists);
-    });
+      },
+      py::arg("pt"),
+      "Search the nearest neighbor. Returns a tuple of found flag, index, and squared distance.")
+    .def(
+      "knn_search",
+      [](const KdTree<PointCloud>& kdtree, const Eigen::Vector3d& pt, int k) {
+        std::vector<size_t> k_indices(k, -1);
+        std::vector<double> k_sq_dists(k, std::numeric_limits<double>::max());
+        const size_t found = traits::knn_search(kdtree, Eigen::Vector4d(pt.x(), pt.y(), pt.z(), 1.0), k, k_indices.data(), k_sq_dists.data());
+        return std::make_pair(k_indices, k_sq_dists);
+      },
+      py::arg("pt"),
+      py::arg("k"),
+      "Search the k-nearest neighbors. Returns a pair of indices and squared distances.");
 }
