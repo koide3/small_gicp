@@ -61,6 +61,12 @@ cd ~/.local/lib/python3.10/site-packages
 pybind11-stubgen -o . --ignore-invalid=all small_gicp
 ```
 
+## Documentation
+
+- Auto-generated docs: [C++](https://koide3.github.io/small_gicp/doc_cpp/index.html) [Python](https://koide3.github.io/small_gicp/doc_py/index.html)
+
+
+
 ## Usage (C++)
 
 The following examples assume `using namespace small_gicp` is placed somewhere.
