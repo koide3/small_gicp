@@ -11,18 +11,18 @@
 
 namespace small_gicp {
 
-/// @brief Gaussian voxel.
+/// @brief Gaussian voxel that computes and stores voxel mean and covariance.
 struct GaussianVoxel {
 public:
   struct Setting {};
 
-  /// @brief Constructor
+  /// @brief Constructor.
   GaussianVoxel() : finalized(false), num_points(0), mean(Eigen::Vector4d::Zero()), cov(Eigen::Matrix4d::Zero()) {}
 
-  /// @brief  Number of points in the voxel (Always 1 for GaussianVoxel)
+  /// @brief  Number of points in the voxel (Always 1 for GaussianVoxel).
   size_t size() const { return 1; }
 
-  /// @brief  Add a point to the voxel
+  /// @brief  Add a point to the voxel.
   /// @param  setting        Setting
   /// @param  transformed_pt Transformed point mean
   /// @param  points         Point cloud
@@ -41,7 +41,7 @@ public:
     this->cov += T.matrix() * traits::cov(points, i) * T.matrix().transpose();
   }
 
-  /// @brief Finalize the voxel mean and covariance
+  /// @brief Finalize the voxel mean and covariance.
   void finalize() {
     if (finalized) {
       return;

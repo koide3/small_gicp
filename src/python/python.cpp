@@ -14,7 +14,7 @@ void define_factors(py::module& m);
 void define_misc(py::module& m);
 
 PYBIND11_MODULE(small_gicp, m) {
-  m.doc() = "Small GICP";
+  m.doc() = "Efficient and parallel algorithms for point cloud registration";
 
   define_pointcloud(m);
   define_kdtree(m);

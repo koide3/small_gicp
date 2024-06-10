@@ -27,12 +27,13 @@ auto define_class(py::module& m, const std::string& name) {
         return sst.str();
       })
     .def("__len__", [](const VoxelMap& voxelmap) { return voxelmap.size(); })
-    .def("size", &VoxelMap::size)
+    .def("size", &VoxelMap::size, "Get the number of voxels.")
     .def(
       "insert",
       [](VoxelMap& voxelmap, const PointCloud& points, const Eigen::Matrix4d& T) { voxelmap.insert(points, Eigen::Isometry3d(T)); },
       py::arg("points"),
-      py::arg("T") = Eigen::Matrix4d::Identity())
+      py::arg("T") = Eigen::Matrix4d::Identity(),
+      "Insert a point cloud.")
     .def(
       "set_lru",
       [](VoxelMap& voxelmap, size_t horizon, size_t clear_cycle) {
@@ -40,24 +41,34 @@ auto define_class(py::module& m, const std::string& name) {
         voxelmap.lru_clear_cycle = clear_cycle;
       },
       py::arg("horizon") = 100,
-      py::arg("clear_cycle") = 10)
-    .def("voxel_points", [](const VoxelMap& voxelmap) -> Eigen::MatrixXd {
-      auto points = traits::voxel_points(voxelmap);
-      return Eigen::Map<const Eigen::Matrix<double, -1, -1, Eigen::RowMajor>>(points[0].data(), points.size(), 4);
-    });
+      py::arg("clear_cycle") = 10,
+      "Set the LRU cache parameters.")
+    .def(
+      "voxel_points",
+      [](const VoxelMap& voxelmap) -> Eigen::MatrixXd {
+        auto points = traits::voxel_points(voxelmap);
+        return Eigen::Map<const Eigen::Matrix<double, -1, -1, Eigen::RowMajor>>(points[0].data(), points.size(), 4);
+      },
+      "Get the voxel points.");
 
   if constexpr (has_normals) {
-    vox.def("voxel_normals", [](const VoxelMap& voxelmap) -> Eigen::MatrixXd {
-      auto normals = traits::voxel_normals(voxelmap);
-      return Eigen::Map<const Eigen::Matrix<double, -1, -1, Eigen::RowMajor>>(normals[0].data(), normals.size(), 4);
-    });
+    vox.def(
+      "voxel_normals",
+      [](const VoxelMap& voxelmap) -> Eigen::MatrixXd {
+        auto normals = traits::voxel_normals(voxelmap);
+        return Eigen::Map<const Eigen::Matrix<double, -1, -1, Eigen::RowMajor>>(normals[0].data(), normals.size(), 4);
+      },
+      "Get the voxel normals.");
   }
 
   if constexpr (has_covs) {
-    vox.def("voxel_covs", [](const VoxelMap& voxelmap) -> Eigen::MatrixXd {
-      auto covs = traits::voxel_covs(voxelmap);
-      return Eigen::Map<const Eigen::Matrix<double, -1, -1, Eigen::RowMajor>>(covs[0].data(), covs.size(), 16);
-    });
+    vox.def(
+      "voxel_covs",
+      [](const VoxelMap& voxelmap) -> Eigen::MatrixXd {
+        auto covs = traits::voxel_covs(voxelmap);
+        return Eigen::Map<const Eigen::Matrix<double, -1, -1, Eigen::RowMajor>>(covs[0].data(), covs.size(), 16);
+      },
+      "Get the voxel covariance matrices.");
   }
 };
 

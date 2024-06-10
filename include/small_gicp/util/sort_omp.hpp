@@ -11,6 +11,10 @@
 
 namespace small_gicp {
 
+/// @brief Implementation of merge sort with OpenMP parallelism. Do not call this directly. Use merge_sort_omp instead.
+/// @param first  First iterator
+/// @param last   Last iterator
+/// @param comp   Comparison function
 template <typename RandomAccessIterator, typename Compare>
 void merge_sort_omp_impl(RandomAccessIterator first, RandomAccessIterator last, const Compare& comp) {
   const size_t n = std::distance(first, last);
@@ -31,6 +35,12 @@ void merge_sort_omp_impl(RandomAccessIterator first, RandomAccessIterator last, 
   std::inplace_merge(first, center, last, comp);
 }
 
+/// @brief Merge sort with OpenMP parallelism.
+/// @note  This tends to be slower than quick_sort_omp.
+/// @param first        First iterator
+/// @param last         Last iterator
+/// @param comp         Comparison function
+/// @param num_threads  Number of threads
 template <typename RandomAccessIterator, typename Compare>
 void merge_sort_omp(RandomAccessIterator first, RandomAccessIterator last, const Compare& comp, int num_threads) {
 #ifndef _MSC_VER
@@ -44,6 +54,10 @@ void merge_sort_omp(RandomAccessIterator first, RandomAccessIterator last, const
 #endif
 }
 
+/// @brief Implementation of quick sort with OpenMP parallelism. Do not call this directly. Use quick_sort_omp instead.
+/// @param first  First iterator
+/// @param last   Last iterator
+/// @param comp   Comparison function
 template <typename RandomAccessIterator, typename Compare>
 void quick_sort_omp_impl(RandomAccessIterator first, RandomAccessIterator last, const Compare& comp) {
   const std::ptrdiff_t n = std::distance(first, last);
@@ -72,6 +86,11 @@ void quick_sort_omp_impl(RandomAccessIterator first, RandomAccessIterator last, 
   quick_sort_omp_impl(middle2, last, comp);
 }
 
+/// @brief Quick sort with OpenMP parallelism.
+/// @param first        First iterator
+/// @param last         Last iterator
+/// @param comp         Comparison function
+/// @param num_threads  Number of threads
 template <typename RandomAccessIterator, typename Compare>
 void quick_sort_omp(RandomAccessIterator first, RandomAccessIterator last, const Compare& comp, int num_threads) {
 #ifndef _MSC_VER

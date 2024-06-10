@@ -47,6 +47,10 @@ inline Eigen::Matrix3d skew(const Eigen::Vector3d& x) {
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
+
+/// @brief SO3 expmap.
+/// @param omega  [rx, ry, rz]
+/// @return       Quaternion
 inline Eigen::Quaterniond so3_exp(const Eigen::Vector3d& omega) {
   double theta_sq = omega.dot(omega);
 
@@ -67,6 +71,9 @@ inline Eigen::Quaterniond so3_exp(const Eigen::Vector3d& omega) {
 }
 
 // Rotation-first
+/// @brief SE3 expmap (Rotation-first).
+/// @param a  Twist vector [rx, ry, rz, tx, ty, tz]
+/// @return   SE3 matrix
 inline Eigen::Isometry3d se3_exp(const Eigen::Matrix<double, 6, 1>& a) {
   using std::cos;
   using std::sin;
