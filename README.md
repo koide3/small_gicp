@@ -1,12 +1,12 @@
-# small_gicp (fast_gicp2)
+# small_gicp
 
-**small_gicp** is a header-only C++ library that offers efficient and parallelized algorithms for fine point cloud registration (ICP, Point-to-Plane ICP, GICP, VGICP, etc.). It is a refined and optimized version of its predecessor, [fast_gicp](https://github.com/SMRT-AIST/fast_gicp), re-written from scratch with the following features.
+**small_gicp** is a header-only C++ library providing efficient and parallelized algorithms for fine point cloud registration (ICP, Point-to-Plane ICP, GICP, VGICP, etc.). It is a refined and optimized version of its predecessor, [fast_gicp](https://github.com/SMRT-AIST/fast_gicp), re-written from scratch with the following features.
 
-- **Highly Optimized** : The implementation of the core registration algorithm is further optimized from that in fast_gicp. It enables up to **2x speed gain**.
-- **All parallerized** : small_gicp offers parallel implementations of several preprocessing algorithms to make the entire registration process parallelized (Downsampling, KdTree construction, Normal/covariance estimation). As a parallelism backend, either (or both) [OpenMP](https://www.openmp.org/) and [Intel TBB](https://github.com/oneapi-src/oneTBB) can be used. 
-- **Minimum dependency** : Only [Eigen](https://eigen.tuxfamily.org/) (and bundled [nanoflann](https://github.com/jlblancoc/nanoflann) and [Sophus](https://github.com/strasdat/Sophus)) are required at a minimum. Optionally, it provides the [PCL](https://pointclouds.org/) registration interface so that it can be used as a drop-in replacement.
-- **Customizable** : small_gicp allows feeding any custom point cloud class to the registration algorithm via traits. Furthermore, the template-based implementation enables customizing the registration process with your original correspondence estimator and registration factors.
-- **Python bindings** : The isolation from PCL makes small_gicp's python bindings more portable and usable with other libraries (e.g., Open3D) without problems. 
+- **Highly Optimized** : The core registration algorithm implementation has been further optimized from fast_gicp, achieving up to **2x speed gain**.
+- **Fully parallerized** : small_gicp offers parallel implementations of several preprocessing algorithms, making the entire registration process parallelized (e.g., Downsampling, KdTree construction, Normal/Covariance estimation). It supports [OpenMP](https://www.openmp.org/) and [Intel TBB](https://github.com/oneapi-src/oneTBB) as parallelism backends.
+- **Minimum dependencies** : The library requires only [Eigen](https://eigen.tuxfamily.org/) along with the bundled [nanoflann](https://github.com/jlblancoc/nanoflann) and [Sophus](https://github.com/strasdat/Sophus). Optionally, it supports a [PCL](https://pointclouds.org/) registration interface for use as a drop-in replacement
+- **Customizable** : small_gicp allows the integration of any custom point cloud class into the registration algorithm via traits. Its template-based implementation enables customization of the registration process with original correspondence estimators and registration factors.
+- **Python bindings** : By being isolated from PCL, small_gicp's Python bindings are more portable and can be used seamlessly with other libraries such as Open3D.
 
 Note that GPU-based implementations are NOT included in this package.
 
@@ -17,7 +17,7 @@ If you find this package useful for your project, please consider leaving a comm
 
 ## Requirements
 
-This library uses some C++17 features. The PCL interface is not compatible with PCL older than 1.11 that uses `boost::shared_ptr`.
+This library uses C++17 features. The PCL interface is not compatible with PCL older than 1.11 that uses `boost::shared_ptr`.
 
 ## Dependencies
 
@@ -43,7 +43,7 @@ sudo make install
 
 ### Python (Linux / Windows / MacOS)
 
-#### Install from PyPI
+#### Install from [PyPI](https://pypi.org/project/small-gicp/)
 
 ```bash
 pip install small_gicp --user
@@ -413,25 +413,24 @@ Processing speed comparison between small_gicp and Open3D ([youtube]((https://yo
 
 - Single-threaded `small_gicp::voxelgrid_sampling` is about **1.3x faster** than `pcl::VoxelGrid`.
 - Multi-threaded `small_gicp::voxelgrid_sampling_tbb` (6 threads) is about **3.2x faster** than `pcl::VoxelGrid`.
-- `small_gicp::voxelgrid_sampling` gives accurate downsampling results (almost identical to those of `pcl::VoxelGrid`) while `pcl::ApproximateVoxelGrid` yields spurious points (up to 2x points).
-- `small_gicp::voxelgrid_sampling` can process a larger point cloud with a fine voxel resolution compared to `pcl::VoxelGrid` (for a point cloud of 1000m width, the minimum voxel resolution can be **0.5 mm**).
+- `small_gicp::voxelgrid_sampling` provides accurate downsampling results that are nearly identical to those of `pcl::VoxelGrid`, while `pcl::ApproximateVoxelGrid` can produce spurious points (up to 2x more points).
+- `small_gicp::voxelgrid_sampling` can handle larger point clouds with finer voxel resolutions compared to `pcl::VoxelGrid`. For a point cloud with a width of 1000m, the minimum voxel resolution can be **0.5 mm**.
 
 ![downsampling_comp](docs/assets/downsampling_comp.png)
 
 ### KdTree construction
 
-- Multi-threaded implementation (TBB and OMP) can be up to **6x faster** than the single-threaded one. The single-thread version shows almost equivalent performance with nanoflann.
-- ~~The processing speed gets faster as the number of threads increases, but the speed gain is not monotonic sometimes (because of the scheduling algorithm or some CPU(AMD 5995WX)-specific issues?)~~.
-- The new KdTree implementation shows a good scalability thanks to its well balanced task assignment.
-- This benchmark only compares the construction time (query time is not included). 
+- Multi-threaded implementation (TBB and OMP) can be up to **6x faster** than the single-threaded version. The single-thread version performs almost equivalently to nanoflann.
+- The new KdTree implementation demonstrates good scalability due to its well-balanced task assignment.
+- This benchmark compares only the construction time (query time is not included). Nearest neighbor queries are included and evaluated in the following odometry estimation evaluation.
 
 ![kdtree_time](docs/assets/kdtree_time.png)
 
 ### Odometry estimation
 
 - Single-thread `small_gicp::GICP` is about **2.4x and 1.9x faster** than `pcl::GICP` and `fast_gicp::GICP`, respectively.
-- `small_gicp::(GICP|VGICP)` shows a better multi-thread scalability compared to `fast_gicp::(GICP|VGICP)`.
-- `small_gicp::GICP` parallelized with [TBB flow graph](src/benchmark/odometry_benchmark_small_gicp_tbb_flow.cpp) shows an excellent scalability to many-threads situations (**~128 threads**) but with latency degradation.
+- `small_gicp::(GICP|VGICP)` demonstrates better multi-threaded scalability compared to `fast_gicp::(GICP|VGICP)`.
+- `small_gicp::GICP` parallelized with [TBB flow graph](src/benchmark/odometry_benchmark_small_gicp_tbb_flow.cpp) shows excellent scalability in many-threads scenarios (**~128 threads**), though with some latency degradation.
 - Outputs of `small_gicp::GICP` are almost identical to those of `fast_gicp::GICP`.
 
 ![odometry_time](docs/assets/odometry_time.png)
