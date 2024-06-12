@@ -46,14 +46,14 @@ sudo make install
 #### Install from [PyPI](https://pypi.org/project/small-gicp/)
 
 ```bash
-pip install small_gicp --user
+pip install small_gicp
 ```
 
 #### Install from source
 
 ```bash
 cd small_gicp
-pip install . --user
+pip install .
 
 # [Optional (linux)] Install stubs for autocomplete (If you know a better way, let me know...)
 pip install pybind11-stubgen
@@ -403,6 +403,31 @@ open3d.visualization.draw_geometries([target_o3d, source_o3d])
 ### Cookbook
 
 - [Scan-to-scan and scan-to-model GICP matching odometry on KITTI](src/example/kitti_odometry.py)
+
+## Running examples
+
+### C++
+
+```bash
+cd small_gicp
+mkdir build && cd build
+cmake .. -DBUILD_EXAMPLES=ON && make -j
+
+cd ..
+./build/01_basic_registration
+./build/02_basic_registration_pcl
+./build/03_registration_template
+```
+
+
+### Python
+
+```bash
+cd small_gicp
+pip install .
+
+python3 src/example/basic_registration.py
+```
 
 ## [Benchmark](BENCHMARK.md)
 
