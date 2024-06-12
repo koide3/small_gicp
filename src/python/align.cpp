@@ -108,7 +108,7 @@ void define_align(py::module& m) {
         registration_type : str = 'GICP'
             Type of registration algorithm to use ('ICP', 'PLANE_ICP', 'GICP', 'VGICP').
         voxel_resolution : float = 1.0
-            Resolution of voxels used for downsampling.
+            Resolution of voxels used for correspondence search (used only in VGICP).
         downsampling_resolution : float = 0.25
             Resolution for downsampling the point clouds.
         max_correspondence_distance : float = 1.0
