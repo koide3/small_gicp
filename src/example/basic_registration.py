@@ -9,6 +9,8 @@ import small_gicp
 
 # Basic registation example with numpy arrays
 def example_numpy1(target_raw_numpy : numpy.ndarray, source_raw_numpy : numpy.ndarray):
+  print('*** example_numpy1 ***')
+
   # Example A : Perform registration with numpy arrays
   # Arguments
   # - target_points               : Nx4 or Nx3 numpy array of the target point cloud
@@ -22,10 +24,15 @@ def example_numpy1(target_raw_numpy : numpy.ndarray, source_raw_numpy : numpy.nd
   # - num_threads                 : Number of threads
   result = small_gicp.align(target_raw_numpy, source_raw_numpy, downsampling_resolution=0.25)
 
+  print('--- registration result ---')
+  print(result)
+
   return result.T_target_source
 
 # Example to perform preprocessing and registration separately
 def example_numpy2(target_raw_numpy : numpy.ndarray, source_raw_numpy : numpy.ndarray):
+  print('*** example_numpy2 ***')
+
   # Example B : Perform preprocessing and registration separately
 
   # Preprocess point clouds
@@ -38,6 +45,9 @@ def example_numpy2(target_raw_numpy : numpy.ndarray, source_raw_numpy : numpy.nd
   target, target_tree = small_gicp.preprocess_points(target_raw_numpy, downsampling_resolution=0.25)
   source, source_tree = small_gicp.preprocess_points(source_raw_numpy, downsampling_resolution=0.25)
 
+  print('preprocessed target=', target)
+  print('preprocessed source=', source)
+
   # Align point clouds
   # Arguments
   # - target                      : Target point cloud (small_gicp.PointCloud)
@@ -48,12 +58,17 @@ def example_numpy2(target_raw_numpy : numpy.ndarray, source_raw_numpy : numpy.nd
   # - max_correspondence_distance : Maximum correspondence distance
   # - num_threads                 : Number of threads
   result = small_gicp.align(target, source, target_tree)
-  
+
+  print('--- registration result ---')
+  print(result)
+
   return result.T_target_source
 
 
 # Basic registation example with small_gicp.PointCloud
 def example_small1(target_raw_numpy : numpy.ndarray, source_raw_numpy : numpy.ndarray):
+  print('*** example_small1 ***')
+
   # Convert numpy arrays (Nx3 or Nx4) to small_gicp.PointCloud
   target_raw = small_gicp.PointCloud(target_raw_numpy)
   source_raw = small_gicp.PointCloud(source_raw_numpy)
@@ -61,13 +76,21 @@ def example_small1(target_raw_numpy : numpy.ndarray, source_raw_numpy : numpy.nd
   # Preprocess point clouds
   target, target_tree = small_gicp.preprocess_points(target_raw, downsampling_resolution=0.25)
   source, source_tree = small_gicp.preprocess_points(source_raw, downsampling_resolution=0.25)
-  
+
+  print('preprocessed target=', target)
+  print('preprocessed source=', source)
+
   result = small_gicp.align(target, source, target_tree)
+
+  print('--- registration result ---')
+  print(result)
   
   return result.T_target_source
   
 # Example to perform each preprocessing and registration separately
 def example_small2(target_raw_numpy : numpy.ndarray, source_raw_numpy : numpy.ndarray):
+  print('*** example_small2 ***')
+
   # Convert numpy arrays (Nx3 or Nx4) to small_gicp.PointCloud
   target_raw = small_gicp.PointCloud(target_raw_numpy)
   source_raw = small_gicp.PointCloud(source_raw_numpy)
@@ -79,13 +102,19 @@ def example_small2(target_raw_numpy : numpy.ndarray, source_raw_numpy : numpy.nd
   # KdTree construction
   target_tree = small_gicp.KdTree(target)
   source_tree = small_gicp.KdTree(source)
-  
+
   # Estimate covariances
   small_gicp.estimate_covariances(target, target_tree)
   small_gicp.estimate_covariances(source, source_tree)
 
+  print('preprocessed target=', target)
+  print('preprocessed source=', source)
+
   # Align point clouds  
   result = small_gicp.align(target, source, target_tree)
+
+  print('--- registration result ---')
+  print(result)
   
   return result.T_target_source
 
