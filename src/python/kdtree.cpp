@@ -86,7 +86,7 @@ void define_kdtree(py::module& m) {
            The squared distances to the k nearest neighbors.
      )""")
     .def(
-      "batch_nns_search",
+      "batch_nearest_neighbor_search",
       [](const KdTree<PointCloud>& kdtree, const Eigen::MatrixXd& pts) {
         std::vector<size_t> k_indices(pts.rows(), -1);
         std::vector<double> k_sq_dists(pts.rows(), std::numeric_limits<double>::max());
