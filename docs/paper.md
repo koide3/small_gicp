@@ -37,8 +37,8 @@ to offer efficiency, portability, and customizability.
 
 # Statement of need
 
-There are several point cloud processing libraries, and PCL @Rusu and Open3D
-@Zhou are the notable ones among them.
+There are several point cloud processing libraries, and PCL [@Rusu] and Open3D
+[@Zhou] are the notable ones among them.
 Although they offer numerous functionalities, including those required for point cloud
 registration, they present several challenges for practical applications and scientific
 research.
@@ -87,12 +87,12 @@ distribution-to-distribution correspondence).
     - Random sampling
 - Nearest neighbor search and point accumulation structures
     - KdTree
-    - Linear iVox (supports incremental points insertion and LRU-cache-based voxel deletion) @Bai
-    - Gaussian voxelmap (supports incremental points insertion and LRU-cache-based voxel deletion) @Koide
+    - Linear iVox (supports incremental points insertion and LRU-cache-based voxel deletion) [@Bai]
+    - Gaussian voxelmap (supports incremental points insertion and LRU-cache-based voxel deletion) [@Koide]
 - Registration error functions
-    - Point-to-point ICP error @Zhang
+    - Point-to-point ICP error [@Zhang]
     - Point-to-plane ICP error
-    - Generalized ICP error @Segal
+    - Generalized ICP error [@Segal]
     - Robust kernels
 - Least squares optimizers
     - GaussNewton optimizer
