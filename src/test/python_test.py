@@ -197,18 +197,18 @@ def test_kdtree(load_points):
   target, target_tree = small_gicp.preprocess_points(target_raw_numpy, downsampling_resolution=0.5)
   source, source_tree = small_gicp.preprocess_points(source_raw_numpy, downsampling_resolution=0.5)
   
-  target_tree_ref = KDTree(target.points())
-  source_tree_ref = KDTree(source.points())
-  
+  target_tree_ref = KDTree(target.points()[:, :3])
+  source_tree_ref = KDTree(source.points()[:, :3])
+
   def batch_test(points, queries, tree, tree_ref, num_threads):
     # test for batch interface
-    k_dists_ref, k_indices_ref = tree_ref.query(queries, k=1)
+    k_dists_ref, k_indices_ref = tree_ref.query(queries[:, :3], k=1)
     k_indices, k_sq_dists = tree.batch_nearest_neighbor_search(queries)
     assert numpy.all(numpy.abs(numpy.square(k_dists_ref) - k_sq_dists) < 1e-6)
     assert numpy.all(numpy.abs(numpy.linalg.norm(points[k_indices] - queries, axis=1) ** 2 - k_sq_dists) < 1e-6)
     
     for k in [2, 10]:
-      k_dists_ref, k_indices_ref = tree_ref.query(queries, k=k)
+      k_dists_ref, k_indices_ref = tree_ref.query(queries[:, :3], k=k)
       k_sq_dists_ref, k_indices_ref = numpy.array(k_dists_ref) ** 2, numpy.array(k_indices_ref)
       
       k_indices, k_sq_dists = tree.batch_knn_search(queries, k, num_threads=num_threads)
@@ -223,7 +223,7 @@ def test_kdtree(load_points):
     if num_threads != 1:
       return
 
-    k_dists_ref, k_indices_ref = tree_ref.query(queries, k=1)
+    k_dists_ref, k_indices_ref = tree_ref.query(queries[:, :3], k=1)
     k_indices2, k_sq_dists2 = [], []
     for query in queries:
       found, index, sq_dist = tree.nearest_neighbor_search(query[:3])
@@ -235,7 +235,7 @@ def test_kdtree(load_points):
     assert numpy.all(numpy.abs(numpy.linalg.norm(points[k_indices2] - queries, axis=1) ** 2 - k_sq_dists2) < 1e-6)
 
     for k in [2, 10]:
-      k_dists_ref, k_indices_ref = tree_ref.query(queries, k=k)
+      k_dists_ref, k_indices_ref = tree_ref.query(queries[:, :3], k=k)
       k_sq_dists_ref, k_indices_ref = numpy.array(k_dists_ref) ** 2, numpy.array(k_indices_ref)
       
       k_indices2, k_sq_dists2 = [], []
