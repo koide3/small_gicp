@@ -31,7 +31,7 @@ public:
   /// @param indices        Buffer to store indices (must be larger than k=max(N, num_neighbors))
   /// @param distances      Buffer to store distances (must be larger than k=max(N, num_neighbors))
   /// @param num_neighbors  Number of neighbors to search (must be -1 for static case N > 0)
-  explicit KnnResult(size_t* indices, double* distances, int num_neighbors = -1) : num_neighbors(num_neighbors), indices(indices), distances(distances) {
+  explicit KnnResult(size_t* indices, double* distances, int num_neighbors = -1) : capacity(num_neighbors), num_found_neighbors(0), indices(indices), distances(distances) {
     if constexpr (N > 0) {
       if (num_neighbors >= 0) {
         std::cerr << "warning: Specifying dynamic num_neighbors=" << num_neighbors << " for a static KNN result container (N=" << N << ")" << std::endl;
@@ -53,12 +53,12 @@ public:
     if constexpr (N > 0) {
       return N;
     } else {
-      return num_neighbors;
+      return capacity;
     }
   }
 
   /// @brief Number of found neighbors.
-  size_t num_found() const { return std::distance(indices, std::find(indices, indices + buffer_size(), INVALID)); }
+  size_t num_found() const { return num_found_neighbors; }
 
   /// @brief Worst distance in the result.
   double worst_distance() const { return distances[buffer_size() - 1]; }
@@ -73,21 +73,22 @@ public:
       indices[0] = index;
       distances[0] = distance;
     } else {
-      for (int i = buffer_size() - 1; i >= 0; i--) {
-        if (i == 0 || distance >= distances[i - 1]) {
-          indices[i] = index;
-          distances[i] = distance;
-          break;
-        }
-
-        indices[i] = indices[i - 1];
-        distances[i] = distances[i - 1];
+      int insert_loc = std::min<int>(num_found_neighbors, buffer_size() - 1);
+      for (; insert_loc > 0 && distance < distances[insert_loc - 1]; insert_loc--) {
+        indices[insert_loc] = indices[insert_loc - 1];
+        distances[insert_loc] = distances[insert_loc - 1];
       }
+
+      indices[insert_loc] = index;
+      distances[insert_loc] = distance;
     }
+
+    num_found_neighbors = std::min<int>(num_found_neighbors + 1, buffer_size());
   }
 
 public:
-  const int num_neighbors;  ///< Maximum number of neighbors to search
+  const int capacity;       ///< Maximum number of neighbors to search
+  int num_found_neighbors;  ///< Number of found neighbors
   size_t* indices;          ///< Indices of neighbors
   double* distances;        ///< Distances to neighbors
 };
