@@ -2,6 +2,7 @@
 # SPDX-FileCopyrightText: Copyright 2024 Kenji Koide
 # SPDX-License-Identifier: MIT
 import numpy
+from scipy.spatial import KDTree
 from scipy.spatial.transform import Rotation
 
 import small_gicp
@@ -188,3 +189,69 @@ def test_registration(load_points):
   
   result = small_gicp.align(target_voxelmap, source)
   verify_result(result.T_target_source, gt_T_target_source)
+
+# KdTree test
+def test_kdtree(load_points):
+  _, target_raw_numpy, source_raw_numpy = load_points
+
+  target, target_tree = small_gicp.preprocess_points(target_raw_numpy, downsampling_resolution=0.5)
+  source, source_tree = small_gicp.preprocess_points(source_raw_numpy, downsampling_resolution=0.5)
+  
+  target_tree_ref = KDTree(target.points())
+  source_tree_ref = KDTree(source.points())
+  
+  def batch_test(points, queries, tree, tree_ref, num_threads):
+    # test for batch interface
+    k_dists_ref, k_indices_ref = tree_ref.query(queries, k=1)
+    k_indices, k_sq_dists = tree.batch_nearest_neighbor_search(queries)
+    assert numpy.all(numpy.abs(numpy.square(k_dists_ref) - k_sq_dists) < 1e-6)
+    assert numpy.all(numpy.abs(numpy.linalg.norm(points[k_indices] - queries, axis=1) ** 2 - k_sq_dists) < 1e-6)
+    
+    for k in [2, 10]:
+      k_dists_ref, k_indices_ref = tree_ref.query(queries, k=k)
+      k_sq_dists_ref, k_indices_ref = numpy.array(k_dists_ref) ** 2, numpy.array(k_indices_ref)
+      
+      k_indices, k_sq_dists = tree.batch_knn_search(queries, k, num_threads=num_threads)
+      k_indices, k_sq_dists = numpy.array(k_indices), numpy.array(k_sq_dists)
+
+      assert(numpy.all(numpy.abs(k_sq_dists_ref - k_sq_dists) < 1e-6))
+      for i in range(k):
+        diff = numpy.linalg.norm(points[k_indices[:, i]] - queries, axis=1) ** 2 - k_sq_dists[:, i]
+        assert(numpy.all(numpy.abs(diff) < 1e-6))
+
+    # test for single query interface
+    if num_threads != 1:
+      return
+
+    k_dists_ref, k_indices_ref = tree_ref.query(queries, k=1)
+    k_indices2, k_sq_dists2 = [], []
+    for query in queries:
+      found, index, sq_dist = tree.nearest_neighbor_search(query[:3])
+      assert found
+      k_indices2.append(index)
+      k_sq_dists2.append(sq_dist)
+    
+    assert numpy.all(numpy.abs(numpy.square(k_dists_ref) - k_sq_dists2) < 1e-6)
+    assert numpy.all(numpy.abs(numpy.linalg.norm(points[k_indices2] - queries, axis=1) ** 2 - k_sq_dists2) < 1e-6)
+
+    for k in [2, 10]:
+      k_dists_ref, k_indices_ref = tree_ref.query(queries, k=k)
+      k_sq_dists_ref, k_indices_ref = numpy.array(k_dists_ref) ** 2, numpy.array(k_indices_ref)
+      
+      k_indices2, k_sq_dists2 = [], []
+      for query in queries:
+        indices, sq_dists = tree.knn_search(query[:3], k)
+        k_indices2.append(indices)
+        k_sq_dists2.append(sq_dists)
+      k_indices2, k_sq_dists2 = numpy.array(k_indices2), numpy.array(k_sq_dists2)
+      
+      assert(numpy.all(numpy.abs(k_sq_dists_ref - k_sq_dists2) < 1e-6))
+      for i in range(k):
+        diff = numpy.linalg.norm(points[k_indices2[:, i]] - queries, axis=1) ** 2 - k_sq_dists2[:, i]
+        assert(numpy.all(numpy.abs(diff) < 1e-6))
+      
+
+  for num_threads in [1, 2]:
+    batch_test(target.points(), target.points(), target_tree, target_tree_ref, num_threads=num_threads)
+    batch_test(target.points(), source.points(), target_tree, target_tree_ref, num_threads=num_threads)
+    batch_test(source.points(), target.points(), source_tree, source_tree_ref, num_threads=num_threads)
