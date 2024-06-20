@@ -58,6 +58,7 @@ void define_kdtree(py::module& m) {
          k_sq_dist : float
              The squared distance to the nearest neighbor.
        )""")
+
     .def(
       "knn_search",
       [](const KdTree<PointCloud>& kdtree, const Eigen::Vector3d& pt, int k) {
@@ -85,11 +86,18 @@ void define_kdtree(py::module& m) {
        k_sq_dists : NDArray, shape (k,)
            The squared distances to the k nearest neighbors.
      )""")
+
     .def(
       "batch_nearest_neighbor_search",
-      [](const KdTree<PointCloud>& kdtree, const Eigen::MatrixXd& pts) {
+      [](const KdTree<PointCloud>& kdtree, const Eigen::MatrixXd& pts, int num_threads) {
+        if (pts.cols() != 3 && pts.cols() != 4) {
+          throw std::invalid_argument("pts must have shape (n, 3) or (n, 4)");
+        }
+
         std::vector<size_t> k_indices(pts.rows(), -1);
         std::vector<double> k_sq_dists(pts.rows(), std::numeric_limits<double>::max());
+
+#pragma omp parallel for num_threads(num_threads)
         for (int i = 0; i < pts.rows(); ++i) {
           const size_t found = traits::nearest_neighbor_search(kdtree, Eigen::Vector4d(pts(i, 0), pts(i, 1), pts(i, 2), 1.0), &k_indices[i], &k_sq_dists[i]);
           if (!found) {
@@ -97,16 +105,20 @@ void define_kdtree(py::module& m) {
             k_sq_dists[i] = std::numeric_limits<double>::max();
           }
         }
+
         return std::make_pair(k_indices, k_sq_dists);
       },
       py::arg("pts"),
+      py::arg("num_threads") = 1,
       R"""(
        Find the nearest neighbors for a batch of points.
 
        Parameters
        ----------
-       pts : NDArray, shape (n, 3)
+       pts : NDArray, shape (n, 3) or (n, 4)
            The input points.
+       num_threads : int, optional
+           The number of threads to use for the search. Default is 1.
 
        Returns
        -------
@@ -115,11 +127,18 @@ void define_kdtree(py::module& m) {
        k_sq_dists : NDArray, shape (n,)
            The squared distances to the nearest neighbors for each input point.
      )""")
+
     .def(
       "batch_knn_search",
-      [](const KdTree<PointCloud>& kdtree, const Eigen::MatrixXd& pts, int k) {
+      [](const KdTree<PointCloud>& kdtree, const Eigen::MatrixXd& pts, int k, int num_threads) {
+        if (pts.cols() != 3 && pts.cols() != 4) {
+          throw std::invalid_argument("pts must have shape (n, 3) or (n, 4)");
+        }
+
         std::vector<std::vector<size_t>> k_indices(pts.rows(), std::vector<size_t>(k, -1));
         std::vector<std::vector<double>> k_sq_dists(pts.rows(), std::vector<double>(k, std::numeric_limits<double>::max()));
+
+#pragma omp parallel for num_threads(num_threads)
         for (int i = 0; i < pts.rows(); ++i) {
           const size_t found = traits::knn_search(kdtree, Eigen::Vector4d(pts(i, 0), pts(i, 1), pts(i, 2), 1.0), k, k_indices[i].data(), k_sq_dists[i].data());
           if (found < k) {
@@ -129,19 +148,23 @@ void define_kdtree(py::module& m) {
             }
           }
         }
+
         return std::make_pair(k_indices, k_sq_dists);
       },
       py::arg("pts"),
       py::arg("k"),
+      py::arg("num_threads") = 1,
       R"""(
        Find the k nearest neighbors for a batch of points.
 
        Parameters
        ----------
-       pts : NDArray, shape (n, 3)
+       pts : NDArray, shape (n, 3) or (n, 4)
            The input points.
        k : int
            The number of nearest neighbors to search for.
+       num_threads : int, optional
+           The number of threads to use for the search. Default is 1.
 
        Returns
        -------
