@@ -7,6 +7,8 @@ on:
       - doci
     tags:
       - '*'
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 jobs:
   gendoc:
@@ -22,10 +24,8 @@ jobs:
       - name: Install python dependencies
         run: python -m pip install mkdocs mkdocs-material
       
-      -name: Generate documentation
-        run: |
-          cd docs && make all
+      - name: Generate documentation
+        run: cd docs && make all
       
       - name: Deploy documentation
-        run: |
-          cd docs && make deploy
+        run: cd docs && make deploy
