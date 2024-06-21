@@ -106,7 +106,7 @@ struct LevenbergMarquardtOptimizer {
       bool success = false;
       for (int j = 0; j < max_inner_iterations; j++) {
         // Solve with damping
-        const Eigen::Matrix<double, 6, 1> delta = (H + lambda * Eigen ::Matrix<double, 6, 6>::Identity()).ldlt().solve(-b);
+        const Eigen::Matrix<double, 6, 1> delta = (H + lambda * Eigen::Matrix<double, 6, 6>::Identity()).ldlt().solve(-b);
 
         // Validte new solution
         const Eigen::Isometry3d new_T = result.T_target_source * se3_exp(delta);
