@@ -17,6 +17,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Configure Git Credentials
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+
       - name : Install dependencies
         run: sudo apt-get install -y git cmake build-essential doxygen python3-dev python3-pip pybind11-dev libeigen3-dev libomp-dev python3-sphinx python3-sphinx-rtd-theme
 
@@ -26,5 +31,10 @@ jobs:
       - name: Generate documentation
         run: cd docs && make all
       
+      - uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: ./site/*
+
       - name: Deploy documentation
         run: cd docs && make deploy
