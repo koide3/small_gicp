@@ -9,6 +9,7 @@
 project = 'small_gicp'
 copyright = '2024, k.koide'
 author = 'k.koide'
+version = '0.1.1'
 
 import os
 import sys
