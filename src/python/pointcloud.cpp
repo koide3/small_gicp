@@ -16,26 +16,38 @@ using namespace small_gicp;
 void define_pointcloud(py::module& m) {
   // PointCloud
   py::class_<PointCloud, std::shared_ptr<PointCloud>>(m, "PointCloud")  //
-    .def(py::init([](const Eigen::MatrixXd& points) {
-      if (points.cols() != 3 && points.cols() != 4) {
-        std::cerr << "points must be Nx3 or Nx4" << std::endl;
-        return std::make_shared<PointCloud>();
-      }
-
-      auto pc = std::make_shared<PointCloud>();
-      pc->resize(points.rows());
-      if (points.cols() == 3) {
-        for (size_t i = 0; i < points.rows(); i++) {
-          pc->point(i) << points.row(i).transpose(), 1.0;
+    .def(
+      py::init([](const Eigen::MatrixXd& points) {
+        if (points.cols() != 3 && points.cols() != 4) {
+          std::cerr << "points must be Nx3 or Nx4" << std::endl;
+          return std::make_shared<PointCloud>();
         }
-      } else {
-        for (size_t i = 0; i < points.rows(); i++) {
-          pc->point(i) << points.row(i).transpose();
-        }
-      }
 
-      return pc;
-    }))  //
+        auto pc = std::make_shared<PointCloud>();
+        pc->resize(points.rows());
+        if (points.cols() == 3) {
+          for (size_t i = 0; i < points.rows(); i++) {
+            pc->point(i) << points.row(i).transpose(), 1.0;
+          }
+        } else {
+          for (size_t i = 0; i < points.rows(); i++) {
+            pc->point(i) << points.row(i).transpose();
+          }
+        }
+
+        return pc;
+      }),
+      py::arg("points"),
+      R"""(
+      PointCloud(points: numpy.ndarray)
+
+      Construct a PointCloud from numpy.
+
+      Parameters
+      ----------
+      points : numpy.ndarray, shape (n, 3) or (n, 4)
+          The input point cloud.
+      )""")
     .def("__repr__", [](const PointCloud& points) { return "small_gicp.PointCloud (" + std::to_string(points.size()) + " points)"; })
     .def("__len__", [](const PointCloud& points) { return points.size(); })
     .def(

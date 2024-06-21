@@ -52,14 +52,16 @@ void define_kdtree(py::module& m) {
       py::arg("points"),
       py::arg("num_threads") = 1,
       R"""(
-         Construct a KdTree from a point cloud.
+        KdTree(points: PointCloud, num_threads: int = 1)
 
-         Parameters
-         ----------
-         points : PointCloud
-             The input point cloud.
-         num_threads : int, optional
-             The number of threads to use for KdTree construction. Default is 1.
+        Construct a KdTree from a point cloud.
+
+        Parameters
+        ----------
+        points : PointCloud
+            The input point cloud.
+        num_threads : int, optional
+            The number of threads to use for KdTree construction. Default is 1.
        )""")
 
     .def(
@@ -72,21 +74,21 @@ void define_kdtree(py::module& m) {
       },
       py::arg("pt"),
       R"""(
-         Find the nearest neighbor to a given point.
+        Find the nearest neighbor to a given point.
 
-         Parameters
-         ----------
-         pt : numpy.ndarray, shape (3,)
-             The input point.
+        Parameters
+        ----------
+        pt : numpy.ndarray, shape (3,)
+            The input point.
 
-         Returns
-         -------
-         found : int
-             Whether a neighbor was found (1 if found, 0 if not).
-         k_index : int
-             The index of the nearest neighbor in the point cloud.
-         k_sq_dist : float
-             The squared distance to the nearest neighbor.
+        Returns
+        -------
+        found : int
+            Whether a neighbor was found (1 if found, 0 if not).
+        k_index : int
+            The index of the nearest neighbor in the point cloud.
+        k_sq_dist : float
+            The squared distance to the nearest neighbor.
        )""")
 
     .def(
@@ -100,21 +102,21 @@ void define_kdtree(py::module& m) {
       py::arg("pt"),
       py::arg("k"),
       R"""(
-       Find the k nearest neighbors to a given point.
+        Find the k nearest neighbors to a given point.
 
-       Parameters
-       ----------
-       pt : numpy.ndarray, shape (3,)
-           The input point.
-       k : int
-           The number of nearest neighbors to search for.
+        Parameters
+        ----------
+        pt : numpy.ndarray, shape (3,)
+            The input point.
+        k : int
+            The number of nearest neighbors to search for.
 
-       Returns
-       -------
-       k_indices : numpy.ndarray, shape (k,)
-           The indices of the k nearest neighbors in the point cloud.
-       k_sq_dists : numpy.ndarray, shape (k,)
-           The squared distances to the k nearest neighbors.
+        Returns
+        -------
+        k_indices : numpy.ndarray, shape (k,)
+            The indices of the k nearest neighbors in the point cloud.
+        k_sq_dists : numpy.ndarray, shape (k,)
+            The squared distances to the k nearest neighbors.
      )""")
 
     .def(
@@ -141,21 +143,21 @@ void define_kdtree(py::module& m) {
       py::arg("pts"),
       py::arg("num_threads") = 1,
       R"""(
-       Find the nearest neighbors for a batch of points.
+        Find the nearest neighbors for a batch of points.
 
-       Parameters
-       ----------
-       pts : numpy.ndarray, shape (n, 3) or (n, 4)
-           The input points.
-       num_threads : int, optional
-           The number of threads to use for the search. Default is 1.
+        Parameters
+        ----------
+        pts : numpy.ndarray, shape (n, 3) or (n, 4)
+            The input points.
+        num_threads : int, optional
+            The number of threads to use for the search. Default is 1.
 
-       Returns
-       -------
-       k_indices : numpy.ndarray, shape (n,)
-           The indices of the nearest neighbors for each input point.
-       k_sq_dists : numpy.ndarray, shape (n,)
-           The squared distances to the nearest neighbors for each input point.
+        Returns
+        -------
+        k_indices : numpy.ndarray, shape (n,)
+            The indices of the nearest neighbors for each input point.
+        k_sq_dists : numpy.ndarray, shape (n,)
+            The squared distances to the nearest neighbors for each input point.
      )""")
 
     .def(
@@ -185,22 +187,22 @@ void define_kdtree(py::module& m) {
       py::arg("k"),
       py::arg("num_threads") = 1,
       R"""(
-       Find the k nearest neighbors for a batch of points.
+        Find the k nearest neighbors for a batch of points.
 
-       Parameters
-       ----------
-       pts : numpy.ndarray, shape (n, 3) or (n, 4)
-           The input points.
-       k : int
-           The number of nearest neighbors to search for.
-       num_threads : int, optional
-           The number of threads to use for the search. Default is 1.
+        Parameters
+        ----------
+        pts : numpy.ndarray, shape (n, 3) or (n, 4)
+            The input points.
+        k : int
+            The number of nearest neighbors to search for.
+        num_threads : int, optional
+            The number of threads to use for the search. Default is 1.
 
-       Returns
-       -------
-       k_indices : list of numpy.ndarray, shape (n,)
-           The list of indices of the k nearest neighbors for each input point.
-       k_sq_dists : list of numpy.ndarray, shape (n,)
-           The list of squared distances to the k nearest neighbors for each input point.
+        Returns
+        -------
+        k_indices : list of numpy.ndarray, shape (n,)
+            The list of indices of the k nearest neighbors for each input point.
+        k_sq_dists : list of numpy.ndarray, shape (n,)
+            The list of squared distances to the k nearest neighbors for each input point.
      )""");
 }

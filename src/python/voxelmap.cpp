@@ -18,7 +18,18 @@ using namespace small_gicp;
 template <typename VoxelMap, bool has_normals, bool has_covs>
 auto define_class(py::module& m, const std::string& name) {
   py::class_<VoxelMap> vox(m, name.c_str());
-  vox.def(py::init<double>())
+  vox
+    .def(
+      py::init<double>(),
+      py::arg("leaf_size"),
+      R"pbdoc(
+        Construct a VoxelMap.
+
+        Parameters
+        ----------
+        leaf_size : float
+            Voxel size.
+        )pbdoc")
     .def(
       "__repr__",
       [=](const VoxelMap& voxelmap) {
