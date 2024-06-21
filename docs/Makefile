@@ -25,4 +25,4 @@ all: cpp py mkdocs
 .PHONY: deploy
 deploy:
 	@echo "Deploying documentation..."
-	cd .. && mkdocs gh-deploy
+	cd .. && mkdocs gh-deploy --force

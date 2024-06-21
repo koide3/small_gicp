@@ -9,6 +9,7 @@
 project = 'small_gicp'
 copyright = '2024, k.koide'
 author = 'k.koide'
+version = '0.1.1'
 
 import os
 import sys
@@ -22,6 +23,7 @@ extensions = ['sphinx.ext.autodoc', 'sphinx.ext.napoleon']
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
+autoclass_content = 'both'
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output

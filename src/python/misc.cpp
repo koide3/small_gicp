@@ -22,6 +22,6 @@ void define_misc(py::module& m) {
       const auto points = read_ply(filename);
       return std::make_shared<PointCloud>(points);
     },
-    "Read PLY file",
+    "Read PLY file. This function can only read simple point clouds with XYZ properties for testing. Do not use this for general PLY IO.",
     py::arg("filename"));
 }

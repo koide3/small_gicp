@@ -18,7 +18,18 @@ using namespace small_gicp;
 template <typename VoxelMap, bool has_normals, bool has_covs>
 auto define_class(py::module& m, const std::string& name) {
   py::class_<VoxelMap> vox(m, name.c_str());
-  vox.def(py::init<double>())
+  vox
+    .def(
+      py::init<double>(),
+      py::arg("leaf_size"),
+      R"pbdoc(
+        Construct a VoxelMap.
+
+        Parameters
+        ----------
+        leaf_size : float
+            Voxel size.
+        )pbdoc")
     .def(
       "__repr__",
       [=](const VoxelMap& voxelmap) {
@@ -27,13 +38,32 @@ auto define_class(py::module& m, const std::string& name) {
         return sst.str();
       })
     .def("__len__", [](const VoxelMap& voxelmap) { return voxelmap.size(); })
-    .def("size", &VoxelMap::size, "Get the number of voxels.")
+    .def(
+      "size",
+      &VoxelMap::size,
+      R"pbdoc(
+        Get the number of voxels.
+
+        Returns
+        -------
+        num_voxels : int
+            Number of voxels.
+        )pbdoc")
     .def(
       "insert",
       [](VoxelMap& voxelmap, const PointCloud& points, const Eigen::Matrix4d& T) { voxelmap.insert(points, Eigen::Isometry3d(T)); },
       py::arg("points"),
       py::arg("T") = Eigen::Matrix4d::Identity(),
-      "Insert a point cloud.")
+      R"pbdoc(
+        Insert a point cloud into the voxel map.
+
+        Parameters
+        ----------
+        points : PointCloud
+            Input source point cloud.
+        T : numpy.ndarray, optional
+            Transformation matrix to be applied to the input point cloud (i.e., T_voxelmap_source). (default: identity)
+        )pbdoc")
     .def(
       "set_lru",
       [](VoxelMap& voxelmap, size_t horizon, size_t clear_cycle) {
@@ -42,14 +72,30 @@ auto define_class(py::module& m, const std::string& name) {
       },
       py::arg("horizon") = 100,
       py::arg("clear_cycle") = 10,
-      "Set the LRU cache parameters.")
+      R"pbdoc(
+        Set the LRU cache parameters.
+
+        Parameters
+        ----------
+        horizon : int, optional
+            LRU horizon size. Voxels that have not been accessed for lru_horizon steps are deleted. (default: 100)
+        clear_cycle : int, optional
+            LRU clear cycle. Voxel deletion is performed every lru_clear_cycle steps. (default: 10)
+        )pbdoc")
     .def(
       "voxel_points",
       [](const VoxelMap& voxelmap) -> Eigen::MatrixXd {
         auto points = traits::voxel_points(voxelmap);
         return Eigen::Map<const Eigen::Matrix<double, -1, -1, Eigen::RowMajor>>(points[0].data(), points.size(), 4);
       },
-      "Get the voxel points.");
+      R"pbdoc(
+        Get the voxel points.
+
+        Returns
+        -------
+        voxel_points : numpy.ndarray
+            Voxel points. (Nx4)
+        )pbdoc");
 
   if constexpr (has_normals) {
     vox.def(
@@ -58,7 +104,14 @@ auto define_class(py::module& m, const std::string& name) {
         auto normals = traits::voxel_normals(voxelmap);
         return Eigen::Map<const Eigen::Matrix<double, -1, -1, Eigen::RowMajor>>(normals[0].data(), normals.size(), 4);
       },
-      "Get the voxel normals.");
+      R"pbdoc(
+        Get the voxel normals.
+
+        Returns
+        -------
+        voxel_normals : numpy.ndarray
+            Voxel normals. (Nx4)
+        )pbdoc");
   }
 
   if constexpr (has_covs) {
@@ -68,7 +121,14 @@ auto define_class(py::module& m, const std::string& name) {
         auto covs = traits::voxel_covs(voxelmap);
         return Eigen::Map<const Eigen::Matrix<double, -1, -1, Eigen::RowMajor>>(covs[0].data(), covs.size(), 16);
       },
-      "Get the voxel covariance matrices.");
+      R"pbdoc(
+        Get the voxel normals.
+
+        Returns
+        -------
+        voxel_covs : list of numpy.ndarray
+            Voxel covariance matrices. (Nx4x4)
+        )pbdoc");
   }
 };
 
