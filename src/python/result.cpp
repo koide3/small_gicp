@@ -33,11 +33,11 @@ void define_result(py::module& m) {
     .def_property_readonly(
       "T_target_source",
       [](const RegistrationResult& result) -> Eigen::Matrix4d { return result.T_target_source.matrix(); },
-      "Final transformation matrix")
-    .def_readonly("converged", &RegistrationResult::converged, "Convergence flag")
-    .def_readonly("iterations", &RegistrationResult::iterations, "Number of iterations")
-    .def_readonly("num_inliers", &RegistrationResult::num_inliers, "Number of inliers")
-    .def_readonly("H", &RegistrationResult::H, "Final Hessian matrix")
-    .def_readonly("b", &RegistrationResult::b, "Final information vector")
-    .def_readonly("error", &RegistrationResult::error, "Final error");
+      "NDArray[np.float64] : Final transformation matrix (4x4). This transformation brings a point in the source cloud frame to the target cloud frame.")
+    .def_readonly("converged", &RegistrationResult::converged, "bool : Convergence flag")
+    .def_readonly("iterations", &RegistrationResult::iterations, "int : Number of iterations")
+    .def_readonly("num_inliers", &RegistrationResult::num_inliers, "int : Number of inliers")
+    .def_readonly("H", &RegistrationResult::H, "NDArray[np.float64] : Final Hessian matrix (6x6)")
+    .def_readonly("b", &RegistrationResult::b, "NDArray[np.float64] : Final information vector (6,)")
+    .def_readonly("error", &RegistrationResult::error, "float : Final error");
 }

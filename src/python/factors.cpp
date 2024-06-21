@@ -22,7 +22,18 @@ void define_factors(py::module& m) {
   // DistanceRejector
   py::class_<DistanceRejector>(m, "DistanceRejector", "Correspondence rejection based on the distance between points.")
     .def(py::init<>())
-    .def("set_max_distance", [](DistanceRejector& rejector, double dist) { rejector.max_dist_sq = dist * dist; }, py::arg("dist"), "Set the maximum distance.");
+    .def(
+      "set_max_distance",
+      [](DistanceRejector& rejector, double dist) { rejector.max_dist_sq = dist * dist; },
+      py::arg("dist"),
+      R"pbdoc(
+        Set maximum correspondence distance.
+
+        Parameters
+        ----------
+        dist : float
+            Maximum correspondence distance.
+        )pbdoc");
 
   // ICPFactor
   py::class_<ICPFactor>(m, "ICPFactor", "ICP per-point factor")
@@ -49,7 +60,35 @@ void define_factors(py::module& m) {
       py::arg("T"),
       py::arg("source_index"),
       py::arg("rejector"),
-      "Linearize the factor. Returns a tuple of success, Hessian, gradient, and error.");
+      R"pbdoc(
+        Linearize the factor.
+
+        Parameters
+        ----------
+        target : PointCloud
+            Target point cloud.
+        source : PointCloud
+            Source point cloud.
+        kdtree : KdTree
+            KdTree for the target point cloud.
+        T : numpy.ndarray
+            Transformation matrix. (4x4)
+        source_index : int
+            Index of the source point.
+        rejector : DistanceRejector
+            Correspondence rejector.
+
+        Returns
+        -------
+        success: bool
+            Success flag.
+        H : numpy.ndarray
+            Hessian matrix (6x6).
+        b : numpy.ndarray
+            Gradient vector (6,).
+        e : float
+            Error.
+        )pbdoc");
 
   // PointToPlaneICPFactor
   py::class_<PointToPlaneICPFactor>(m, "PointToPlaneICPFactor", "Point-to-plane ICP per-point factor")
@@ -76,7 +115,35 @@ void define_factors(py::module& m) {
       py::arg("T"),
       py::arg("source_index"),
       py::arg("rejector"),
-      "Linearize the factor. Returns a tuple of success, Hessian, gradient, and error.");
+      R"pbdoc(
+        Linearize the factor.
+
+        Parameters
+        ----------
+        target : PointCloud
+            Target point cloud.
+        source : PointCloud
+            Source point cloud.
+        kdtree : KdTree
+            KdTree for the target point cloud.
+        T : numpy.ndarray
+            Transformation matrix. (4x4)
+        source_index : int
+            Index of the source point.
+        rejector : DistanceRejector
+            Correspondence rejector.
+
+        Returns
+        -------
+        success: bool
+            Success flag.
+        H : numpy.ndarray
+            Hessian matrix (6x6).
+        b : numpy.ndarray
+            Gradient vector (6,).
+        e : float
+            Error.
+        )pbdoc");
 
   // GICPFactor
   py::class_<GICPFactor>(m, "GICPFactor", "Generalized ICP per-point factor")  //
@@ -103,5 +170,33 @@ void define_factors(py::module& m) {
       py::arg("T"),
       py::arg("source_index"),
       py::arg("rejector"),
-      "Linearize the factor. Returns a tuple of success, Hessian, gradient, and error.");
+      R"pbdoc(
+        Linearize the factor.
+
+        Parameters
+        ----------
+        target : PointCloud
+            Target point cloud.
+        source : PointCloud
+            Source point cloud.
+        kdtree : KdTree
+            KdTree for the target point cloud.
+        T : numpy.ndarray
+            Transformation matrix. (4x4)
+        source_index : int
+            Index of the source point.
+        rejector : DistanceRejector
+            Correspondence rejector.
+
+        Returns
+        -------
+        success: bool
+            Success flag.
+        H : numpy.ndarray
+            Hessian matrix (6x6).
+        b : numpy.ndarray
+            Gradient vector (6,).
+        e : float
+            Error.
+        )pbdoc");
 }

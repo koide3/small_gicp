@@ -18,6 +18,36 @@ void define_kdtree(py::module& m) {
   // KdTree
   py::class_<KdTree<PointCloud>, std::shared_ptr<KdTree<PointCloud>>>(m, "KdTree")  //
     .def(
+      py::init([](const Eigen::MatrixXd& points_numpy, int num_threads) {
+        if (points_numpy.cols() != 3 && points_numpy.cols() != 4) {
+          throw std::invalid_argument("points must have shape (n, 3) or (n, 4)");
+        }
+
+        auto points = std::make_shared<PointCloud>();
+        points->resize(points_numpy.rows());
+
+        for (int i = 0; i < points_numpy.rows(); i++) {
+          points->point(i) << points_numpy(i, 0), points_numpy(i, 1), points_numpy(i, 2), 1.0;
+        }
+
+        return std::make_shared<KdTree<PointCloud>>(points, KdTreeBuilderOMP(num_threads));
+      }),
+      py::arg("points"),
+      py::arg("num_threads") = 1,
+      R"""(
+        KdTree(points: numpy.ndarray, num_threads: int = 1)
+
+        Construct a KdTree from numpy.
+
+        Parameters
+        ----------
+        points : numpy.ndarray, shape (n, 3) or (n, 4)
+            The input point cloud.
+        num_threads : int, optional
+            The number of threads to use for KdTree construction. Default is 1.
+       )""")
+
+    .def(
       py::init([](const PointCloud::ConstPtr& points, int num_threads) { return std::make_shared<KdTree<PointCloud>>(points, KdTreeBuilderOMP(num_threads)); }),
       py::arg("points"),
       py::arg("num_threads") = 1,
@@ -46,7 +76,7 @@ void define_kdtree(py::module& m) {
 
          Parameters
          ----------
-         pt : NDArray, shape (3,)
+         pt : numpy.ndarray, shape (3,)
              The input point.
 
          Returns
@@ -74,16 +104,16 @@ void define_kdtree(py::module& m) {
 
        Parameters
        ----------
-       pt : NDArray, shape (3,)
+       pt : numpy.ndarray, shape (3,)
            The input point.
        k : int
            The number of nearest neighbors to search for.
 
        Returns
        -------
-       k_indices : NDArray, shape (k,)
+       k_indices : numpy.ndarray, shape (k,)
            The indices of the k nearest neighbors in the point cloud.
-       k_sq_dists : NDArray, shape (k,)
+       k_sq_dists : numpy.ndarray, shape (k,)
            The squared distances to the k nearest neighbors.
      )""")
 
@@ -115,16 +145,16 @@ void define_kdtree(py::module& m) {
 
        Parameters
        ----------
-       pts : NDArray, shape (n, 3) or (n, 4)
+       pts : numpy.ndarray, shape (n, 3) or (n, 4)
            The input points.
        num_threads : int, optional
            The number of threads to use for the search. Default is 1.
 
        Returns
        -------
-       k_indices : NDArray, shape (n,)
+       k_indices : numpy.ndarray, shape (n,)
            The indices of the nearest neighbors for each input point.
-       k_sq_dists : NDArray, shape (n,)
+       k_sq_dists : numpy.ndarray, shape (n,)
            The squared distances to the nearest neighbors for each input point.
      )""")
 
@@ -159,7 +189,7 @@ void define_kdtree(py::module& m) {
 
        Parameters
        ----------
-       pts : NDArray, shape (n, 3) or (n, 4)
+       pts : numpy.ndarray, shape (n, 3) or (n, 4)
            The input points.
        k : int
            The number of nearest neighbors to search for.
@@ -168,9 +198,9 @@ void define_kdtree(py::module& m) {
 
        Returns
        -------
-       k_indices : list of NDArray, shape (n,)
+       k_indices : list of numpy.ndarray, shape (n,)
            The list of indices of the k nearest neighbors for each input point.
-       k_sq_dists : list of NDArray, shape (n,)
+       k_sq_dists : list of numpy.ndarray, shape (n,)
            The list of squared distances to the k nearest neighbors for each input point.
      )""");
 }
