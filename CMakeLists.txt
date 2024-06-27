@@ -22,7 +22,7 @@ option(BUILD_PYTHON_BINDINGS "Build python bindings" OFF)
 option(ENABLE_COVERAGE "Enable coverage" OFF)
 
 # Dependency options
-set(BUILD_WITH_OPENMP CACHE STRING "Build with OpenMP" "auto")
+set(BUILD_WITH_OPENMP "auto" CACHE STRING "Build with OpenMP")
 option(BUILD_WITH_TBB "Build with TBB" OFF)
 option(BUILD_WITH_PCL "Build with PCL (required for benchmark and test only)" OFF)
 option(BUILD_WITH_FAST_GICP "Build with fast_gicp (required for benchmark and test only)" OFF)
