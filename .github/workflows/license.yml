@@ -1,0 +1,23 @@
+name: license
+
+on:
+  push:
+    branches: [ master, license-check ]
+    paths-ignore: '**.md'
+  pull_request:
+    branches: [ master ]
+    paths-ignore: '**.md'
+
+jobs:
+  license_check:
+    name: License indication check
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check header files
+        run: "find include/small_gicp -type f | xargs -I filename bash -c 'if ! grep -q SPDX-License-Identifier: MIT filename; then echo filename : lisence not found; exit 1; fi'"
+
+      - name: Check source files
+        run: "find src/small_gicp -type f | xargs -I filename bash -c 'if ! grep -q SPDX-License-Identifier: MIT filename; then echo filename : lisence not found; exit 1; fi'"
