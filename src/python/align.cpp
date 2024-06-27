@@ -32,7 +32,8 @@ void define_align(py::module& m) {
       double downsampling_resolution,
       double max_correspondence_distance,
       int num_threads,
-      int max_iterations) {
+      int max_iterations,
+      bool verbose) {
       if (target_points.cols() != 3 && target_points.cols() != 4) {
         std::cerr << "target_points must be Nx3 or Nx4" << std::endl;
         return RegistrationResult(Eigen::Isometry3d::Identity());
@@ -60,6 +61,8 @@ void define_align(py::module& m) {
       setting.downsampling_resolution = downsampling_resolution;
       setting.max_correspondence_distance = max_correspondence_distance;
       setting.num_threads = num_threads;
+      setting.max_iterations = max_iterations;
+      setting.verbose = verbose;
 
       std::vector<Eigen::Vector4d> target(target_points.rows());
       if (target_points.cols() == 3) {
@@ -94,6 +97,7 @@ void define_align(py::module& m) {
     py::arg("max_correspondence_distance") = 1.0,
     py::arg("num_threads") = 1,
     py::arg("max_iterations") = 20,
+    py::arg("verbose") = false,
     R"pbdoc(
         Align two point clouds using various ICP-like algorithms.
 
@@ -117,6 +121,8 @@ void define_align(py::module& m) {
             Number of threads to use for parallel processing.
         max_iterations : int = 20
             Maximum number of iterations for the optimization algorithm.
+        verbose : bool = False
+            If True, print debug information during the optimization process.
 
         Returns
         -------
@@ -135,7 +141,8 @@ void define_align(py::module& m) {
       const std::string& registration_type,
       double max_correspondence_distance,
       int num_threads,
-      int max_iterations) {
+      int max_iterations,
+      bool verbose) {
       RegistrationSetting setting;
       if (registration_type == "ICP") {
         setting.type = RegistrationSetting::ICP;
@@ -149,6 +156,8 @@ void define_align(py::module& m) {
       }
       setting.max_correspondence_distance = max_correspondence_distance;
       setting.num_threads = num_threads;
+      setting.max_iterations = max_iterations;
+      setting.verbose = verbose;
 
       if (target_tree == nullptr) {
         target_tree = std::make_shared<KdTree<PointCloud>>(target, KdTreeBuilderOMP(num_threads));
@@ -163,6 +172,7 @@ void define_align(py::module& m) {
     py::arg("max_correspondence_distance") = 1.0,
     py::arg("num_threads") = 1,
     py::arg("max_iterations") = 20,
+    py::arg("verbose") = false,
     R"pbdoc(
     Align two point clouds using specified ICP-like algorithms, utilizing point cloud and KD-tree inputs.
 
@@ -184,6 +194,8 @@ void define_align(py::module& m) {
         Number of threads to use for computation.
     max_iterations : int = 20
         Maximum number of iterations for the optimization algorithm.
+    verbose : bool = False
+        If True, print debug information during the optimization process.
 
     Returns
     -------
@@ -200,11 +212,13 @@ void define_align(py::module& m) {
       const Eigen::Matrix4d& init_T_target_source,
       double max_correspondence_distance,
       int num_threads,
-      int max_iterations) {
+      int max_iterations,
+      bool verbose) {
       Registration<GICPFactor, ParallelReductionOMP> registration;
       registration.rejector.max_dist_sq = max_correspondence_distance * max_correspondence_distance;
       registration.reduction.num_threads = num_threads;
       registration.optimizer.max_iterations = max_iterations;
+      registration.optimizer.verbose = verbose;
 
       return registration.align(target_voxelmap, source, target_voxelmap, Eigen::Isometry3d(init_T_target_source));
     },
@@ -214,6 +228,7 @@ void define_align(py::module& m) {
     py::arg("max_correspondence_distance") = 1.0,
     py::arg("num_threads") = 1,
     py::arg("max_iterations") = 20,
+    py::arg("verbose") = false,
     R"pbdoc(
     Align two point clouds using voxel-based GICP algorithm, utilizing a Gaussian Voxel Map.
 
@@ -231,6 +246,8 @@ void define_align(py::module& m) {
         Number of threads to use for computation.
     max_iterations : int = 20
         Maximum number of iterations for the optimization algorithm.
+    verbose : bool = False
+        If True, print debug information during the optimization process.
 
     Returns
     -------

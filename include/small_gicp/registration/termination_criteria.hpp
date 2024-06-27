@@ -14,7 +14,7 @@ struct TerminationCriteria {
   /// @brief Check the convergence
   /// @param delta  Transformation update vector
   /// @return       True if converged
-  bool converged(const Eigen::Matrix<double, 6, 1>& delta) const { return delta.template head<3>().norm() < rotation_eps && delta.template tail<3>().norm() < translation_eps; }
+  bool converged(const Eigen::Matrix<double, 6, 1>& delta) const { return delta.template head<3>().norm() <= rotation_eps && delta.template tail<3>().norm() <= translation_eps; }
 
   double translation_eps;  ///< Rotation tolerance [rad]
   double rotation_eps;     ///< Translation tolerance

@@ -40,6 +40,7 @@ struct RegistrationSetting {
   double translation_eps = 1e-3;             ///< Translation tolerance for convergence check
   int num_threads = 4;                       ///< Number of threads
   int max_iterations = 20;                   ///< Maximum number of iterations
+  bool verbose = false;                      ///< Verbose mode
 };
 
 /// @brief Align point clouds
