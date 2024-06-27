@@ -141,7 +141,7 @@ public:
 
   /// @brief Calculate the global point index from the voxel index and the point index.
   inline size_t calc_index(const size_t voxel_id, const size_t point_id) const { return (voxel_id << point_id_bits) | point_id; }
-  inline size_t voxel_id(const size_t i) const { return i >> point_id_bits; }                ///< Extract the point ID from a global index.
+  inline size_t voxel_id(const size_t i) const { return i >> point_id_bits; }                 ///< Extract the point ID from a global index.
   inline size_t point_id(const size_t i) const { return i & ((1ull << point_id_bits) - 1); }  ///< Extract the voxel ID from a global index.
 
 public:

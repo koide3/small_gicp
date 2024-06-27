@@ -91,6 +91,7 @@ align(const PointCloud& target, const PointCloud& source, const KdTree<PointClou
       registration.criteria.rotation_eps = setting.rotation_eps;
       registration.criteria.translation_eps = setting.translation_eps;
       registration.optimizer.max_iterations = setting.max_iterations;
+      registration.optimizer.verbose = setting.verbose;
       return registration.align(target, source, target_tree, init_T);
     }
     case RegistrationSetting::PLANE_ICP: {
@@ -100,6 +101,7 @@ align(const PointCloud& target, const PointCloud& source, const KdTree<PointClou
       registration.criteria.rotation_eps = setting.rotation_eps;
       registration.criteria.translation_eps = setting.translation_eps;
       registration.optimizer.max_iterations = setting.max_iterations;
+      registration.optimizer.verbose = setting.verbose;
       return registration.align(target, source, target_tree, init_T);
     }
     case RegistrationSetting::GICP: {
@@ -109,6 +111,7 @@ align(const PointCloud& target, const PointCloud& source, const KdTree<PointClou
       registration.criteria.rotation_eps = setting.rotation_eps;
       registration.criteria.translation_eps = setting.translation_eps;
       registration.optimizer.max_iterations = setting.max_iterations;
+      registration.optimizer.verbose = setting.verbose;
       return registration.align(target, source, target_tree, init_T);
     }
     case RegistrationSetting::VGICP: {
@@ -129,6 +132,7 @@ RegistrationResult align(const GaussianVoxelMap& target, const PointCloud& sourc
   registration.criteria.rotation_eps = setting.rotation_eps;
   registration.criteria.translation_eps = setting.translation_eps;
   registration.optimizer.max_iterations = setting.max_iterations;
+  registration.optimizer.verbose = setting.verbose;
   return registration.align(target, source, target, init_T);
 }
 

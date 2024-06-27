@@ -39,7 +39,7 @@ std::shared_ptr<OutputPointCloud> voxelgrid_sampling_omp(const InputPointCloud& 
       continue;
     }
     // Compute voxel coord bits (0|1bit, z|21bit, y|21bit, x|21bit)
-    const std::uint64_t bits =                                 //
+    const std::uint64_t bits =                                                           //
       (static_cast<std::uint64_t>(coord[0] & coord_bit_mask) << (coord_bit_size * 0)) |  //
       (static_cast<std::uint64_t>(coord[1] & coord_bit_mask) << (coord_bit_size * 1)) |  //
       (static_cast<std::uint64_t>(coord[2] & coord_bit_mask) << (coord_bit_size * 2));
@@ -47,11 +47,7 @@ std::shared_ptr<OutputPointCloud> voxelgrid_sampling_omp(const InputPointCloud& 
   }
 
   // Sort by voxel coords
-  quick_sort_omp(
-    coord_pt.begin(),
-    coord_pt.end(),
-    [](const auto& lhs, const auto& rhs) { return lhs.first < rhs.first; },
-    num_threads);
+  quick_sort_omp(coord_pt.begin(), coord_pt.end(), [](const auto& lhs, const auto& rhs) { return lhs.first < rhs.first; }, num_threads);
 
   auto downsampled = std::make_shared<OutputPointCloud>();
   traits::resize(*downsampled, traits::size(points));
