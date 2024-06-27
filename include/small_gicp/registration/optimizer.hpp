@@ -118,7 +118,7 @@ struct LevenbergMarquardtOptimizer {
                     << " dr=" << delta.head<3>().norm() << std::endl;
         }
 
-        if (new_e < e) {
+        if (new_e <= e) {
           // Error decreased, decrease lambda
           result.converged = criteria.converged(delta);
           result.T_target_source = new_T;
