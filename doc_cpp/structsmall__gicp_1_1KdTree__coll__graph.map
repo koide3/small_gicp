@@ -1,0 +1,4 @@
+<map id="small_gicp::KdTree&lt; PointCloud, Projection &gt;" name="small_gicp::KdTree&lt; PointCloud, Projection &gt;">
+<area shape="rect" id="node1" title="&quot;Safe&quot; KdTree that holds the ownership of the input points." alt="" coords="5,124,200,165"/>
+<area shape="rect" id="node2" href="$structsmall__gicp_1_1UnsafeKdTree.html" title=" " alt="" coords="7,5,198,61"/>
+</map>

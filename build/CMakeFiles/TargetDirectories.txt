@@ -1,0 +1,8 @@
+/home/runner/work/small_gicp/small_gicp/docs/build/CMakeFiles/small_gicp.dir
+/home/runner/work/small_gicp/small_gicp/docs/build/CMakeFiles/small_gicp_python.dir
+/home/runner/work/small_gicp/small_gicp/docs/build/CMakeFiles/edit_cache.dir
+/home/runner/work/small_gicp/small_gicp/docs/build/CMakeFiles/rebuild_cache.dir
+/home/runner/work/small_gicp/small_gicp/docs/build/CMakeFiles/list_install_components.dir
+/home/runner/work/small_gicp/small_gicp/docs/build/CMakeFiles/install.dir
+/home/runner/work/small_gicp/small_gicp/docs/build/CMakeFiles/install/local.dir
+/home/runner/work/small_gicp/small_gicp/docs/build/CMakeFiles/install/strip.dir

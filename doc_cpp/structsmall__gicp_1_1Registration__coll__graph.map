@@ -1,0 +1,7 @@
+<map id="small_gicp::Registration&lt; PointFactor, Reduction, GeneralFactor, CorrespondenceRejector, Optimizer &gt;" name="small_gicp::Registration&lt; PointFactor, Reduction, GeneralFactor, CorrespondenceRejector, Optimizer &gt;">
+<area shape="rect" id="node1" title="Point cloud registration." alt="" coords="387,75,673,145"/>
+<area shape="rect" id="node2" href="$structsmall__gicp_1_1LevenbergMarquardtOptimizer.html" title="LevenbergMarquardt optimizer." alt="" coords="5,5,240,47"/>
+<area shape="rect" id="node3" href="$structsmall__gicp_1_1TerminationCriteria.html" title="Registration termination criteria." alt="" coords="10,71,235,98"/>
+<area shape="rect" id="node4" href="$structsmall__gicp_1_1DistanceRejector.html" title="Rejecting correspondences with large distances." alt="" coords="17,122,228,149"/>
+<area shape="rect" id="node5" href="$structsmall__gicp_1_1NullFactor.html" title="Null factor that gives no constraints." alt="" coords="40,173,205,199"/>
+</map>

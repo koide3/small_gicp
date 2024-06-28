@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC -O3 -DNDEBUG -shared -Wl,-soname,libsmall_gicp.so -o libsmall_gicp.so CMakeFiles/small_gicp.dir/src/small_gicp/registration/registration.cpp.o CMakeFiles/small_gicp.dir/src/small_gicp/registration/registration_helper.cpp.o  /usr/lib/gcc/x86_64-linux-gnu/11/libgomp.so /usr/lib/x86_64-linux-gnu/libpthread.a
