@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(small_gicp VERSION 0.1.1 LANGUAGES C CXX)
+project(small_gicp VERSION 0.1.2 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
