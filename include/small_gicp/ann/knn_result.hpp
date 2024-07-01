@@ -22,9 +22,14 @@ public:
   double epsilon = 0.0;  ///< Early termination threshold
 };
 
+/// @brief Identity transform (alternative to std::identity in C++20).
+struct identity_transform {
+  size_t operator()(size_t i) const { return i; }
+};
+
 /// @brief K-nearest neighbor search result container.
 /// @tparam N   Number of neighbors to search. If N == -1, the number of neighbors is dynamicaly determined.
-template <int N>
+template <int N, typename IndexTransform = identity_transform>
 struct KnnResult {
 public:
   static constexpr size_t INVALID = std::numeric_limits<size_t>::max();
@@ -33,7 +38,12 @@ public:
   /// @param indices        Buffer to store indices (must be larger than k=max(N, num_neighbors))
   /// @param distances      Buffer to store distances (must be larger than k=max(N, num_neighbors))
   /// @param num_neighbors  Number of neighbors to search (must be -1 for static case N > 0)
-  explicit KnnResult(size_t* indices, double* distances, int num_neighbors = -1) : capacity(num_neighbors), num_found_neighbors(0), indices(indices), distances(distances) {
+  explicit KnnResult(size_t* indices, double* distances, int num_neighbors = -1, const IndexTransform& index_transform = identity_transform())
+  : index_transform(index_transform),
+    capacity(num_neighbors),
+    num_found_neighbors(0),
+    indices(indices),
+    distances(distances) {
     if constexpr (N > 0) {
       if (num_neighbors >= 0) {
         std::cerr << "warning: Specifying dynamic num_neighbors=" << num_neighbors << " for a static KNN result container (N=" << N << ")" << std::endl;
@@ -72,7 +82,7 @@ public:
     }
 
     if constexpr (N == 1) {
-      indices[0] = index;
+      indices[0] = index_transform(index);
       distances[0] = distance;
     } else {
       int insert_loc = std::min<int>(num_found_neighbors, buffer_size() - 1);
@@ -81,7 +91,7 @@ public:
         distances[insert_loc] = distances[insert_loc - 1];
       }
 
-      indices[insert_loc] = index;
+      indices[insert_loc] = index_transform(index);
       distances[insert_loc] = distance;
     }
 
@@ -89,10 +99,11 @@ public:
   }
 
 public:
-  const int capacity;       ///< Maximum number of neighbors to search
-  int num_found_neighbors;  ///< Number of found neighbors
-  size_t* indices;          ///< Indices of neighbors
-  double* distances;        ///< Distances to neighbors
+  const IndexTransform index_transform;  ///< Point index transformation (e.g., local point index to global point/voxel index)
+  const int capacity;                    ///< Maximum number of neighbors to search
+  int num_found_neighbors;               ///< Number of found neighbors
+  size_t* indices;                       ///< Indices of neighbors
+  double* distances;                     ///< Distances to neighbors
 };
 
 }  // namespace small_gicp

@@ -79,6 +79,11 @@ struct Traits<GaussianVoxel> {
   static size_t knn_search(const GaussianVoxel& voxel, const Eigen::Vector4d& pt, size_t k, size_t* k_index, double* k_sq_dist) {
     return nearest_neighbor_search(voxel, pt, k_index, k_sq_dist);
   }
+
+  template <typename Result>
+  static void knn_search(const GaussianVoxel& voxel, const Eigen::Vector4d& pt, Result& result) {
+    result.push(0, (voxel.mean - pt).squaredNorm());
+  }
 };
 
 }  // namespace traits

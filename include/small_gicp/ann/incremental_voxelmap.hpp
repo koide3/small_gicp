@@ -9,6 +9,7 @@
 #include <Eigen/Geometry>
 
 #include <small_gicp/ann/traits.hpp>
+#include <small_gicp/ann/knn_result.hpp>
 #include <small_gicp/ann/flat_container.hpp>
 #include <small_gicp/points/traits.hpp>
 #include <small_gicp/util/fast_floor.hpp>
@@ -103,13 +104,10 @@ public:
     const size_t voxel_index = found->second;
     const auto& voxel = flat_voxels[voxel_index]->second;
 
-    size_t point_index;
-    if (traits::nearest_neighbor_search(voxel, pt, &point_index, sq_dist) == 0) {
-      return 0;
-    }
-
-    *index = calc_index(voxel_index, point_index);
-    return 1;
+    const auto index_transform = [=](size_t i) { return calc_index(voxel_index, i); };
+    KnnResult<1, decltype(index_transform)> result(index, sq_dist, -1, index_transform);
+    traits::Traits<VoxelContents>::knn_search(voxel, pt, result);
+    return result.num_found();
   }
 
   /// @brief Find k nearest neighbors
@@ -128,15 +126,10 @@ public:
     const size_t voxel_index = found->second;
     const auto& voxel = flat_voxels[voxel_index]->second;
 
-    std::vector<size_t> point_indices(k);
-    std::vector<double> sq_dists(k);
-    const size_t num_found = traits::knn_search(voxel, pt, k, point_indices.data(), sq_dists.data());
-
-    for (size_t i = 0; i < num_found; i++) {
-      k_indices[i] = calc_index(voxel_index, point_indices[i]);
-      k_sq_dists[i] = sq_dists[i];
-    }
-    return num_found;
+    const auto index_transform = [=](size_t i) { return calc_index(voxel_index, i); };
+    KnnResult<-1, decltype(index_transform)> result(k_indices, k_sq_dists, k, index_transform);
+    traits::Traits<VoxelContents>::knn_search(voxel, pt, result);
+    return result.num_found();
   }
 
   /// @brief Calculate the global point index from the voxel index and the point index.
