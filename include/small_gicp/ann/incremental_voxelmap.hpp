@@ -41,7 +41,7 @@ public:
 
   /// @brief Constructor.
   /// @param leaf_size  Voxel size
-  explicit IncrementalVoxelMap(double leaf_size) : inv_leaf_size(1.0 / leaf_size), lru_horizon(100), lru_clear_cycle(10), lru_counter(0) {}
+  explicit IncrementalVoxelMap(double leaf_size) : inv_leaf_size(1.0 / leaf_size), lru_horizon(100), lru_clear_cycle(10), lru_counter(0) { set_search_offsets(1); }
 
   /// @brief Number of points in the voxelmap.
   size_t size() const { return flat_voxels.size(); }
@@ -95,18 +95,24 @@ public:
   /// @param sq_dist  Squared distance to the nearest neighbor
   /// @return         Number of found points (0 or 1)
   size_t nearest_neighbor_search(const Eigen::Vector4d& pt, size_t* index, double* sq_dist) const {
-    const Eigen::Vector3i coord = fast_floor(pt * inv_leaf_size).template head<3>();
-    const auto found = voxels.find(coord);
-    if (found == voxels.end()) {
-      return 0;
+    const Eigen::Vector3i center = fast_floor(pt * inv_leaf_size).template head<3>();
+    size_t voxel_index = 0;
+    const auto index_transform = [&](size_t i) { return calc_index(voxel_index, i); };
+    KnnResult<1, decltype(index_transform)> result(index, sq_dist, -1, index_transform);
+
+    for (const auto& offset : search_offsets) {
+      const Eigen::Vector3i coord = center + offset;
+      const auto found = voxels.find(coord);
+      if (found == voxels.end()) {
+        continue;
+      }
+
+      voxel_index = found->second;
+      const auto& voxel = flat_voxels[voxel_index]->second;
+
+      traits::Traits<VoxelContents>::knn_search(voxel, pt, result);
     }
 
-    const size_t voxel_index = found->second;
-    const auto& voxel = flat_voxels[voxel_index]->second;
-
-    const auto index_transform = [=](size_t i) { return calc_index(voxel_index, i); };
-    KnnResult<1, decltype(index_transform)> result(index, sq_dist, -1, index_transform);
-    traits::Traits<VoxelContents>::knn_search(voxel, pt, result);
     return result.num_found();
   }
 
@@ -117,18 +123,25 @@ public:
   /// @param k_sq_dists  Squared distances to nearest neighbors
   /// @return            Number of found points
   size_t knn_search(const Eigen::Vector4d& pt, size_t k, size_t* k_indices, double* k_sq_dists) const {
-    const Eigen::Vector3i coord = fast_floor(pt * inv_leaf_size).template head<3>();
-    const auto found = voxels.find(coord);
-    if (found == voxels.end()) {
-      return 0;
+    const Eigen::Vector3i center = fast_floor(pt * inv_leaf_size).template head<3>();
+
+    size_t voxel_index = 0;
+    const auto index_transform = [&](size_t i) { return calc_index(voxel_index, i); };
+    KnnResult<-1, decltype(index_transform)> result(k_indices, k_sq_dists, k, index_transform);
+
+    for (const auto& offset : search_offsets) {
+      const Eigen::Vector3i coord = center + offset;
+      const auto found = voxels.find(coord);
+      if (found == voxels.end()) {
+        continue;
+      }
+
+      voxel_index = found->second;
+      const auto& voxel = flat_voxels[voxel_index]->second;
+
+      traits::Traits<VoxelContents>::knn_search(voxel, pt, result);
     }
 
-    const size_t voxel_index = found->second;
-    const auto& voxel = flat_voxels[voxel_index]->second;
-
-    const auto index_transform = [=](size_t i) { return calc_index(voxel_index, i); };
-    KnnResult<-1, decltype(index_transform)> result(k_indices, k_sq_dists, k, index_transform);
-    traits::Traits<VoxelContents>::knn_search(voxel, pt, result);
     return result.num_found();
   }
 
@@ -136,6 +149,38 @@ public:
   inline size_t calc_index(const size_t voxel_id, const size_t point_id) const { return (voxel_id << point_id_bits) | point_id; }
   inline size_t voxel_id(const size_t i) const { return i >> point_id_bits; }                 ///< Extract the point ID from a global index.
   inline size_t point_id(const size_t i) const { return i & ((1ull << point_id_bits) - 1); }  ///< Extract the voxel ID from a global index.
+
+  /// @brief Set the pattern of the search offsets. (Must be 1, 7, or 27)
+  void set_search_offsets(int num_offsets) {
+    switch (num_offsets) {
+      default:
+        std::cerr << "warning: unsupported search_offsets=" << num_offsets << " (supported values: 1, 7, 27)" << std::endl;
+        std::cerr << "       : using default search_offsets=1" << std::endl;
+        [[fallthrough]];
+      case 1:
+        search_offsets = {Eigen::Vector3i(0, 0, 0)};
+        break;
+      case 7:
+        search_offsets = {
+          Eigen::Vector3i(0, 0, 0),
+          Eigen::Vector3i(1, 0, 0),
+          Eigen::Vector3i(0, 1, 0),
+          Eigen::Vector3i(0, 0, 1),
+          Eigen::Vector3i(-1, 0, 0),
+          Eigen::Vector3i(0, -1, 0),
+          Eigen::Vector3i(0, 0, -1)};
+        break;
+      case 27:
+        for (int i = -1; i <= 1; i++) {
+          for (int j = -1; j <= 1; j++) {
+            for (int k = -1; k <= 1; k++) {
+              search_offsets.emplace_back(i, j, k);
+            }
+          }
+        }
+        break;
+    }
+  }
 
 public:
   static_assert(sizeof(size_t) == 8, "size_t must be 64-bit");
@@ -146,6 +191,8 @@ public:
   size_t lru_horizon;      ///< LRU horizon size. Voxels that have not been accessed for lru_horizon steps are deleted.
   size_t lru_clear_cycle;  ///< LRU clear cycle. Voxel deletion is performed every lru_clear_cycle steps.
   size_t lru_counter;      ///< LRU counter. Incremented every step.
+
+  std::vector<Eigen::Vector3i> search_offsets;  ///< Voxel search offsets.
 
   typename VoxelContents::Setting voxel_setting;                                  ///< Voxel setting.
   std::vector<std::shared_ptr<std::pair<VoxelInfo, VoxelContents>>> flat_voxels;  ///< Voxel contents.
