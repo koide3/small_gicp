@@ -187,7 +187,9 @@ if(BUILD_BENCHMARKS)
     src/benchmark/odometry_benchmark_small_gicp_tbb.cpp
     src/benchmark/odometry_benchmark_small_vgicp_tbb.cpp
     src/benchmark/odometry_benchmark_small_gicp_model_tbb.cpp
+    src/benchmark/odometry_benchmark_small_gicp_model_omp.cpp
     src/benchmark/odometry_benchmark_small_vgicp_model_tbb.cpp
+    src/benchmark/odometry_benchmark_small_vgicp_model_omp.cpp
     src/benchmark/odometry_benchmark_small_gicp_tbb_flow.cpp
     src/benchmark/odometry_benchmark.cpp
   )

@@ -7,6 +7,7 @@
 #include <Eigen/Geometry>
 #include <small_gicp/ann/traits.hpp>
 #include <small_gicp/points/traits.hpp>
+#include <small_gicp/ann/knn_result.hpp>
 
 namespace small_gicp {
 
@@ -67,21 +68,9 @@ public:
       return 0;
     }
 
-    size_t min_index = -1;
-    double min_sq_dist = std::numeric_limits<double>::max();
-
-    for (size_t i = 0; i < points.size(); i++) {
-      const double sq_dist = (points[i] - pt).squaredNorm();
-      if (sq_dist < min_sq_dist) {
-        min_index = i;
-        min_sq_dist = sq_dist;
-      }
-    }
-
-    *k_index = min_index;
-    *k_sq_dist = min_sq_dist;
-
-    return 1;
+    KnnResult<1> result(k_index, k_sq_dist);
+    knn_search(pt, result);
+    return result.num_found();
   }
 
   /// @brief Find k nearest neighbors.
@@ -90,28 +79,32 @@ public:
   /// @param k_index      Indices of nearest neighbors
   /// @param k_sq_dist    Squared distances to nearest neighbors
   /// @return             Number of found points
-  size_t knn_search(const Eigen::Vector4d& pt, int k, size_t* k_index, double* k_sq_dist) const {
+  size_t knn_search(const Eigen::Vector4d& pt, int k, size_t* k_indices, double* k_sq_dists) const {
     if (points.empty()) {
       return 0;
     }
 
-    std::priority_queue<std::pair<size_t, double>> queue;
+    KnnResult<-1> result(k_indices, k_sq_dists, k);
+    knn_search(pt, result);
+    return result.num_found();
+  }
+
+  /// @brief Find k nearest neighbors.
+  /// @param pt           Query point
+  /// @param k            Number of neighbors
+  /// @param k_index      Indices of nearest neighbors
+  /// @param k_sq_dist    Squared distances to nearest neighbors
+  /// @return             Number of found points
+  template <typename Result>
+  void knn_search(const Eigen::Vector4d& pt, Result& result) const {
+    if (points.empty()) {
+      return;
+    }
+
     for (size_t i = 0; i < points.size(); i++) {
       const double sq_dist = (points[i] - pt).squaredNorm();
-      queue.push({i, sq_dist});
-      if (queue.size() > k) {
-        queue.pop();
-      }
+      result.push(i, sq_dist);
     }
-
-    const size_t n = queue.size();
-    while (!queue.empty()) {
-      k_index[queue.size() - 1] = queue.top().first;
-      k_sq_dist[queue.size() - 1] = queue.top().second;
-      queue.pop();
-    }
-
-    return n;
   }
 
 public:
@@ -150,6 +143,11 @@ struct Traits<FlatContainer<HasNormals, HasCovs>> {
 
   static size_t knn_search(const FlatContainer<HasNormals, HasCovs>& container, const Eigen::Vector4d& pt, size_t k, size_t* k_index, double* k_sq_dist) {
     return container.knn_search(pt, k, k_index, k_sq_dist);
+  }
+
+  template <typename Result>
+  static void knn_search(const FlatContainer<HasNormals, HasCovs>& container, const Eigen::Vector4d& pt, Result& result) {
+    container.knn_search(pt, result);
   }
 };
 
