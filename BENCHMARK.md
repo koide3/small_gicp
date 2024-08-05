@@ -1,5 +1,11 @@
 # Benchmark
 
+## Dataset
+
+The following benchmark requires the KITTI odometry evaluation dataset. You can download the full dataset (80GB) from [the official dataset page](https://www.cvlibs.net/datasets/kitti/eval_odometry.php) or a part of the dataset (500 frames in 00 sequence, 622MB) from [google drive (KITTI00.tar.gz)](https://drive.google.com/file/d/1h9tARKvX6BwLfc_vfMfdxuP3bSbmgjmd/view?usp=sharing).
+
+Note that because the original KITTI dataset is distributed under the CC BY-NC-SA 3.0 license, the derived dataset (KITTI00.tar.gz) must not be used for commercial purposes.
+
 ## Build
 
 ```bash
