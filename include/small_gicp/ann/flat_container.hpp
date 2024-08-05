@@ -14,6 +14,7 @@ namespace small_gicp {
 /// @brief Point container with a flat vector.
 /// @note  IncrementalVoxelMap combined with FlastContainer is mostly the same as linear iVox.
 ///        Bai et al., "Faster-LIO: Lightweight Tightly Coupled Lidar-Inertial Odometry Using Parallel Sparse Incremental Voxels", IEEE RA-L, 2022
+/// @note  This container stores only up to max_num_points_in_cell points and avoids insertings points that are too close to existing points (min_sq_dist_in_cell).
 /// @tparam HasNormals  If true, store normals.
 /// @tparam HasCovs     If true, store covariances.
 template <bool HasNormals = false, bool HasCovs = false>

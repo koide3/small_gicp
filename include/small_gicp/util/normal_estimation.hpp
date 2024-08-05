@@ -8,6 +8,7 @@
 namespace small_gicp {
 
 /// @brief Computes point normals from eigenvectors and sets them to the point cloud.
+/// @note  If a sufficient number of neighbor points is not found, a zero vector is set to the point.
 template <typename PointCloud>
 struct NormalSetter {
   /// @brief Handle invalid case (too few points).
@@ -25,6 +26,7 @@ struct NormalSetter {
 };
 
 /// @brief Computes point covariances from eigenvectors and sets them to the point cloud.
+/// @note  If a sufficient number of neighbor points is not found, an identity matrix is set to the point.
 template <typename PointCloud>
 struct CovarianceSetter {
   /// @brief Handle invalid case (too few points).
@@ -44,6 +46,7 @@ struct CovarianceSetter {
 };
 
 /// @brief Computes point normals and covariances from eigenvectors and sets them to the point cloud.
+/// @note  If a sufficient number of neighbor points is not found, a zero vector and an identity matrix are set to the point.
 template <typename PointCloud>
 struct NormalCovarianceSetter {
   /// @brief Handle invalid case (too few points).

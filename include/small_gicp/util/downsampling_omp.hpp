@@ -15,10 +15,10 @@ namespace small_gicp {
 
 /// @brief Voxel grid downsampling with OpenMP backend.
 /// @note  This function has minor run-by-run non-deterministic behavior due to parallel data collection that results
-///        in a minor deviation of the number of points in the downsampling results (up to 10% increase from the single-thread version).
+///        in a deviation of the number of points in the downsampling results (up to 10% increase from the single-thread version).
 /// @note  Discretized voxel coords must be in 21bit range [-1048576, 1048575].
 ///        For example, if the downsampling resolution is 0.01 m, point coordinates must be in [-10485.76, 10485.75] m.
-///        Points outside the range will be ignored.
+///        Points outside the valid range will be ignored.
 /// @param points     Input points
 /// @param leaf_size  Downsampling resolution
 /// @return           Downsampled points

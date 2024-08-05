@@ -50,6 +50,7 @@ struct RegistrationSetting {
 
 /// @brief Align point clouds
 /// @note This function only accepts Eigen::Vector(3|4)(f|d) as input
+/// @see  small_gicp::voxelgrid_sampling_omp, small_gicp::estimate_normals_covariances_omp
 /// @param target     Target points
 /// @param source     Source points
 /// @param init_T     Initial guess of T_target_source
