@@ -32,6 +32,7 @@ public:
   size_t size() const { return points.size(); }
 
   /// @brief Add a point to the container.
+  ///        If there is a point that is too close to the input point, or there are too many points in the cell, the input point will not be ignored.
   /// @param setting         Setting
   /// @param transformed_pt  Transformed point (== T * points[i])
   /// @param points          Point cloud
@@ -77,7 +78,7 @@ public:
   /// @param pt           Query point
   /// @param k            Number of neighbors
   /// @param k_index      Indices of nearest neighbors
-  /// @param k_sq_dist    Squared distances to nearest neighbors
+  /// @param k_sq_dist    Squared distances to nearest neighbors (sorted in ascending order)
   /// @return             Number of found points
   size_t knn_search(const Eigen::Vector4d& pt, int k, size_t* k_indices, double* k_sq_dists) const {
     if (points.empty()) {
@@ -93,7 +94,7 @@ public:
   /// @param pt           Query point
   /// @param k            Number of neighbors
   /// @param k_index      Indices of nearest neighbors
-  /// @param k_sq_dist    Squared distances to nearest neighbors
+  /// @param k_sq_dist    Squared distances to nearest neighbors (sorted in ascending order)
   /// @return             Number of found points
   template <typename Result>
   void knn_search(const Eigen::Vector4d& pt, Result& result) const {

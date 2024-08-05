@@ -31,8 +31,9 @@ public:
 };
 
 /// @brief Incremental voxelmap.
-///        This class supports incremental point cloud insertion and LRU-based voxel deletion.
+///        This class supports incremental point cloud insertion and LRU-based voxel deletion that removes voxels that are not recently referenced.
 /// @note  This class can be used as a point cloud as well as a neighbor search structure.
+/// @note  This class can handle arbitrary number of voxels and arbitrary range of voxel coordinates (in 32-bit int range).
 template <typename VoxelContents>
 struct IncrementalVoxelMap {
 public:
@@ -120,7 +121,7 @@ public:
   /// @param pt          Query point
   /// @param k           Number of neighbors
   /// @param k_indices   Indices of nearest neighbors
-  /// @param k_sq_dists  Squared distances to nearest neighbors
+  /// @param k_sq_dists  Squared distances to nearest neighbors (sorted in ascending order)
   /// @return            Number of found points
   size_t knn_search(const Eigen::Vector4d& pt, size_t k, size_t* k_indices, double* k_sq_dists) const {
     const Eigen::Vector3i center = fast_floor(pt * inv_leaf_size).template head<3>();
@@ -151,6 +152,7 @@ public:
   inline size_t point_id(const size_t i) const { return i & ((1ull << point_id_bits) - 1); }  ///< Extract the voxel ID from a global index.
 
   /// @brief Set the pattern of the search offsets. (Must be 1, 7, or 27)
+  /// @note  1: center only, 7: center + 6 adjacent neighbors (+- 1X/1Y/1Z), 27: center + 26 neighbors (3 x 3 x 3 cube)
   void set_search_offsets(int num_offsets) {
     switch (num_offsets) {
       default:

@@ -14,7 +14,11 @@
 namespace small_gicp {
 
 /// @brief Voxel grid downsampling with TBB backend.
+/// @note  This function has minor run-by-run non-deterministic behavior due to parallel data collection that results
+///        in a minor deviation of the number of points in the downsampling results (up to 10% increase from the single-thread version).
 /// @note  Discretized voxel coords must be in 21bit range [-1048576, 1048575].
+///        For example, if the downsampling resolution is 0.01 m, point coordinates must be in [-10485.76, 10485.75] m.
+///        Points outside the range will be ignored.
 /// @param points     Input points
 /// @param leaf_size  Downsampling resolution
 /// @return           Downsampled points
@@ -25,9 +29,11 @@ std::shared_ptr<OutputPointCloud> voxelgrid_sampling_tbb(const InputPointCloud& 
   }
 
   const double inv_leaf_size = 1.0 / leaf_size;
-  const int coord_bit_size = 21;                       // Bits to represent each voxel coordinate (pack 21x3 = 63bits in 64bit int)
-  const size_t coord_bit_mask = (1 << 21) - 1;         // Bit mask
-  const int coord_offset = 1 << (coord_bit_size - 1);  // Coordinate offset to make values positive
+
+  constexpr std::uint64_t invalid_coord = std::numeric_limits<std::uint64_t>::max();
+  constexpr int coord_bit_size = 21;                       // Bits to represent each voxel coordinate (pack 21x3 = 63bits in 64bit int)
+  constexpr size_t coord_bit_mask = (1 << 21) - 1;         // Bit mask
+  constexpr int coord_offset = 1 << (coord_bit_size - 1);  // Coordinate offset to make values positive
 
   std::vector<std::pair<std::uint64_t, size_t>> coord_pt(traits::size(points));
   tbb::parallel_for(tbb::blocked_range<size_t>(0, traits::size(points), 64), [&](const tbb::blocked_range<size_t>& range) {
@@ -35,12 +41,12 @@ std::shared_ptr<OutputPointCloud> voxelgrid_sampling_tbb(const InputPointCloud& 
       const Eigen::Array4i coord = fast_floor(traits::point(points, i) * inv_leaf_size) + coord_offset;
       if ((coord < 0).any() || (coord > coord_bit_mask).any()) {
         std::cerr << "warning: voxel coord is out of range!!" << std::endl;
-        coord_pt[i] = {0, i};
+        coord_pt[i] = {invalid_coord, i};
         continue;
       }
 
       // Compute voxel coord bits (0|1bit, z|21bit, y|21bit, x|21bit)
-      const std::uint64_t bits =                                 //
+      const std::uint64_t bits =                                                           //
         (static_cast<std::uint64_t>(coord[0] & coord_bit_mask) << (coord_bit_size * 0)) |  //
         (static_cast<std::uint64_t>(coord[1] & coord_bit_mask) << (coord_bit_size * 1)) |  //
         (static_cast<std::uint64_t>(coord[2] & coord_bit_mask) << (coord_bit_size * 2));
@@ -63,6 +69,10 @@ std::shared_ptr<OutputPointCloud> voxelgrid_sampling_tbb(const InputPointCloud& 
 
     Eigen::Vector4d sum_pt = traits::point(points, coord_pt[range.begin()].second);
     for (size_t i = range.begin() + 1; i != range.end(); i++) {
+      if (coord_pt[i].first == invalid_coord) {
+        continue;
+      }
+
       if (coord_pt[i - 1].first != coord_pt[i].first) {
         sub_points.emplace_back(sum_pt / sum_pt.w());
         sum_pt.setZero();

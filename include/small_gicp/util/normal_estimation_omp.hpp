@@ -26,6 +26,8 @@ void estimate_local_features_omp(PointCloud& cloud, KdTree& kdtree, int num_neig
 }
 
 /// @brief Estimate point normals with OpenMP
+/// @note  If a sufficient number of neighbor points for normal/covariance estimation (5 points) is not found,
+///        an invalid normal/covariance is set to the point (normal=zero vector, covariance=identity matrix).
 /// @param cloud          [in/out] Point cloud
 /// @param num_neighbors  Number of neighbors used for attribute estimation
 /// @param num_threads    Number of threads
@@ -35,6 +37,8 @@ void estimate_normals_omp(PointCloud& cloud, int num_neighbors = 20, int num_thr
 }
 
 /// @brief Estimate point normals with OpenMP
+/// @note  If a sufficient number of neighbor points for normal/covariance estimation (5 points) is not found,
+///        an invalid normal/covariance is set to the point (normal=zero vector, covariance=identity matrix).
 /// @param cloud          [in/out] Point cloud
 /// @param kdtree         Nearest neighbor search
 /// @param num_neighbors  Number of neighbors used for attribute estimation
@@ -45,6 +49,8 @@ void estimate_normals_omp(PointCloud& cloud, KdTree& kdtree, int num_neighbors =
 }
 
 /// @brief Estimate point covariances with OpenMP
+/// @note  If a sufficient number of neighbor points for normal/covariance estimation (5 points) is not found,
+///        an invalid normal/covariance is set to the point (normal=zero vector, covariance=identity matrix).
 /// @param cloud          [in/out] Point cloud
 /// @param num_neighbors  Number of neighbors used for attribute estimation
 /// @param num_threads    Number of threads
@@ -54,6 +60,8 @@ void estimate_covariances_omp(PointCloud& cloud, int num_neighbors = 20, int num
 }
 
 /// @brief Estimate point covariances with OpenMP
+/// @note  If a sufficient number of neighbor points for normal/covariance estimation (5 points) is not found,
+///        an invalid normal/covariance is set to the point (normal=zero vector, covariance=identity matrix).
 /// @param cloud          [in/out] Point cloud
 /// @param kdtree         Nearest neighbor search
 /// @param num_neighbors  Number of neighbors used for attribute estimation
@@ -64,6 +72,8 @@ void estimate_covariances_omp(PointCloud& cloud, KdTree& kdtree, int num_neighbo
 }
 
 /// @brief Estimate point normals and covariances with OpenMP
+/// @note  If a sufficient number of neighbor points for normal/covariance estimation (5 points) is not found,
+///        an invalid normal/covariance is set to the point (normal=zero vector, covariance=identity matrix).
 /// @param cloud          [in/out] Point cloud
 /// @param num_neighbors  Number of neighbors used for attribute estimation
 /// @param num_threads    Number of threads
@@ -73,6 +83,8 @@ void estimate_normals_covariances_omp(PointCloud& cloud, int num_neighbors = 20,
 }
 
 /// @brief Estimate point normals and covariances with OpenMP
+/// @note  If a sufficient number of neighbor points for normal/covariance estimation (5 points) is not found,
+///        an invalid normal/covariance is set to the point (normal=zero vector, covariance=identity matrix).
 /// @param cloud          [in/out] Point cloud
 /// @param kdtree         Nearest neighbor search
 /// @param num_neighbors  Number of neighbors used for attribute estimation

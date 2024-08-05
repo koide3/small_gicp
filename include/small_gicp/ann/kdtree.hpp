@@ -154,8 +154,8 @@ public:
 
   /// @brief Find the nearest neighbor.
   /// @param query        Query point
-  /// @param k_indices    Index of the nearest neighbor
-  /// @param k_sq_dists   Squared distance to the nearest neighbor
+  /// @param k_indices    Index of the nearest neighbor (uninitialized if not found)
+  /// @param k_sq_dists   Squared distance to the nearest neighbor (uninitialized if not found)
   /// @param setting      KNN search setting
   /// @return             Number of found neighbors (0 or 1)
   size_t nearest_neighbor_search(const Eigen::Vector4d& query, size_t* k_indices, double* k_sq_dists, const KnnSetting& setting = KnnSetting()) const {
@@ -166,7 +166,7 @@ public:
   /// @param  query       Query point
   /// @param  k           Number of neighbors
   /// @param  k_indices   Indices of neighbors
-  /// @param  k_sq_dists  Squared distances to neighbors
+  /// @param  k_sq_dists  Squared distances to neighbors (sorted in ascending order)
   /// @param  setting     KNN search setting
   /// @return             Number of found neighbors
   size_t knn_search(const Eigen::Vector4d& query, int k, size_t* k_indices, double* k_sq_dists, const KnnSetting& setting = KnnSetting()) const {
@@ -178,7 +178,7 @@ public:
   /// @brief Find k-nearest neighbors. This method uses fixed and static memory allocation. Might be faster for small k.
   /// @param query       Query point
   /// @param k_indices   Indices of neighbors
-  /// @param k_sq_dists  Squared distances to neighbors
+  /// @param k_sq_dists  Squared distances to neighbors (sorted in ascending order)
   /// @param setting     KNN search setting
   /// @return            Number of found neighbors
   template <int N>
@@ -255,7 +255,7 @@ public:
   /// @param  query       Query point
   /// @param  k           Number of neighbors
   /// @param  k_indices   Indices of neighbors
-  /// @param  k_sq_dists  Squared distances to neighbors
+  /// @param  k_sq_dists  Squared distances to neighbors (sorted in ascending order)
   /// @param  setting     KNN search setting
   /// @return             Number of found neighbors
   size_t nearest_neighbor_search(const Eigen::Vector4d& query, size_t* k_indices, double* k_sq_dists, const KnnSetting& setting = KnnSetting()) const {
@@ -266,7 +266,7 @@ public:
   /// @param  query       Query point
   /// @param  k           Number of neighbors
   /// @param  k_indices   Indices of neighbors
-  /// @param  k_sq_dists  Squared distances to neighbors
+  /// @param  k_sq_dists  Squared distances to neighbors (sorted in ascending order)
   /// @param  setting     KNN search setting
   /// @return             Number of found neighbors
   size_t knn_search(const Eigen::Vector4d& query, size_t k, size_t* k_indices, double* k_sq_dists, const KnnSetting& setting = KnnSetting()) const {
