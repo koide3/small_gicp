@@ -20,12 +20,14 @@ bibliography: paper.bib
 
 Point cloud registration is a task of aligning two point clouds measured by 3D ranging
 sensors, for example, LiDARs and range cameras. Iterative point cloud registration,
-also known as fine registration or local registration, is particularly crucial. This
-process iteratively performs proximity-based point correspondence search and minimizes
-the distance between corresponding points. Iterative closest point (ICP) and its variants,
+also known as fine registration or local registration, iteratively refines the transformation
+between point clouds starting from an initial guess.
+Each iteration involves a proximity-based point correspondence search and the minimization
+of the distance between corresponding points, continuing until convergence.
+Iterative closest point (ICP) and its variants,
 such as Generalized ICP, are representative iterative point cloud registration algorithms.
-They are widely used in applications like autonomous vehicle localization, place recognition,
-and object classification. Since these applications often require real-time or near-real-time
+They are widely used in applications like autonomous vehicle localization [@Kim], place recognition [@Wang],
+and object classification [@Izadinia]. Since these applications often require real-time or near-real-time
 processing, speed is a critical factor in point cloud registration routines.
 
 **small_gicp** provides efficient and parallel algorithms to create an extremely
@@ -37,8 +39,9 @@ to offer efficiency, portability, and customizability.
 
 # Statement of need
 
-There are several point cloud processing libraries, and PCL [@Rusu] and Open3D
-[@Zhou] are the notable ones among them.
+There are several point cloud processing libraries, and PCL [@Rusu], Open3D
+[@Zhou], libpointmatcher [@Pomerleau] are commonly used in real-time applications
+owing to their performant implementations.
 Although they offer numerous functionalities, including those required for point cloud
 registration, they present several challenges for practical applications and scientific
 research.
@@ -105,6 +108,15 @@ distribution-to-distribution correspondence).
 - Single-threaded `small_gicp::GICP` is about 2.4x faster than `pcl::GICP`, with the multi-threaded version showing better scalability.
 
 More details can be found at https://github.com/koide3/small_gicp/blob/master/BENCHMARK.md.
+
+# Future work
+
+The efficiency of nearest neighbor search significantly impacts the overall performance of point cloud registration.
+While small_gicp currently offers efficient and parallel implementations of KdTree and voxelmap, which are general and useful in many situations,
+there are other nearest neighbor search methods that can be more efficient under mild assumptions about the point cloud measurement model
+(e.g., projective search [@Serafin]).
+We plan to implement these alternative neighbor search algorithms to further enhance the speed of the point cloud registration process.
+The design of small_gicp, where nearest neighbor search and pose optimization are decoupled, facilitates the easy integration of these new search algorithms.
 
 # Acknowledgements
 
