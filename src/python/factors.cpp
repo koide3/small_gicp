@@ -20,7 +20,12 @@ using namespace small_gicp;
 
 void define_factors(py::module& m) {
   // DistanceRejector
-  py::class_<DistanceRejector>(m, "DistanceRejector", "Correspondence rejection based on the distance between points.")
+  py::class_<DistanceRejector>(
+    m,
+    "DistanceRejector",
+    R"pbdoc(
+    Correspondence rejection based on the distance between points.
+    )pbdoc")
     .def(py::init<>())
     .def(
       "set_max_distance",
@@ -36,7 +41,13 @@ void define_factors(py::module& m) {
         )pbdoc");
 
   // ICPFactor
-  py::class_<ICPFactor>(m, "ICPFactor", "ICP per-point factor")
+  py::class_<ICPFactor>(m, "ICPFactor", R"pbdoc(
+    ICP per-point factor based on the conventional point-to-point distance.
+
+    References
+    ----------
+    Zhang, "Iterative Point Matching for Registration of Free-Form Curve", IJCV1994
+    )pbdoc")
     .def(py::init<>())
     .def(
       "linearize",
@@ -61,11 +72,11 @@ void define_factors(py::module& m) {
       py::arg("source_index"),
       py::arg("rejector"),
       R"pbdoc(
-        Linearize the factor.
+        Linearize the factor for the i-th source point.
 
         Parameters
         ----------
-        target : PointCloud
+        target : :class:`PointCloud`
             Target point cloud.
         source : PointCloud
             Source point cloud.
@@ -81,7 +92,7 @@ void define_factors(py::module& m) {
         Returns
         -------
         success: bool
-            Success flag.
+            Success flag. If false, the correspondence is rejected.
         H : numpy.ndarray
             Hessian matrix (6x6).
         b : numpy.ndarray
@@ -91,7 +102,13 @@ void define_factors(py::module& m) {
         )pbdoc");
 
   // PointToPlaneICPFactor
-  py::class_<PointToPlaneICPFactor>(m, "PointToPlaneICPFactor", "Point-to-plane ICP per-point factor")
+  py::class_<PointToPlaneICPFactor>(m, "PointToPlaneICPFactor", R"pbdoc(
+    Point-to-plane ICP per-point factor based on the point-to-plane distance.
+
+    References
+    ----------
+    Zhang, "Iterative Point Matching for Registration of Free-Form Curve", IJCV1994
+    )pbdoc")
     .def(py::init<>())
     .def(
       "linearize",
@@ -116,12 +133,12 @@ void define_factors(py::module& m) {
       py::arg("source_index"),
       py::arg("rejector"),
       R"pbdoc(
-        Linearize the factor.
+        Linearize the factor for the i-th source point.
 
         Parameters
         ----------
         target : PointCloud
-            Target point cloud.
+            Target point cloud. Must have normals.
         source : PointCloud
             Source point cloud.
         kdtree : KdTree
@@ -136,7 +153,7 @@ void define_factors(py::module& m) {
         Returns
         -------
         success: bool
-            Success flag.
+            Success flag. If false, the correspondence is rejected.
         H : numpy.ndarray
             Hessian matrix (6x6).
         b : numpy.ndarray
@@ -146,7 +163,13 @@ void define_factors(py::module& m) {
         )pbdoc");
 
   // GICPFactor
-  py::class_<GICPFactor>(m, "GICPFactor", "Generalized ICP per-point factor")  //
+  py::class_<GICPFactor>(m, "GICPFactor", R"pbdoc(
+    Generalized ICP per-point factor based on distribution-to-distribution distance.
+    
+    References
+    ----------
+    Segal et al., "Generalized-ICP", RSS2005
+    )pbdoc")  //
     .def(py::init<>())
     .def(
       "linearize",
@@ -171,14 +194,14 @@ void define_factors(py::module& m) {
       py::arg("source_index"),
       py::arg("rejector"),
       R"pbdoc(
-        Linearize the factor.
+        Linearize the factor for the i-th source point.
 
         Parameters
         ----------
         target : PointCloud
-            Target point cloud.
+            Target point cloud. Must have covariances.
         source : PointCloud
-            Source point cloud.
+            Source point cloud. Must have covariances.
         kdtree : KdTree
             KdTree for the target point cloud.
         T : numpy.ndarray
@@ -191,7 +214,7 @@ void define_factors(py::module& m) {
         Returns
         -------
         success: bool
-            Success flag.
+            Success flag. If false, the correspondence is rejected.
         H : numpy.ndarray
             Hessian matrix (6x6).
         b : numpy.ndarray

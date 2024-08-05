@@ -23,7 +23,12 @@ auto define_class(py::module& m, const std::string& name) {
       py::init<double>(),
       py::arg("leaf_size"),
       R"pbdoc(
-        Construct a VoxelMap.
+        Construct a Incremental voxelmap.
+
+        Notes
+        -----
+        This class supports incremental point cloud insertion and LRU-based voxel deletion that removes voxels that are not recently referenced.
+        It can handle arbitrary number of voxels and arbitrary range of voxel coordinates (in 32-bit int range).
 
         Parameters
         ----------
@@ -55,11 +60,17 @@ auto define_class(py::module& m, const std::string& name) {
       py::arg("points"),
       py::arg("T") = Eigen::Matrix4d::Identity(),
       R"pbdoc(
-        Insert a point cloud into the voxel map.
+        Insert a point cloud into the voxel map and delete voxels that are not recently accessed.
+
+        Note
+        ----
+        If this class is based on FlatContainer (i.e., IncrementalVoxelMap*), input points are ignored if
+        1) there are too many points in the cell or
+        2) the input point is too close to existing points in the cell.
 
         Parameters
         ----------
-        points : PointCloud
+        points : :class:`PointCloud`
             Input source point cloud.
         T : numpy.ndarray, optional
             Transformation matrix to be applied to the input point cloud (i.e., T_voxelmap_source). (default: identity)
@@ -136,6 +147,6 @@ void define_voxelmap(py::module& m) {
   define_class<IncrementalVoxelMap<FlatContainerPoints>, false, false>(m, "IncrementalVoxelMap");
   define_class<IncrementalVoxelMap<FlatContainerNormal>, true, false>(m, "IncrementalVoxelMapNormal");
   define_class<IncrementalVoxelMap<FlatContainerCov>, false, true>(m, "IncrementalVoxelMapCov");
-  define_class<IncrementalVoxelMap<FlatContainerNormalCov>, true, true>(m, "FlatContainerNormalCov");
+  define_class<IncrementalVoxelMap<FlatContainerNormalCov>, true, true>(m, "IncrementalVoxelMapNormalCov");
   define_class<GaussianVoxelMap, false, true>(m, "GaussianVoxelMap");
 }

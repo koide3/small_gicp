@@ -41,7 +41,7 @@ void define_pointcloud(py::module& m) {
       R"""(
       PointCloud(points: numpy.ndarray)
 
-      Construct a PointCloud from numpy.
+      Construct a PointCloud from a numpy array.
 
       Parameters
       ----------
