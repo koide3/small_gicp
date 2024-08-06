@@ -14,6 +14,7 @@ namespace small_gicp {
 /// @brief Point container with a flat vector.
 /// @note  IncrementalVoxelMap combined with FlastContainer is mostly the same as linear iVox.
 ///        Bai et al., "Faster-LIO: Lightweight Tightly Coupled Lidar-Inertial Odometry Using Parallel Sparse Incremental Voxels", IEEE RA-L, 2022
+/// @note  This container stores only up to max_num_points_in_cell points and avoids insertings points that are too close to existing points (min_sq_dist_in_cell).
 /// @tparam HasNormals  If true, store normals.
 /// @tparam HasCovs     If true, store covariances.
 template <bool HasNormals = false, bool HasCovs = false>
@@ -32,6 +33,7 @@ public:
   size_t size() const { return points.size(); }
 
   /// @brief Add a point to the container.
+  ///        If there is a point that is too close to the input point, or there are too many points in the cell, the input point will not be ignored.
   /// @param setting         Setting
   /// @param transformed_pt  Transformed point (== T * points[i])
   /// @param points          Point cloud
@@ -77,7 +79,7 @@ public:
   /// @param pt           Query point
   /// @param k            Number of neighbors
   /// @param k_index      Indices of nearest neighbors
-  /// @param k_sq_dist    Squared distances to nearest neighbors
+  /// @param k_sq_dist    Squared distances to nearest neighbors (sorted in ascending order)
   /// @return             Number of found points
   size_t knn_search(const Eigen::Vector4d& pt, int k, size_t* k_indices, double* k_sq_dists) const {
     if (points.empty()) {
@@ -93,7 +95,7 @@ public:
   /// @param pt           Query point
   /// @param k            Number of neighbors
   /// @param k_index      Indices of nearest neighbors
-  /// @param k_sq_dist    Squared distances to nearest neighbors
+  /// @param k_sq_dist    Squared distances to nearest neighbors (sorted in ascending order)
   /// @return             Number of found points
   template <typename Result>
   void knn_search(const Eigen::Vector4d& pt, Result& result) const {

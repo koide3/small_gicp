@@ -9,7 +9,9 @@
 
 namespace small_gicp {
 
-/// @brief Preprocess point cloud (downsampling, kdtree creation, and normal and covariance estimation)
+/// @brief Preprocess point cloud (downsampling, kdtree creation, and normal and covariance estimation).
+/// @note  When num_threads >= 2, this function has minor run-by-run non-determinism due to the parallel downsampling.
+/// @see   small_gicp::voxelgrid_sampling_omp, small_gicp::estimate_normals_covariances_omp
 /// @param points                Input points
 /// @param downsampling_resolution Downsample resolution
 /// @param num_neighbors         Number of neighbors for normal/covariance estimation
@@ -19,11 +21,14 @@ preprocess_points(const PointCloud& points, double downsampling_resolution, int 
 
 /// @brief Preprocess point cloud (downsampling, kdtree creation, and normal and covariance estimation)
 /// @note  This function only accepts Eigen::Vector(3|4)(f|d) as input
+/// @note  When num_threads >= 2, this function has minor run-by-run non-determinism due to the parallel downsampling.
+/// @see   small_gicp::voxelgrid_sampling_omp, small_gicp::estimate_normals_covariances_omp
 template <typename T, int D>
 std::pair<PointCloud::Ptr, std::shared_ptr<KdTree<PointCloud>>>
 preprocess_points(const std::vector<Eigen::Matrix<T, D, 1>>& points, double downsampling_resolution, int num_neighbors = 10, int num_threads = 4);
 
-/// @brief Create Gaussian voxel map
+/// @brief Create an incremental Gaussian voxel map.
+/// @see   small_gicp::IncrementalVoxelMap
 /// @param points            Input points
 /// @param voxel_resolution  Voxel resolution
 GaussianVoxelMap::Ptr create_gaussian_voxelmap(const PointCloud& points, double voxel_resolution);
@@ -45,6 +50,7 @@ struct RegistrationSetting {
 
 /// @brief Align point clouds
 /// @note This function only accepts Eigen::Vector(3|4)(f|d) as input
+/// @see  small_gicp::voxelgrid_sampling_omp, small_gicp::estimate_normals_covariances_omp
 /// @param target     Target points
 /// @param source     Source points
 /// @param init_T     Initial guess of T_target_source
@@ -72,9 +78,8 @@ RegistrationResult align(
   const RegistrationSetting& setting = RegistrationSetting());
 
 /// @brief Align preprocessed point clouds with VGICP
-/// @param target       Target point cloud
+/// @param target       Target Gaussian voxelmap
 /// @param source       Source point cloud
-/// @param target_tree  Nearest neighbor search for the target point cloud
 /// @param init_T       Initial guess of T_target_source
 /// @param setting      Registration setting
 /// @return             Registration result

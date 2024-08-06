@@ -8,6 +8,7 @@
 namespace small_gicp {
 
 /// @brief Computes point normals from eigenvectors and sets them to the point cloud.
+/// @note  If a sufficient number of neighbor points is not found, a zero vector is set to the point.
 template <typename PointCloud>
 struct NormalSetter {
   /// @brief Handle invalid case (too few points).
@@ -25,6 +26,7 @@ struct NormalSetter {
 };
 
 /// @brief Computes point covariances from eigenvectors and sets them to the point cloud.
+/// @note  If a sufficient number of neighbor points is not found, an identity matrix is set to the point.
 template <typename PointCloud>
 struct CovarianceSetter {
   /// @brief Handle invalid case (too few points).
@@ -44,6 +46,7 @@ struct CovarianceSetter {
 };
 
 /// @brief Computes point normals and covariances from eigenvectors and sets them to the point cloud.
+/// @note  If a sufficient number of neighbor points is not found, a zero vector and an identity matrix are set to the point.
 template <typename PointCloud>
 struct NormalCovarianceSetter {
   /// @brief Handle invalid case (too few points).
@@ -107,6 +110,8 @@ void estimate_local_features(PointCloud& cloud, int num_neighbors) {
 }
 
 /// @brief Estimate point normals
+/// @note  If a sufficient number of neighbor points for normal/covariance estimation (5 points) is not found,
+///        an invalid normal/covariance is set to the point (normal=zero vector, covariance=identity matrix).
 /// @param cloud          [in/out] Point cloud
 /// @param num_neighbors  Number of neighbors used for attribute estimation
 template <typename PointCloud>
@@ -115,6 +120,8 @@ void estimate_normals(PointCloud& cloud, int num_neighbors = 20) {
 }
 
 /// @brief Estimate point normals
+/// @note  If a sufficient number of neighbor points for normal/covariance estimation (5 points) is not found,
+///        an invalid normal/covariance is set to the point (normal=zero vector, covariance=identity matrix).
 /// @param cloud          [in/out] Point cloud
 /// @param kdtree         Nearest neighbor search
 /// @param num_neighbors  Number of neighbors used for attribute estimation
@@ -124,6 +131,8 @@ void estimate_normals(PointCloud& cloud, KdTree& kdtree, int num_neighbors = 20)
 }
 
 /// @brief Estimate point covariances
+/// @note  If a sufficient number of neighbor points for normal/covariance estimation (5 points) is not found,
+///        an invalid normal/covariance is set to the point (normal=zero vector, covariance=identity matrix).
 /// @param cloud          [in/out] Point cloud
 /// @param num_neighbors  Number of neighbors used for attribute estimation
 template <typename PointCloud>
@@ -132,6 +141,8 @@ void estimate_covariances(PointCloud& cloud, int num_neighbors = 20) {
 }
 
 /// @brief Estimate point covariances
+/// @note  If a sufficient number of neighbor points for normal/covariance estimation (5 points) is not found,
+///        an invalid normal/covariance is set to the point (normal=zero vector, covariance=identity matrix).
 /// @param cloud          [in/out] Point cloud
 /// @param kdtree         Nearest neighbor search
 /// @param num_neighbors  Number of neighbors used for attribute estimation
@@ -141,6 +152,8 @@ void estimate_covariances(PointCloud& cloud, KdTree& kdtree, int num_neighbors =
 }
 
 /// @brief Estimate point normals and covariances
+/// @note  If a sufficient number of neighbor points for normal/covariance estimation (5 points) is not found,
+///        an invalid normal/covariance is set to the point (normal=zero vector, covariance=identity matrix).
 /// @param cloud          [in/out] Point cloud
 /// @param num_neighbors  Number of neighbors used for attribute estimation
 template <typename PointCloud>
@@ -149,6 +162,8 @@ void estimate_normals_covariances(PointCloud& cloud, int num_neighbors = 20) {
 }
 
 /// @brief Estimate point normals and covariances
+/// @note  If a sufficient number of neighbor points for normal/covariance estimation (5 points) is not found,
+///        an invalid normal/covariance is set to the point (normal=zero vector, covariance=identity matrix).
 /// @param cloud          [in/out] Point cloud
 /// @param kdtree         Nearest neighbor search
 /// @param num_neighbors  Number of neighbors used for attribute estimation

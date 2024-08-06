@@ -14,6 +14,7 @@ struct ProjectionSetting {
 };
 
 /// @brief Conventional axis-aligned projection (i.e., selecting any of XYZ axes with the largest variance).
+/// @note  Up to max_scan_count samples are used to estimate the variance.
 struct AxisAlignedProjection {
 public:
   /// @brief Project the point to the selected axis.
@@ -53,6 +54,7 @@ public:
 };
 
 /// @brief Normal projection (i.e., selecting the 3D direction with the largest variance of the points).
+/// @note  Up to max_scan_count samples are used to estimate the variance along the axis.
 struct NormalProjection {
 public:
   /// @brief Project the point to the normal direction.

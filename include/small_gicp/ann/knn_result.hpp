@@ -76,6 +76,7 @@ public:
   double worst_distance() const { return distances[buffer_size() - 1]; }
 
   /// @brief  Push a pair of point index and distance to the result.
+  /// @note   The result is sorted by distance in ascending order.
   void push(size_t index, double distance) {
     if (distance >= worst_distance()) {
       return;

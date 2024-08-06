@@ -35,9 +35,18 @@ void define_preprocess(py::module& m) {
     R"pbdoc(
         Voxelgrid downsampling.
 
+        Notes
+        -----
+        When multi-threading is enabled, this function has minor run-by-run non-deterministic behavior due to parallel data collection that results
+        in a deviation of the number of points in the downsampling results (up to 10% increase from the single-thread version).
+
+        Discretized voxel coords must be in 21bit range [-1048576, 1048575].
+        For example, if the downsampling resolution is 0.01 m, point coordinates must be in [-10485.76, 10485.75] m.
+        Points outside the valid range will be ignored.
+
         Parameters
         ----------
-        points : PointCloud
+        points : :class:`PointCloud`
             Input point cloud.
         resolution : float
             Voxel size.
@@ -46,7 +55,7 @@ void define_preprocess(py::module& m) {
 
         Returns
         -------
-        PointCloud
+        :class:`PointCloud`
             Downsampled point cloud.
         )pbdoc");
 
@@ -71,6 +80,15 @@ void define_preprocess(py::module& m) {
     R"pbdoc(
         Voxelgrid downsampling.
 
+        Notes
+        -----
+        When multi-threading is enabled, this function has minor run-by-run non-deterministic behavior due to parallel data collection that results
+        in a deviation of the number of points in the downsampling results (up to 10% increase from the single-thread version).
+
+        Discretized voxel coords must be in 21bit range [-1048576, 1048575].
+        For example, if the downsampling resolution is 0.01 m, point coordinates must be in [-10485.76, 10485.75] m.
+        Points outside the valid range will be ignored.
+
         Parameters
         ----------
         points : [np.float64]
@@ -82,7 +100,7 @@ void define_preprocess(py::module& m) {
 
         Returns
         -------
-        PointCloud
+        :class:`PointCloud`
             Downsampled point cloud.
         )pbdoc");
 
@@ -106,12 +124,13 @@ void define_preprocess(py::module& m) {
     py::arg("num_threads") = 1,
     R"pbdoc(
         Estimate point normals.
+        If a sufficient number of neighbor points (5 points) is not found, a zero vector is set to the point.
 
         Parameters
         ----------
-        points : PointCloud
+        points : :class:`PointCloud`
             Input point cloud. Normals will be estimated in-place. (in/out)
-        tree : KdTree, optional
+        tree : :class:`KdTree`, optional
             Nearest neighbor search. If None, create a new KdTree (default: None)
         num_neighbors : int, optional
             Number of neighbors. (default: 20)
@@ -139,12 +158,13 @@ void define_preprocess(py::module& m) {
     py::arg("num_threads") = 1,
     R"pbdoc(
         Estimate point covariances.
+        If a sufficient number of neighbor points (5 points) is not found, an identity matrix is set to the point.
 
         Parameters
         ----------
-        points : PointCloud
+        points : :class:`PointCloud`
             Input point cloud. Covariances will be estimated in-place. (in/out)
-        tree : KdTree, optional
+        tree : :class:`KdTree`, optional
             Nearest neighbor search. If None, create a new KdTree (default: None)
         num_neighbors : int, optional
             Number of neighbors. (default: 20)
@@ -172,12 +192,13 @@ void define_preprocess(py::module& m) {
     py::arg("num_threads") = 1,
     R"pbdoc(
         Estimate point normals and covariances.
+        If a sufficient number of neighbor points (5 points) is not found, a zero vector and an identity matrix is set to the point.
 
         Parameters
         ----------
-        points : PointCloud
+        points : :class:`PointCloud`
             Input point cloud. Normals and covariances will be estimated in-place. (in/out)
-        tree : KdTree, optional
+        tree : :class:`KdTree`, optional
             Nearest neighbor search. If None, create a new KdTree (default: None)
         num_neighbors : int, optional
             Number of neighbors. (default: 20)
@@ -215,13 +236,14 @@ void define_preprocess(py::module& m) {
     py::arg("num_threads") = 1,
     R"pbdoc(
         Preprocess point cloud (Downsampling and normal/covariance estimation).
+        See also: :func:`voxelgrid_sampling`, :func:`estimate_normals_covariances`.
 
         Parameters
         ----------
         points : [np.float64]
             Input point cloud. Nx3 or Nx4.
         downsampling_resolution : float, optional
-            Resolution for downsampling the point clouds. (default: 0.25)
+            Resolution for downsampling the point clouds. Input points out of 21bit range after discretization are ignored (See also: :func:`voxelgrid_sampling`). (default: 0.25)
         num_neighbors : int, optional
             Number of neighbors used for attribute estimation. (default: 10)
         num_threads : int, optional
@@ -229,9 +251,9 @@ void define_preprocess(py::module& m) {
         
         Returns
         -------
-        PointCloud
+        :class:`PointCloud`
             Downsampled point cloud.
-        KdTree
+        :class:`KdTree`
             KdTree for the downsampled point cloud.
         )pbdoc");
 
@@ -255,13 +277,14 @@ void define_preprocess(py::module& m) {
     py::arg("num_threads") = 1,
     R"pbdoc(
         Preprocess point cloud (Downsampling and normal/covariance estimation).
+        See also: :func:`voxelgrid_sampling`, :func:`estimate_normals_covariances`.
 
         Parameters
         ----------
-        points : PointCloud
+        points : :class:`PointCloud`
             Input point cloud.
         downsampling_resolution : float, optional
-            Resolution for downsampling the point clouds. (default: 0.25)
+            Resolution for downsampling the point clouds. Input points out of 21bit range after discretization are ignored (See also: :func:`voxelgrid_sampling`). (default: 0.25)
         num_neighbors : int, optional
             Number of neighbors used for attribute estimation. (default: 10)
         num_threads : int, optional
@@ -269,9 +292,9 @@ void define_preprocess(py::module& m) {
         
         Returns
         -------
-        PointCloud
+        :class:`PointCloud`
             Downsampled point cloud.
-        KdTree
+        :class:`KdTree`
             KdTree for the downsampled point cloud.
         )pbdoc");
 }

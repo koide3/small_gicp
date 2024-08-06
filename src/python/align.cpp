@@ -100,10 +100,13 @@ void define_align(py::module& m) {
     py::arg("verbose") = false,
     R"pbdoc(
         Align two point clouds using various ICP-like algorithms.
+        This function first performs preprocessing (downsampling, normal estimation, KdTree construction) and then estimates the transformation.
+
+        See also: :class:`voxelgrid_sampling` :class:`estimate_normals` :class:`preprocess_points`
 
         Parameters
         ----------
-        target_points : numpy.ndarray[np.float64]
+        target_points : :class:`numpy.ndarray[np.float64]`
             Nx3 or Nx4 matrix representing the target point cloud.
         source_points : numpy.ndarray[np.float64]
             Nx3 or Nx4 matrix representing the source point cloud.
@@ -115,6 +118,7 @@ void define_align(py::module& m) {
             Resolution of voxels used for correspondence search (used only in VGICP).
         downsampling_resolution : float = 0.25
             Resolution for downsampling the point clouds.
+            Input points out of the 21bit range after discretization will be ignored (See also: :class:`voxelgrid_sampling`).
         max_correspondence_distance : float = 1.0
             Maximum distance for matching points between point clouds.
         num_threads : int = 1
@@ -126,7 +130,7 @@ void define_align(py::module& m) {
 
         Returns
         -------
-        result : RegistrationResult
+        result : :class:`RegistrationResult`
             Object containing the final transformation matrix and convergence status.
         )pbdoc");
 
@@ -175,15 +179,17 @@ void define_align(py::module& m) {
     py::arg("verbose") = false,
     R"pbdoc(
     Align two point clouds using specified ICP-like algorithms, utilizing point cloud and KD-tree inputs.
+    Input point clouds are assumed to be preprocessed (downsampled, normals estimated, KD-tree built).
+    See also: :class:`voxelgrid_sampling` :class:`estimate_normals` :class:`preprocess_points`
 
     Parameters
     ----------
-    target : PointCloud::ConstPtr
-        Pointer to the target point cloud.
-    source : PointCloud::ConstPtr
-        Pointer to the source point cloud.
-    target_tree : KdTree<PointCloud>::ConstPtr, optional
-        Pointer to the KD-tree of the target for nearest neighbor search. If nullptr, a new tree is built.
+    target : :class:`PointCloud`
+        Target point cloud.
+    source : :class:`PointCloud`
+        Source point cloud.
+    target_tree : :class:`KdTree`, optional
+        KdTree for the target point cloud. If not given, a new KdTree is built.
     init_T_target_source : numpy.ndarray[np.float64]
         4x4 matrix representing the initial transformation from target to source.
     registration_type : str = 'GICP'
@@ -199,7 +205,7 @@ void define_align(py::module& m) {
 
     Returns
     -------
-    result : RegistrationResult
+    result : :class:`RegistrationResult`
         Object containing the final transformation matrix and convergence status.
     )pbdoc");
 
@@ -231,12 +237,14 @@ void define_align(py::module& m) {
     py::arg("verbose") = false,
     R"pbdoc(
     Align two point clouds using voxel-based GICP algorithm, utilizing a Gaussian Voxel Map.
+    Input source point cloud is assumed to be preprocessed (downsampled, normals estimated, KD-tree built).
+    See also: :class:`voxelgrid_sampling` :class:`estimate_normals` :class:`preprocess_points`
 
     Parameters
     ----------
-    target_voxelmap : GaussianVoxelMap
+    target_voxelmap : :class:`GaussianVoxelMap`
         Voxel map constructed from the target point cloud.
-    source : PointCloud
+    source : :class:`PointCloud`
         Source point cloud to align to the target.
     init_T_target_source : numpy.ndarray[np.float64]
         4x4 matrix representing the initial transformation from target to source.
@@ -251,7 +259,7 @@ void define_align(py::module& m) {
 
     Returns
     -------
-    result : RegistrationResult
+    result : :class:`RegistrationResult`
         Object containing the final transformation matrix and convergence status.
     )pbdoc");
 }

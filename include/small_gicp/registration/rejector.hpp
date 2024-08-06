@@ -24,7 +24,7 @@ struct DistanceRejector {
     return sq_dist > max_dist_sq;
   }
 
-  double max_dist_sq;
+  double max_dist_sq;  ///< Maximum squared distance between corresponding points
 };
 
 }  // namespace small_gicp

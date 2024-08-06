@@ -30,6 +30,8 @@ void estimate_local_features_tbb(PointCloud& cloud, int num_neighbors) {
 }
 
 /// @brief Estimate point normals with TBB
+/// @note  If a sufficient number of neighbor points for normal/covariance estimation (5 points) is not found,
+///        an invalid normal/covariance is set to the point (normal=zero vector, covariance=identity matrix).
 /// @param cloud          [in/out] Point cloud
 /// @param num_neighbors  Number of neighbors used for attribute estimation
 template <typename PointCloud>
@@ -38,6 +40,8 @@ void estimate_normals_tbb(PointCloud& cloud, int num_neighbors = 20) {
 }
 
 /// @brief Estimate point normals with TBB
+/// @note  If a sufficient number of neighbor points for normal/covariance estimation (5 points) is not found,
+///        an invalid normal/covariance is set to the point (normal=zero vector, covariance=identity matrix).
 /// @param cloud          [in/out] Point cloud
 /// @param kdtree         Nearest neighbor search
 /// @param num_neighbors  Number of neighbors used for attribute estimation
@@ -47,6 +51,8 @@ void estimate_normals_tbb(PointCloud& cloud, KdTree& kdtree, int num_neighbors =
 }
 
 /// @brief Estimate point covariances with TBB
+/// @note  If a sufficient number of neighbor points for normal/covariance estimation (5 points) is not found,
+///        an invalid normal/covariance is set to the point (normal=zero vector, covariance=identity matrix).
 /// @param cloud          [in/out] Point cloud
 /// @param num_neighbors  Number of neighbors used for attribute estimation
 template <typename PointCloud>
@@ -55,6 +61,8 @@ void estimate_covariances_tbb(PointCloud& cloud, int num_neighbors = 20) {
 }
 
 /// @brief Estimate point covariances with TBB
+/// @note  If a sufficient number of neighbor points for normal/covariance estimation (5 points) is not found,
+///        an invalid normal/covariance is set to the point (normal=zero vector, covariance=identity matrix).
 /// @param cloud          [in/out] Point cloud
 /// @param kdtree         Nearest neighbor search
 /// @param num_neighbors  Number of neighbors used for attribute estimation
@@ -64,6 +72,8 @@ void estimate_covariances_tbb(PointCloud& cloud, KdTree& kdtree, int num_neighbo
 }
 
 /// @brief Estimate point normals and covariances with TBB
+/// @note  If a sufficient number of neighbor points for normal/covariance estimation (5 points) is not found,
+///        an invalid normal/covariance is set to the point (normal=zero vector, covariance=identity matrix).
 /// @param cloud          [in/out] Point cloud
 /// @param num_neighbors  Number of neighbors used for attribute estimation
 template <typename PointCloud>
@@ -72,6 +82,8 @@ void estimate_normals_covariances_tbb(PointCloud& cloud, int num_neighbors = 20)
 }
 
 /// @brief Estimate point normals and covariances with TBB
+/// @note  If a sufficient number of neighbor points for normal/covariance estimation (5 points) is not found,
+///        an invalid normal/covariance is set to the point (normal=zero vector, covariance=identity matrix).
 /// @param cloud          [in/out] Point cloud
 /// @param kdtree         Nearest neighbor search
 /// @param num_neighbors  Number of neighbors used for attribute estimation

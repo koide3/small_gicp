@@ -37,11 +37,11 @@ void define_kdtree(py::module& m) {
       R"""(
         KdTree(points: numpy.ndarray, num_threads: int = 1)
 
-        Construct a KdTree from numpy.
+        Construct a KdTree from a numpy array.
 
         Parameters
         ----------
-        points : numpy.ndarray, shape (n, 3) or (n, 4)
+        points : :class:`numpy.ndarray`, shape (n, 3) or (n, 4)
             The input point cloud.
         num_threads : int, optional
             The number of threads to use for KdTree construction. Default is 1.
@@ -54,11 +54,11 @@ void define_kdtree(py::module& m) {
       R"""(
         KdTree(points: PointCloud, num_threads: int = 1)
 
-        Construct a KdTree from a point cloud.
+        Construct a KdTree from a small_gicp.PointCloud.
 
         Parameters
         ----------
-        points : PointCloud
+        points : :class:`PointCloud`
             The input point cloud.
         num_threads : int, optional
             The number of threads to use for KdTree construction. Default is 1.
@@ -86,7 +86,7 @@ void define_kdtree(py::module& m) {
         found : int
             Whether a neighbor was found (1 if found, 0 if not).
         k_index : int
-            The index of the nearest neighbor in the point cloud.
+            The index of the nearest neighbor in the point cloud. If a neighbor was not found, the index is -1.
         k_sq_dist : float
             The squared distance to the nearest neighbor.
        )""")
@@ -114,9 +114,9 @@ void define_kdtree(py::module& m) {
         Returns
         -------
         k_indices : numpy.ndarray, shape (k,)
-            The indices of the k nearest neighbors in the point cloud.
+            The indices of the k nearest neighbors in the point cloud. If a neighbor was not found, the index is -1.
         k_sq_dists : numpy.ndarray, shape (k,)
-            The squared distances to the k nearest neighbors.
+            The squared distances to the k nearest neighbors (Sorted in ascending order).
      )""")
 
     .def(
@@ -155,7 +155,7 @@ void define_kdtree(py::module& m) {
         Returns
         -------
         k_indices : numpy.ndarray, shape (n,)
-            The indices of the nearest neighbors for each input point.
+            The indices of the nearest neighbors for each input point. If a neighbor was not found, the index is -1.
         k_sq_dists : numpy.ndarray, shape (n,)
             The squared distances to the nearest neighbors for each input point.
      )""")
@@ -201,8 +201,8 @@ void define_kdtree(py::module& m) {
         Returns
         -------
         k_indices : list of numpy.ndarray, shape (n,)
-            The list of indices of the k nearest neighbors for each input point.
+            The list of indices of the k nearest neighbors for each input point. If a neighbor was not found, the index is -1.
         k_sq_dists : list of numpy.ndarray, shape (n,)
-            The list of squared distances to the k nearest neighbors for each input point.
+            The list of squared distances to the k nearest neighbors for each input point (sorted in ascending order).
      )""");
 }
