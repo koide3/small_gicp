@@ -16,6 +16,8 @@ date: 22 June 2024
 bibliography: paper.bib
 ---
 
+\def\CC{{C\nolinebreak[4]\hspace{-.05em}\raisebox{.4ex}{\tiny\bf ++}}}
+
 # Summary
 
 Point cloud registration is a task of aligning two point clouds measured by 3D ranging
@@ -34,7 +36,7 @@ processing, speed is a critical factor in point cloud registration routines.
 fast point cloud registration pipeline. It offers parallel implementations of 
 downsampling, nearest neighbor search, local feature extraction, and registration
 to accelerate the entire process.
-small_gicp is implemented as a header-only C++ library with minimal dependencies
+small_gicp is implemented as a header-only \CC library with minimal dependencies
 to offer efficiency, portability, and customizability.
 
 # Statement of need
@@ -73,10 +75,10 @@ we designed small_gicp with the following features:
   offering up to 2x speed gain in single-threaded scenarios and better scalability in multi-core
   environments.
 
-- A modular and customizable framework using C++ templates, allowing easy customization of the
+- A modular and customizable framework using \CC templates, allowing easy customization of the
   algorithm's internal workings while maintaining efficiency.
 
-- A header-only C++ library implementation for easy integration into user projects, with Python bindings
+- A header-only \CC library implementation for easy integration into user projects, with Python bindings
   provided for collaborative use with other libraries (e.g., Open3D).
 
 # Functionalities
@@ -107,7 +109,7 @@ distribution-to-distribution correspondence).
 - Multi-threaded construction of `small_gicp::KdTree` can be up to 6x faster than that of `nanoflann`.
 - Single-threaded `small_gicp::GICP` is about 2.4x faster than `pcl::GICP`, with the multi-threaded version showing better scalability.
 
-More details can be found at https://github.com/koide3/small_gicp/blob/master/BENCHMARK.md.
+More details can be found at \url{https://github.com/koide3/small_gicp/blob/master/BENCHMARK.md}.
 
 # Future work
 
