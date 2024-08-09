@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>small_gicp documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="#" class="icon icon-home"> small_gicp
+          </a>
+              <div class="version">
+                1.0.0
+              </div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="index.html#document-small_gicp">small_gicp module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">small_gicp</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
+      <li>small_gicp  documentation</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="welcome-to-small-gicp-s-documentation">
+<h1>Welcome to small_gicp’s documentation!<a class="headerlink" href="#welcome-to-small-gicp-s-documentation" title="Permalink to this headline"></a></h1>
+<div class="toctree-wrapper compound">
+<span id="document-small_gicp"></span><section id="module-small_gicp">
+<span id="small-gicp-module"></span><h2>small_gicp module<a class="headerlink" href="#module-small_gicp" title="Permalink to this headline"></a></h2>
+<p>Efficient and parallel algorithms for point cloud registration</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="small_gicp.DistanceRejector">
+<em class="property"><span class="pre">class</span><span class="w">  </span></em><span class="sig-prename descclassname"><span class="pre">small_gicp.</span></span><span class="sig-name descname"><span class="pre">DistanceRejector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.DistanceRejector" title="small_gicp.DistanceRejector"><span class="pre">small_gicp.DistanceRejector</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#small_gicp.DistanceRejector" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<p>Correspondence rejection based on the distance between points.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.DistanceRejector.set_max_distance">
+<span class="sig-name descname"><span class="pre">set_max_distance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.DistanceRejector" title="small_gicp.DistanceRejector"><span class="pre">small_gicp.DistanceRejector</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">dist</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#small_gicp.DistanceRejector.set_max_distance" title="Permalink to this definition"></a></dt>
+<dd><p>Set maximum correspondence distance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dist</strong> (<em>float</em>) – Maximum correspondence distance.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="small_gicp.GICPFactor">
+<em class="property"><span class="pre">class</span><span class="w">  </span></em><span class="sig-prename descclassname"><span class="pre">small_gicp.</span></span><span class="sig-name descname"><span class="pre">GICPFactor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.GICPFactor" title="small_gicp.GICPFactor"><span class="pre">small_gicp.GICPFactor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#small_gicp.GICPFactor" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<p>Generalized ICP per-point factor based on distribution-to-distribution distance.</p>
+<p class="rubric">References</p>
+<p>Segal et al., “Generalized-ICP”, RSS2005</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.GICPFactor.linearize">
+<span class="sig-name descname"><span class="pre">linearize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.GICPFactor" title="small_gicp.GICPFactor"><span class="pre">small_gicp.GICPFactor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.PointCloud" title="small_gicp.PointCloud"><span class="pre">small_gicp.PointCloud</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.PointCloud" title="small_gicp.PointCloud"><span class="pre">small_gicp.PointCloud</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">kdtree</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.KdTree" title="small_gicp.KdTree"><span class="pre">small_gicp.KdTree</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_index</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rejector</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.DistanceRejector" title="small_gicp.DistanceRejector"><span class="pre">small_gicp.DistanceRejector</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">6</span></span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="m"><span class="pre">6</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">6</span></span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#small_gicp.GICPFactor.linearize" title="Permalink to this definition"></a></dt>
+<dd><p>Linearize the factor for the i-th source point.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<a class="reference internal" href="index.html#small_gicp.PointCloud" title="small_gicp.PointCloud"><em>PointCloud</em></a>) – Target point cloud. Must have covariances.</p></li>
+<li><p><strong>source</strong> (<a class="reference internal" href="index.html#small_gicp.PointCloud" title="small_gicp.PointCloud"><em>PointCloud</em></a>) – Source point cloud. Must have covariances.</p></li>
+<li><p><strong>kdtree</strong> (<a class="reference internal" href="index.html#small_gicp.KdTree" title="small_gicp.KdTree"><em>KdTree</em></a>) – KdTree for the target point cloud.</p></li>
+<li><p><strong>T</strong> (<em>numpy.ndarray</em>) – Transformation matrix. (4x4)</p></li>
+<li><p><strong>source_index</strong> (<em>int</em>) – Index of the source point.</p></li>
+<li><p><strong>rejector</strong> (<a class="reference internal" href="index.html#small_gicp.DistanceRejector" title="small_gicp.DistanceRejector"><em>DistanceRejector</em></a>) – Correspondence rejector.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>success</strong> (<em>bool</em>) – Success flag. If false, the correspondence is rejected.</p></li>
+<li><p><strong>H</strong> (<em>numpy.ndarray</em>) – Hessian matrix (6x6).</p></li>
+<li><p><strong>b</strong> (<em>numpy.ndarray</em>) – Gradient vector (6,).</p></li>
+<li><p><strong>e</strong> (<em>float</em>) – Error.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="small_gicp.GaussianVoxelMap">
+<em class="property"><span class="pre">class</span><span class="w">  </span></em><span class="sig-prename descclassname"><span class="pre">small_gicp.</span></span><span class="sig-name descname"><span class="pre">GaussianVoxelMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.GaussianVoxelMap" title="small_gicp.GaussianVoxelMap"><span class="pre">small_gicp.GaussianVoxelMap</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">leaf_size</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#small_gicp.GaussianVoxelMap" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<p>Construct a Incremental voxelmap.</p>
+<p class="rubric">Notes</p>
+<p>This class supports incremental point cloud insertion and LRU-based voxel deletion that removes voxels that are not recently referenced.
+It can handle arbitrary number of voxels and arbitrary range of voxel coordinates (in 32-bit int range).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>leaf_size</strong> (<em>float</em>) – Voxel size.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.GaussianVoxelMap.insert">
+<span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#small_gicp.GaussianVoxelMap.insert" title="Permalink to this definition"></a></dt>
+<dd><p>insert(self: small_gicp.GaussianVoxelMap, points: small_gicp.PointCloud, T: numpy.ndarray[numpy.float64[4, 4]] = array([[1., 0., 0., 0.],
+[0., 1., 0., 0.],
+[0., 0., 1., 0.],
+[0., 0., 0., 1.]])) -&gt; None</p>
+<blockquote>
+<div><p>Insert a point cloud into the voxel map and delete voxels that are not recently accessed.</p>
+<p>If this class is based on FlatContainer (i.e., IncrementalVoxelMap*), input points are ignored if
+1) there are too many points in the cell or
+2) the input point is too close to existing points in the cell.</p>
+<dl>
+<dt>points<span class="classifier"><a class="reference internal" href="#small_gicp.PointCloud" title="small_gicp.PointCloud"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointCloud</span></code></a></span></dt><dd><p>Input source point cloud.</p>
+</dd>
+<dt>T<span class="classifier">numpy.ndarray, optional</span></dt><dd><p>Transformation matrix to be applied to the input point cloud (i.e., T_voxelmap_source). (default: identity)</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.GaussianVoxelMap.set_lru">
+<span class="sig-name descname"><span class="pre">set_lru</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.GaussianVoxelMap" title="small_gicp.GaussianVoxelMap"><span class="pre">small_gicp.GaussianVoxelMap</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">horizon</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">int</span></span><span class="w">  </span><span class="o"><span class="pre">=</span></span><span class="w">  </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clear_cycle</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">int</span></span><span class="w">  </span><span class="o"><span class="pre">=</span></span><span class="w">  </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#small_gicp.GaussianVoxelMap.set_lru" title="Permalink to this definition"></a></dt>
+<dd><p>Set the LRU cache parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>horizon</strong> (<em>int</em><em>, </em><em>optional</em>) – LRU horizon size. Voxels that have not been accessed for lru_horizon steps are deleted. (default: 100)</p></li>
+<li><p><strong>clear_cycle</strong> (<em>int</em><em>, </em><em>optional</em>) – LRU clear cycle. Voxel deletion is performed every lru_clear_cycle steps. (default: 10)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.GaussianVoxelMap.size">
+<span class="sig-name descname"><span class="pre">size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.GaussianVoxelMap" title="small_gicp.GaussianVoxelMap"><span class="pre">small_gicp.GaussianVoxelMap</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#small_gicp.GaussianVoxelMap.size" title="Permalink to this definition"></a></dt>
+<dd><p>Get the number of voxels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>num_voxels</strong> – Number of voxels.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.GaussianVoxelMap.voxel_covs">
+<span class="sig-name descname"><span class="pre">voxel_covs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.GaussianVoxelMap" title="small_gicp.GaussianVoxelMap"><span class="pre">small_gicp.GaussianVoxelMap</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">[</span></span><span class="pre">m</span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="pre">n</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#small_gicp.GaussianVoxelMap.voxel_covs" title="Permalink to this definition"></a></dt>
+<dd><p>Get the voxel normals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>voxel_covs</strong> – Voxel covariance matrices. (Nx4x4)</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list of numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.GaussianVoxelMap.voxel_points">
+<span class="sig-name descname"><span class="pre">voxel_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.GaussianVoxelMap" title="small_gicp.GaussianVoxelMap"><span class="pre">small_gicp.GaussianVoxelMap</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">[</span></span><span class="pre">m</span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="pre">n</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#small_gicp.GaussianVoxelMap.voxel_points" title="Permalink to this definition"></a></dt>
+<dd><p>Get the voxel points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>voxel_points</strong> – Voxel points. (Nx4)</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="small_gicp.ICPFactor">
+<em class="property"><span class="pre">class</span><span class="w">  </span></em><span class="sig-prename descclassname"><span class="pre">small_gicp.</span></span><span class="sig-name descname"><span class="pre">ICPFactor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.ICPFactor" title="small_gicp.ICPFactor"><span class="pre">small_gicp.ICPFactor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#small_gicp.ICPFactor" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<p>ICP per-point factor based on the conventional point-to-point distance.</p>
+<p class="rubric">References</p>
+<p>Zhang, “Iterative Point Matching for Registration of Free-Form Curve”, IJCV1994</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.ICPFactor.linearize">
+<span class="sig-name descname"><span class="pre">linearize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.ICPFactor" title="small_gicp.ICPFactor"><span class="pre">small_gicp.ICPFactor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.PointCloud" title="small_gicp.PointCloud"><span class="pre">small_gicp.PointCloud</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.PointCloud" title="small_gicp.PointCloud"><span class="pre">small_gicp.PointCloud</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">kdtree</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.KdTree" title="small_gicp.KdTree"><span class="pre">small_gicp.KdTree</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_index</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rejector</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.DistanceRejector" title="small_gicp.DistanceRejector"><span class="pre">small_gicp.DistanceRejector</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">6</span></span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="m"><span class="pre">6</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">6</span></span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#small_gicp.ICPFactor.linearize" title="Permalink to this definition"></a></dt>
+<dd><p>Linearize the factor for the i-th source point.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<a class="reference internal" href="#small_gicp.PointCloud" title="small_gicp.PointCloud"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointCloud</span></code></a>) – Target point cloud.</p></li>
+<li><p><strong>source</strong> (<a class="reference internal" href="index.html#small_gicp.PointCloud" title="small_gicp.PointCloud"><em>PointCloud</em></a>) – Source point cloud.</p></li>
+<li><p><strong>kdtree</strong> (<a class="reference internal" href="index.html#small_gicp.KdTree" title="small_gicp.KdTree"><em>KdTree</em></a>) – KdTree for the target point cloud.</p></li>
+<li><p><strong>T</strong> (<em>numpy.ndarray</em>) – Transformation matrix. (4x4)</p></li>
+<li><p><strong>source_index</strong> (<em>int</em>) – Index of the source point.</p></li>
+<li><p><strong>rejector</strong> (<a class="reference internal" href="index.html#small_gicp.DistanceRejector" title="small_gicp.DistanceRejector"><em>DistanceRejector</em></a>) – Correspondence rejector.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>success</strong> (<em>bool</em>) – Success flag. If false, the correspondence is rejected.</p></li>
+<li><p><strong>H</strong> (<em>numpy.ndarray</em>) – Hessian matrix (6x6).</p></li>
+<li><p><strong>b</strong> (<em>numpy.ndarray</em>) – Gradient vector (6,).</p></li>
+<li><p><strong>e</strong> (<em>float</em>) – Error.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="small_gicp.IncrementalVoxelMap">
+<em class="property"><span class="pre">class</span><span class="w">  </span></em><span class="sig-prename descclassname"><span class="pre">small_gicp.</span></span><span class="sig-name descname"><span class="pre">IncrementalVoxelMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.IncrementalVoxelMap" title="small_gicp.IncrementalVoxelMap"><span class="pre">small_gicp.IncrementalVoxelMap</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">leaf_size</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#small_gicp.IncrementalVoxelMap" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<p>Construct a Incremental voxelmap.</p>
+<p class="rubric">Notes</p>
+<p>This class supports incremental point cloud insertion and LRU-based voxel deletion that removes voxels that are not recently referenced.
+It can handle arbitrary number of voxels and arbitrary range of voxel coordinates (in 32-bit int range).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>leaf_size</strong> (<em>float</em>) – Voxel size.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.IncrementalVoxelMap.insert">
+<span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#small_gicp.IncrementalVoxelMap.insert" title="Permalink to this definition"></a></dt>
+<dd><p>insert(self: small_gicp.IncrementalVoxelMap, points: small_gicp.PointCloud, T: numpy.ndarray[numpy.float64[4, 4]] = array([[1., 0., 0., 0.],
+[0., 1., 0., 0.],
+[0., 0., 1., 0.],
+[0., 0., 0., 1.]])) -&gt; None</p>
+<blockquote>
+<div><p>Insert a point cloud into the voxel map and delete voxels that are not recently accessed.</p>
+<p>If this class is based on FlatContainer (i.e., IncrementalVoxelMap*), input points are ignored if
+1) there are too many points in the cell or
+2) the input point is too close to existing points in the cell.</p>
+<dl>
+<dt>points<span class="classifier"><a class="reference internal" href="#small_gicp.PointCloud" title="small_gicp.PointCloud"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointCloud</span></code></a></span></dt><dd><p>Input source point cloud.</p>
+</dd>
+<dt>T<span class="classifier">numpy.ndarray, optional</span></dt><dd><p>Transformation matrix to be applied to the input point cloud (i.e., T_voxelmap_source). (default: identity)</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.IncrementalVoxelMap.set_lru">
+<span class="sig-name descname"><span class="pre">set_lru</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.IncrementalVoxelMap" title="small_gicp.IncrementalVoxelMap"><span class="pre">small_gicp.IncrementalVoxelMap</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">horizon</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">int</span></span><span class="w">  </span><span class="o"><span class="pre">=</span></span><span class="w">  </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clear_cycle</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">int</span></span><span class="w">  </span><span class="o"><span class="pre">=</span></span><span class="w">  </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#small_gicp.IncrementalVoxelMap.set_lru" title="Permalink to this definition"></a></dt>
+<dd><p>Set the LRU cache parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>horizon</strong> (<em>int</em><em>, </em><em>optional</em>) – LRU horizon size. Voxels that have not been accessed for lru_horizon steps are deleted. (default: 100)</p></li>
+<li><p><strong>clear_cycle</strong> (<em>int</em><em>, </em><em>optional</em>) – LRU clear cycle. Voxel deletion is performed every lru_clear_cycle steps. (default: 10)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.IncrementalVoxelMap.size">
+<span class="sig-name descname"><span class="pre">size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.IncrementalVoxelMap" title="small_gicp.IncrementalVoxelMap"><span class="pre">small_gicp.IncrementalVoxelMap</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#small_gicp.IncrementalVoxelMap.size" title="Permalink to this definition"></a></dt>
+<dd><p>Get the number of voxels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>num_voxels</strong> – Number of voxels.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.IncrementalVoxelMap.voxel_points">
+<span class="sig-name descname"><span class="pre">voxel_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.IncrementalVoxelMap" title="small_gicp.IncrementalVoxelMap"><span class="pre">small_gicp.IncrementalVoxelMap</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">[</span></span><span class="pre">m</span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="pre">n</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#small_gicp.IncrementalVoxelMap.voxel_points" title="Permalink to this definition"></a></dt>
+<dd><p>Get the voxel points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>voxel_points</strong> – Voxel points. (Nx4)</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="small_gicp.IncrementalVoxelMapCov">
+<em class="property"><span class="pre">class</span><span class="w">  </span></em><span class="sig-prename descclassname"><span class="pre">small_gicp.</span></span><span class="sig-name descname"><span class="pre">IncrementalVoxelMapCov</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.IncrementalVoxelMapCov" title="small_gicp.IncrementalVoxelMapCov"><span class="pre">small_gicp.IncrementalVoxelMapCov</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">leaf_size</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#small_gicp.IncrementalVoxelMapCov" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<p>Construct a Incremental voxelmap.</p>
+<p class="rubric">Notes</p>
+<p>This class supports incremental point cloud insertion and LRU-based voxel deletion that removes voxels that are not recently referenced.
+It can handle arbitrary number of voxels and arbitrary range of voxel coordinates (in 32-bit int range).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>leaf_size</strong> (<em>float</em>) – Voxel size.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.IncrementalVoxelMapCov.insert">
+<span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#small_gicp.IncrementalVoxelMapCov.insert" title="Permalink to this definition"></a></dt>
+<dd><p>insert(self: small_gicp.IncrementalVoxelMapCov, points: small_gicp.PointCloud, T: numpy.ndarray[numpy.float64[4, 4]] = array([[1., 0., 0., 0.],
+[0., 1., 0., 0.],
+[0., 0., 1., 0.],
+[0., 0., 0., 1.]])) -&gt; None</p>
+<blockquote>
+<div><p>Insert a point cloud into the voxel map and delete voxels that are not recently accessed.</p>
+<p>If this class is based on FlatContainer (i.e., IncrementalVoxelMap*), input points are ignored if
+1) there are too many points in the cell or
+2) the input point is too close to existing points in the cell.</p>
+<dl>
+<dt>points<span class="classifier"><a class="reference internal" href="#small_gicp.PointCloud" title="small_gicp.PointCloud"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointCloud</span></code></a></span></dt><dd><p>Input source point cloud.</p>
+</dd>
+<dt>T<span class="classifier">numpy.ndarray, optional</span></dt><dd><p>Transformation matrix to be applied to the input point cloud (i.e., T_voxelmap_source). (default: identity)</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.IncrementalVoxelMapCov.set_lru">
+<span class="sig-name descname"><span class="pre">set_lru</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.IncrementalVoxelMapCov" title="small_gicp.IncrementalVoxelMapCov"><span class="pre">small_gicp.IncrementalVoxelMapCov</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">horizon</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">int</span></span><span class="w">  </span><span class="o"><span class="pre">=</span></span><span class="w">  </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clear_cycle</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">int</span></span><span class="w">  </span><span class="o"><span class="pre">=</span></span><span class="w">  </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#small_gicp.IncrementalVoxelMapCov.set_lru" title="Permalink to this definition"></a></dt>
+<dd><p>Set the LRU cache parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>horizon</strong> (<em>int</em><em>, </em><em>optional</em>) – LRU horizon size. Voxels that have not been accessed for lru_horizon steps are deleted. (default: 100)</p></li>
+<li><p><strong>clear_cycle</strong> (<em>int</em><em>, </em><em>optional</em>) – LRU clear cycle. Voxel deletion is performed every lru_clear_cycle steps. (default: 10)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.IncrementalVoxelMapCov.size">
+<span class="sig-name descname"><span class="pre">size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.IncrementalVoxelMapCov" title="small_gicp.IncrementalVoxelMapCov"><span class="pre">small_gicp.IncrementalVoxelMapCov</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#small_gicp.IncrementalVoxelMapCov.size" title="Permalink to this definition"></a></dt>
+<dd><p>Get the number of voxels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>num_voxels</strong> – Number of voxels.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.IncrementalVoxelMapCov.voxel_covs">
+<span class="sig-name descname"><span class="pre">voxel_covs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.IncrementalVoxelMapCov" title="small_gicp.IncrementalVoxelMapCov"><span class="pre">small_gicp.IncrementalVoxelMapCov</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">[</span></span><span class="pre">m</span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="pre">n</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#small_gicp.IncrementalVoxelMapCov.voxel_covs" title="Permalink to this definition"></a></dt>
+<dd><p>Get the voxel normals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>voxel_covs</strong> – Voxel covariance matrices. (Nx4x4)</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list of numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.IncrementalVoxelMapCov.voxel_points">
+<span class="sig-name descname"><span class="pre">voxel_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.IncrementalVoxelMapCov" title="small_gicp.IncrementalVoxelMapCov"><span class="pre">small_gicp.IncrementalVoxelMapCov</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">[</span></span><span class="pre">m</span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="pre">n</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#small_gicp.IncrementalVoxelMapCov.voxel_points" title="Permalink to this definition"></a></dt>
+<dd><p>Get the voxel points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>voxel_points</strong> – Voxel points. (Nx4)</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="small_gicp.IncrementalVoxelMapNormal">
+<em class="property"><span class="pre">class</span><span class="w">  </span></em><span class="sig-prename descclassname"><span class="pre">small_gicp.</span></span><span class="sig-name descname"><span class="pre">IncrementalVoxelMapNormal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.IncrementalVoxelMapNormal" title="small_gicp.IncrementalVoxelMapNormal"><span class="pre">small_gicp.IncrementalVoxelMapNormal</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">leaf_size</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#small_gicp.IncrementalVoxelMapNormal" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<p>Construct a Incremental voxelmap.</p>
+<p class="rubric">Notes</p>
+<p>This class supports incremental point cloud insertion and LRU-based voxel deletion that removes voxels that are not recently referenced.
+It can handle arbitrary number of voxels and arbitrary range of voxel coordinates (in 32-bit int range).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>leaf_size</strong> (<em>float</em>) – Voxel size.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.IncrementalVoxelMapNormal.insert">
+<span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#small_gicp.IncrementalVoxelMapNormal.insert" title="Permalink to this definition"></a></dt>
+<dd><p>insert(self: small_gicp.IncrementalVoxelMapNormal, points: small_gicp.PointCloud, T: numpy.ndarray[numpy.float64[4, 4]] = array([[1., 0., 0., 0.],
+[0., 1., 0., 0.],
+[0., 0., 1., 0.],
+[0., 0., 0., 1.]])) -&gt; None</p>
+<blockquote>
+<div><p>Insert a point cloud into the voxel map and delete voxels that are not recently accessed.</p>
+<p>If this class is based on FlatContainer (i.e., IncrementalVoxelMap*), input points are ignored if
+1) there are too many points in the cell or
+2) the input point is too close to existing points in the cell.</p>
+<dl>
+<dt>points<span class="classifier"><a class="reference internal" href="#small_gicp.PointCloud" title="small_gicp.PointCloud"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointCloud</span></code></a></span></dt><dd><p>Input source point cloud.</p>
+</dd>
+<dt>T<span class="classifier">numpy.ndarray, optional</span></dt><dd><p>Transformation matrix to be applied to the input point cloud (i.e., T_voxelmap_source). (default: identity)</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.IncrementalVoxelMapNormal.set_lru">
+<span class="sig-name descname"><span class="pre">set_lru</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.IncrementalVoxelMapNormal" title="small_gicp.IncrementalVoxelMapNormal"><span class="pre">small_gicp.IncrementalVoxelMapNormal</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">horizon</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">int</span></span><span class="w">  </span><span class="o"><span class="pre">=</span></span><span class="w">  </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clear_cycle</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">int</span></span><span class="w">  </span><span class="o"><span class="pre">=</span></span><span class="w">  </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#small_gicp.IncrementalVoxelMapNormal.set_lru" title="Permalink to this definition"></a></dt>
+<dd><p>Set the LRU cache parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>horizon</strong> (<em>int</em><em>, </em><em>optional</em>) – LRU horizon size. Voxels that have not been accessed for lru_horizon steps are deleted. (default: 100)</p></li>
+<li><p><strong>clear_cycle</strong> (<em>int</em><em>, </em><em>optional</em>) – LRU clear cycle. Voxel deletion is performed every lru_clear_cycle steps. (default: 10)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.IncrementalVoxelMapNormal.size">
+<span class="sig-name descname"><span class="pre">size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.IncrementalVoxelMapNormal" title="small_gicp.IncrementalVoxelMapNormal"><span class="pre">small_gicp.IncrementalVoxelMapNormal</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#small_gicp.IncrementalVoxelMapNormal.size" title="Permalink to this definition"></a></dt>
+<dd><p>Get the number of voxels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>num_voxels</strong> – Number of voxels.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.IncrementalVoxelMapNormal.voxel_normals">
+<span class="sig-name descname"><span class="pre">voxel_normals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.IncrementalVoxelMapNormal" title="small_gicp.IncrementalVoxelMapNormal"><span class="pre">small_gicp.IncrementalVoxelMapNormal</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">[</span></span><span class="pre">m</span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="pre">n</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#small_gicp.IncrementalVoxelMapNormal.voxel_normals" title="Permalink to this definition"></a></dt>
+<dd><p>Get the voxel normals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>voxel_normals</strong> – Voxel normals. (Nx4)</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.IncrementalVoxelMapNormal.voxel_points">
+<span class="sig-name descname"><span class="pre">voxel_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.IncrementalVoxelMapNormal" title="small_gicp.IncrementalVoxelMapNormal"><span class="pre">small_gicp.IncrementalVoxelMapNormal</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">[</span></span><span class="pre">m</span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="pre">n</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#small_gicp.IncrementalVoxelMapNormal.voxel_points" title="Permalink to this definition"></a></dt>
+<dd><p>Get the voxel points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>voxel_points</strong> – Voxel points. (Nx4)</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="small_gicp.IncrementalVoxelMapNormalCov">
+<em class="property"><span class="pre">class</span><span class="w">  </span></em><span class="sig-prename descclassname"><span class="pre">small_gicp.</span></span><span class="sig-name descname"><span class="pre">IncrementalVoxelMapNormalCov</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.IncrementalVoxelMapNormalCov" title="small_gicp.IncrementalVoxelMapNormalCov"><span class="pre">small_gicp.IncrementalVoxelMapNormalCov</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">leaf_size</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#small_gicp.IncrementalVoxelMapNormalCov" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<p>Construct a Incremental voxelmap.</p>
+<p class="rubric">Notes</p>
+<p>This class supports incremental point cloud insertion and LRU-based voxel deletion that removes voxels that are not recently referenced.
+It can handle arbitrary number of voxels and arbitrary range of voxel coordinates (in 32-bit int range).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>leaf_size</strong> (<em>float</em>) – Voxel size.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.IncrementalVoxelMapNormalCov.insert">
+<span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#small_gicp.IncrementalVoxelMapNormalCov.insert" title="Permalink to this definition"></a></dt>
+<dd><p>insert(self: small_gicp.IncrementalVoxelMapNormalCov, points: small_gicp.PointCloud, T: numpy.ndarray[numpy.float64[4, 4]] = array([[1., 0., 0., 0.],
+[0., 1., 0., 0.],
+[0., 0., 1., 0.],
+[0., 0., 0., 1.]])) -&gt; None</p>
+<blockquote>
+<div><p>Insert a point cloud into the voxel map and delete voxels that are not recently accessed.</p>
+<p>If this class is based on FlatContainer (i.e., IncrementalVoxelMap*), input points are ignored if
+1) there are too many points in the cell or
+2) the input point is too close to existing points in the cell.</p>
+<dl>
+<dt>points<span class="classifier"><a class="reference internal" href="#small_gicp.PointCloud" title="small_gicp.PointCloud"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointCloud</span></code></a></span></dt><dd><p>Input source point cloud.</p>
+</dd>
+<dt>T<span class="classifier">numpy.ndarray, optional</span></dt><dd><p>Transformation matrix to be applied to the input point cloud (i.e., T_voxelmap_source). (default: identity)</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.IncrementalVoxelMapNormalCov.set_lru">
+<span class="sig-name descname"><span class="pre">set_lru</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.IncrementalVoxelMapNormalCov" title="small_gicp.IncrementalVoxelMapNormalCov"><span class="pre">small_gicp.IncrementalVoxelMapNormalCov</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">horizon</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">int</span></span><span class="w">  </span><span class="o"><span class="pre">=</span></span><span class="w">  </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clear_cycle</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">int</span></span><span class="w">  </span><span class="o"><span class="pre">=</span></span><span class="w">  </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#small_gicp.IncrementalVoxelMapNormalCov.set_lru" title="Permalink to this definition"></a></dt>
+<dd><p>Set the LRU cache parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>horizon</strong> (<em>int</em><em>, </em><em>optional</em>) – LRU horizon size. Voxels that have not been accessed for lru_horizon steps are deleted. (default: 100)</p></li>
+<li><p><strong>clear_cycle</strong> (<em>int</em><em>, </em><em>optional</em>) – LRU clear cycle. Voxel deletion is performed every lru_clear_cycle steps. (default: 10)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.IncrementalVoxelMapNormalCov.size">
+<span class="sig-name descname"><span class="pre">size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.IncrementalVoxelMapNormalCov" title="small_gicp.IncrementalVoxelMapNormalCov"><span class="pre">small_gicp.IncrementalVoxelMapNormalCov</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#small_gicp.IncrementalVoxelMapNormalCov.size" title="Permalink to this definition"></a></dt>
+<dd><p>Get the number of voxels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>num_voxels</strong> – Number of voxels.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.IncrementalVoxelMapNormalCov.voxel_covs">
+<span class="sig-name descname"><span class="pre">voxel_covs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.IncrementalVoxelMapNormalCov" title="small_gicp.IncrementalVoxelMapNormalCov"><span class="pre">small_gicp.IncrementalVoxelMapNormalCov</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">[</span></span><span class="pre">m</span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="pre">n</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#small_gicp.IncrementalVoxelMapNormalCov.voxel_covs" title="Permalink to this definition"></a></dt>
+<dd><p>Get the voxel normals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>voxel_covs</strong> – Voxel covariance matrices. (Nx4x4)</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list of numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.IncrementalVoxelMapNormalCov.voxel_normals">
+<span class="sig-name descname"><span class="pre">voxel_normals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.IncrementalVoxelMapNormalCov" title="small_gicp.IncrementalVoxelMapNormalCov"><span class="pre">small_gicp.IncrementalVoxelMapNormalCov</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">[</span></span><span class="pre">m</span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="pre">n</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#small_gicp.IncrementalVoxelMapNormalCov.voxel_normals" title="Permalink to this definition"></a></dt>
+<dd><p>Get the voxel normals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>voxel_normals</strong> – Voxel normals. (Nx4)</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.IncrementalVoxelMapNormalCov.voxel_points">
+<span class="sig-name descname"><span class="pre">voxel_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.IncrementalVoxelMapNormalCov" title="small_gicp.IncrementalVoxelMapNormalCov"><span class="pre">small_gicp.IncrementalVoxelMapNormalCov</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">[</span></span><span class="pre">m</span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="pre">n</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#small_gicp.IncrementalVoxelMapNormalCov.voxel_points" title="Permalink to this definition"></a></dt>
+<dd><p>Get the voxel points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>voxel_points</strong> – Voxel points. (Nx4)</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="small_gicp.KdTree">
+<em class="property"><span class="pre">class</span><span class="w">  </span></em><span class="sig-prename descclassname"><span class="pre">small_gicp.</span></span><span class="sig-name descname"><span class="pre">KdTree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#small_gicp.KdTree" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<p>Overloaded function.</p>
+<ol class="arabic">
+<li><p>__init__(self: small_gicp.KdTree, points: numpy.ndarray[numpy.float64[m, n]], num_threads: int = 1) -&gt; None</p>
+<blockquote>
+<div><p>KdTree(points: numpy.ndarray, num_threads: int = 1)</p>
+<p>Construct a KdTree from a numpy array.</p>
+<dl>
+<dt>points<span class="classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, shape (n, 3) or (n, 4)</span></dt><dd><p>The input point cloud.</p>
+</dd>
+<dt>num_threads<span class="classifier">int, optional</span></dt><dd><p>The number of threads to use for KdTree construction. Default is 1.</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+<li><p>__init__(self: small_gicp.KdTree, points: small_gicp.PointCloud, num_threads: int = 1) -&gt; None</p>
+<blockquote>
+<div><p>KdTree(points: PointCloud, num_threads: int = 1)</p>
+<p>Construct a KdTree from a small_gicp.PointCloud.</p>
+<dl>
+<dt>points<span class="classifier"><a class="reference internal" href="#small_gicp.PointCloud" title="small_gicp.PointCloud"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointCloud</span></code></a></span></dt><dd><p>The input point cloud.</p>
+</dd>
+<dt>num_threads<span class="classifier">int, optional</span></dt><dd><p>The number of threads to use for KdTree construction. Default is 1.</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+</ol>
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.KdTree.batch_knn_search">
+<span class="sig-name descname"><span class="pre">batch_knn_search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.KdTree" title="small_gicp.KdTree"><span class="pre">small_gicp.KdTree</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pts</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">[</span></span><span class="pre">m</span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="pre">n</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_threads</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">int</span></span><span class="w">  </span><span class="o"><span class="pre">=</span></span><span class="w">  </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#small_gicp.KdTree.batch_knn_search" title="Permalink to this definition"></a></dt>
+<dd><p>Find the k nearest neighbors for a batch of points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pts</strong> (<em>numpy.ndarray</em><em>, </em><em>shape</em><em> (</em><em>n</em><em>, </em><em>3</em><em>) or </em><em>(</em><em>n</em><em>, </em><em>4</em><em>)</em>) – The input points.</p></li>
+<li><p><strong>k</strong> (<em>int</em>) – The number of nearest neighbors to search for.</p></li>
+<li><p><strong>num_threads</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of threads to use for the search. Default is 1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>k_indices</strong> (<em>list of numpy.ndarray, shape (n,)</em>) – The list of indices of the k nearest neighbors for each input point. If a neighbor was not found, the index is -1.</p></li>
+<li><p><strong>k_sq_dists</strong> (<em>list of numpy.ndarray, shape (n,)</em>) – The list of squared distances to the k nearest neighbors for each input point (sorted in ascending order).</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.KdTree.batch_nearest_neighbor_search">
+<span class="sig-name descname"><span class="pre">batch_nearest_neighbor_search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.KdTree" title="small_gicp.KdTree"><span class="pre">small_gicp.KdTree</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pts</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">[</span></span><span class="pre">m</span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="pre">n</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_threads</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">int</span></span><span class="w">  </span><span class="o"><span class="pre">=</span></span><span class="w">  </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#small_gicp.KdTree.batch_nearest_neighbor_search" title="Permalink to this definition"></a></dt>
+<dd><p>Find the nearest neighbors for a batch of points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pts</strong> (<em>numpy.ndarray</em><em>, </em><em>shape</em><em> (</em><em>n</em><em>, </em><em>3</em><em>) or </em><em>(</em><em>n</em><em>, </em><em>4</em><em>)</em>) – The input points.</p></li>
+<li><p><strong>num_threads</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of threads to use for the search. Default is 1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>k_indices</strong> (<em>numpy.ndarray, shape (n,)</em>) – The indices of the nearest neighbors for each input point. If a neighbor was not found, the index is -1.</p></li>
+<li><p><strong>k_sq_dists</strong> (<em>numpy.ndarray, shape (n,)</em>) – The squared distances to the nearest neighbors for each input point.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.KdTree.knn_search">
+<span class="sig-name descname"><span class="pre">knn_search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.KdTree" title="small_gicp.KdTree"><span class="pre">small_gicp.KdTree</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pt</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">3</span></span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#small_gicp.KdTree.knn_search" title="Permalink to this definition"></a></dt>
+<dd><p>Find the k nearest neighbors to a given point.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pt</strong> (<em>numpy.ndarray</em><em>, </em><em>shape</em><em> (</em><em>3</em><em>,</em><em>)</em>) – The input point.</p></li>
+<li><p><strong>k</strong> (<em>int</em>) – The number of nearest neighbors to search for.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>k_indices</strong> (<em>numpy.ndarray, shape (k,)</em>) – The indices of the k nearest neighbors in the point cloud. If a neighbor was not found, the index is -1.</p></li>
+<li><p><strong>k_sq_dists</strong> (<em>numpy.ndarray, shape (k,)</em>) – The squared distances to the k nearest neighbors (Sorted in ascending order).</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.KdTree.nearest_neighbor_search">
+<span class="sig-name descname"><span class="pre">nearest_neighbor_search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.KdTree" title="small_gicp.KdTree"><span class="pre">small_gicp.KdTree</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pt</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">3</span></span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#small_gicp.KdTree.nearest_neighbor_search" title="Permalink to this definition"></a></dt>
+<dd><p>Find the nearest neighbor to a given point.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pt</strong> (<em>numpy.ndarray</em><em>, </em><em>shape</em><em> (</em><em>3</em><em>,</em><em>)</em>) – The input point.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>found</strong> (<em>int</em>) – Whether a neighbor was found (1 if found, 0 if not).</p></li>
+<li><p><strong>k_index</strong> (<em>int</em>) – The index of the nearest neighbor in the point cloud. If a neighbor was not found, the index is -1.</p></li>
+<li><p><strong>k_sq_dist</strong> (<em>float</em>) – The squared distance to the nearest neighbor.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="small_gicp.PointCloud">
+<em class="property"><span class="pre">class</span><span class="w">  </span></em><span class="sig-prename descclassname"><span class="pre">small_gicp.</span></span><span class="sig-name descname"><span class="pre">PointCloud</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.PointCloud" title="small_gicp.PointCloud"><span class="pre">small_gicp.PointCloud</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">[</span></span><span class="pre">m</span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="pre">n</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#small_gicp.PointCloud" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<p>PointCloud(points: numpy.ndarray)</p>
+<p>Construct a PointCloud from a numpy array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>points</strong> (<em>numpy.ndarray</em><em>, </em><em>shape</em><em> (</em><em>n</em><em>, </em><em>3</em><em>) or </em><em>(</em><em>n</em><em>, </em><em>4</em><em>)</em>) – The input point cloud.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.PointCloud.cov">
+<span class="sig-name descname"><span class="pre">cov</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.PointCloud" title="small_gicp.PointCloud"><span class="pre">small_gicp.PointCloud</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#small_gicp.PointCloud.cov" title="Permalink to this definition"></a></dt>
+<dd><p>Get the i-th covariance matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>i</strong> (<em>int</em>) – Index of the point.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>cov</strong> – Covariance matrix.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray, shape (4, 4)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.PointCloud.covs">
+<span class="sig-name descname"><span class="pre">covs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.PointCloud" title="small_gicp.PointCloud"><span class="pre">small_gicp.PointCloud</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#small_gicp.PointCloud.covs" title="Permalink to this definition"></a></dt>
+<dd><p>Get the covariance matrices as a list of 4x4 matrices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>covs</strong> – Covariance matrices.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list of numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.PointCloud.empty">
+<span class="sig-name descname"><span class="pre">empty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.PointCloud" title="small_gicp.PointCloud"><span class="pre">small_gicp.PointCloud</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#small_gicp.PointCloud.empty" title="Permalink to this definition"></a></dt>
+<dd><p>Check if the point cloud is empty</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>empty</strong> – True if the point cloud is empty.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.PointCloud.normal">
+<span class="sig-name descname"><span class="pre">normal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.PointCloud" title="small_gicp.PointCloud"><span class="pre">small_gicp.PointCloud</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#small_gicp.PointCloud.normal" title="Permalink to this definition"></a></dt>
+<dd><p>Get the i-th normal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>i</strong> (<em>int</em>) – Index of the point.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>normal</strong> – Normal.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray, shape (4,)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.PointCloud.normals">
+<span class="sig-name descname"><span class="pre">normals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.PointCloud" title="small_gicp.PointCloud"><span class="pre">small_gicp.PointCloud</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">[</span></span><span class="pre">m</span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="pre">n</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#small_gicp.PointCloud.normals" title="Permalink to this definition"></a></dt>
+<dd><p>Get the normals as a Nx4 matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>normals</strong> – Normals.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.PointCloud.point">
+<span class="sig-name descname"><span class="pre">point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.PointCloud" title="small_gicp.PointCloud"><span class="pre">small_gicp.PointCloud</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#small_gicp.PointCloud.point" title="Permalink to this definition"></a></dt>
+<dd><p>Get the i-th point.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>i</strong> (<em>int</em>) – Index of the point.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>point</strong> – Point.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray, shape (4,)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.PointCloud.points">
+<span class="sig-name descname"><span class="pre">points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.PointCloud" title="small_gicp.PointCloud"><span class="pre">small_gicp.PointCloud</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">[</span></span><span class="pre">m</span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="pre">n</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#small_gicp.PointCloud.points" title="Permalink to this definition"></a></dt>
+<dd><p>Get the points as a Nx4 matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>points</strong> – Points.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.PointCloud.size">
+<span class="sig-name descname"><span class="pre">size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.PointCloud" title="small_gicp.PointCloud"><span class="pre">small_gicp.PointCloud</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#small_gicp.PointCloud.size" title="Permalink to this definition"></a></dt>
+<dd><p>Get the number of points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>num_points</strong> – Number of points.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="small_gicp.PointToPlaneICPFactor">
+<em class="property"><span class="pre">class</span><span class="w">  </span></em><span class="sig-prename descclassname"><span class="pre">small_gicp.</span></span><span class="sig-name descname"><span class="pre">PointToPlaneICPFactor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.PointToPlaneICPFactor" title="small_gicp.PointToPlaneICPFactor"><span class="pre">small_gicp.PointToPlaneICPFactor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#small_gicp.PointToPlaneICPFactor" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<p>Point-to-plane ICP per-point factor based on the point-to-plane distance.</p>
+<p class="rubric">References</p>
+<p>Zhang, “Iterative Point Matching for Registration of Free-Form Curve”, IJCV1994</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="small_gicp.PointToPlaneICPFactor.linearize">
+<span class="sig-name descname"><span class="pre">linearize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.PointToPlaneICPFactor" title="small_gicp.PointToPlaneICPFactor"><span class="pre">small_gicp.PointToPlaneICPFactor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.PointCloud" title="small_gicp.PointCloud"><span class="pre">small_gicp.PointCloud</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.PointCloud" title="small_gicp.PointCloud"><span class="pre">small_gicp.PointCloud</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">kdtree</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.KdTree" title="small_gicp.KdTree"><span class="pre">small_gicp.KdTree</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_index</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rejector</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.DistanceRejector" title="small_gicp.DistanceRejector"><span class="pre">small_gicp.DistanceRejector</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">6</span></span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="m"><span class="pre">6</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">6</span></span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w">  </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#small_gicp.PointToPlaneICPFactor.linearize" title="Permalink to this definition"></a></dt>
+<dd><p>Linearize the factor for the i-th source point.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<a class="reference internal" href="index.html#small_gicp.PointCloud" title="small_gicp.PointCloud"><em>PointCloud</em></a>) – Target point cloud. Must have normals.</p></li>
+<li><p><strong>source</strong> (<a class="reference internal" href="index.html#small_gicp.PointCloud" title="small_gicp.PointCloud"><em>PointCloud</em></a>) – Source point cloud.</p></li>
+<li><p><strong>kdtree</strong> (<a class="reference internal" href="index.html#small_gicp.KdTree" title="small_gicp.KdTree"><em>KdTree</em></a>) – KdTree for the target point cloud.</p></li>
+<li><p><strong>T</strong> (<em>numpy.ndarray</em>) – Transformation matrix. (4x4)</p></li>
+<li><p><strong>source_index</strong> (<em>int</em>) – Index of the source point.</p></li>
+<li><p><strong>rejector</strong> (<a class="reference internal" href="index.html#small_gicp.DistanceRejector" title="small_gicp.DistanceRejector"><em>DistanceRejector</em></a>) – Correspondence rejector.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>success</strong> (<em>bool</em>) – Success flag. If false, the correspondence is rejected.</p></li>
+<li><p><strong>H</strong> (<em>numpy.ndarray</em>) – Hessian matrix (6x6).</p></li>
+<li><p><strong>b</strong> (<em>numpy.ndarray</em>) – Gradient vector (6,).</p></li>
+<li><p><strong>e</strong> (<em>float</em>) – Error.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="small_gicp.RegistrationResult">
+<em class="property"><span class="pre">class</span><span class="w">  </span></em><span class="sig-prename descclassname"><span class="pre">small_gicp.</span></span><span class="sig-name descname"><span class="pre">RegistrationResult</span></span><a class="headerlink" href="#small_gicp.RegistrationResult" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="small_gicp.RegistrationResult.H">
+<em class="property"><span class="pre">property</span><span class="w">  </span></em><span class="sig-name descname"><span class="pre">H</span></span><a class="headerlink" href="#small_gicp.RegistrationResult.H" title="Permalink to this definition"></a></dt>
+<dd><p>Final Hessian matrix (6x6)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>NDArray[np.float64]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="small_gicp.RegistrationResult.T_target_source">
+<em class="property"><span class="pre">property</span><span class="w">  </span></em><span class="sig-name descname"><span class="pre">T_target_source</span></span><a class="headerlink" href="#small_gicp.RegistrationResult.T_target_source" title="Permalink to this definition"></a></dt>
+<dd><p>Final transformation matrix (4x4). This transformation brings a point in the source cloud frame to the target cloud frame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>NDArray[np.float64]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="small_gicp.RegistrationResult.b">
+<em class="property"><span class="pre">property</span><span class="w">  </span></em><span class="sig-name descname"><span class="pre">b</span></span><a class="headerlink" href="#small_gicp.RegistrationResult.b" title="Permalink to this definition"></a></dt>
+<dd><p>Final information vector (6,)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>NDArray[np.float64]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="small_gicp.RegistrationResult.converged">
+<em class="property"><span class="pre">property</span><span class="w">  </span></em><span class="sig-name descname"><span class="pre">converged</span></span><a class="headerlink" href="#small_gicp.RegistrationResult.converged" title="Permalink to this definition"></a></dt>
+<dd><p>Convergence flag</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="small_gicp.RegistrationResult.error">
+<em class="property"><span class="pre">property</span><span class="w">  </span></em><span class="sig-name descname"><span class="pre">error</span></span><a class="headerlink" href="#small_gicp.RegistrationResult.error" title="Permalink to this definition"></a></dt>
+<dd><p>Final error</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="small_gicp.RegistrationResult.iterations">
+<em class="property"><span class="pre">property</span><span class="w">  </span></em><span class="sig-name descname"><span class="pre">iterations</span></span><a class="headerlink" href="#small_gicp.RegistrationResult.iterations" title="Permalink to this definition"></a></dt>
+<dd><p>Number of iterations</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="small_gicp.RegistrationResult.num_inliers">
+<em class="property"><span class="pre">property</span><span class="w">  </span></em><span class="sig-name descname"><span class="pre">num_inliers</span></span><a class="headerlink" href="#small_gicp.RegistrationResult.num_inliers" title="Permalink to this definition"></a></dt>
+<dd><p>Number of inliers</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="small_gicp.align">
+<span class="sig-prename descclassname"><span class="pre">small_gicp.</span></span><span class="sig-name descname"><span class="pre">align</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#small_gicp.align" title="Permalink to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic">
+<li><dl>
+<dt>align(target_points: numpy.ndarray[numpy.float64[m, n]], source_points: numpy.ndarray[numpy.float64[m, n]], init_T_target_source: numpy.ndarray[numpy.float64[4, 4]] = array([[1., 0., 0., 0.],</dt><dd><p>[0., 1., 0., 0.],
+[0., 0., 1., 0.],
+[0., 0., 0., 1.]]), registration_type: str = ‘GICP’, voxel_resolution: float = 1.0, downsampling_resolution: float = 0.25, max_correspondence_distance: float = 1.0, num_threads: int = 1, max_iterations: int = 20, verbose: bool = False) -&gt; small_gicp.RegistrationResult</p>
+<blockquote>
+<div><p>Align two point clouds using various ICP-like algorithms.
+This function first performs preprocessing (downsampling, normal estimation, KdTree construction) and then estimates the transformation.</p>
+<p>See also: <a class="reference internal" href="#small_gicp.voxelgrid_sampling" title="small_gicp.voxelgrid_sampling"><code class="xref py py-class docutils literal notranslate"><span class="pre">voxelgrid_sampling</span></code></a> <a class="reference internal" href="#small_gicp.estimate_normals" title="small_gicp.estimate_normals"><code class="xref py py-class docutils literal notranslate"><span class="pre">estimate_normals</span></code></a> <a class="reference internal" href="#small_gicp.preprocess_points" title="small_gicp.preprocess_points"><code class="xref py py-class docutils literal notranslate"><span class="pre">preprocess_points</span></code></a></p>
+<dl>
+<dt>target_points<span class="classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[np.float64]</span></code></span></dt><dd><p>Nx3 or Nx4 matrix representing the target point cloud.</p>
+</dd>
+<dt>source_points<span class="classifier">numpy.ndarray[np.float64]</span></dt><dd><p>Nx3 or Nx4 matrix representing the source point cloud.</p>
+</dd>
+<dt>init_T_target_source<span class="classifier">numpy.ndarray[np.float64]</span></dt><dd><p>4x4 matrix representing the initial transformation from target to source.</p>
+</dd>
+<dt>registration_type<span class="classifier">str = ‘GICP’</span></dt><dd><p>Type of registration algorithm to use (‘ICP’, ‘PLANE_ICP’, ‘GICP’, ‘VGICP’).</p>
+</dd>
+<dt>voxel_resolution<span class="classifier">float = 1.0</span></dt><dd><p>Resolution of voxels used for correspondence search (used only in VGICP).</p>
+</dd>
+<dt>downsampling_resolution<span class="classifier">float = 0.25</span></dt><dd><p>Resolution for downsampling the point clouds.
+Input points out of the 21bit range after discretization will be ignored (See also: <a class="reference internal" href="#small_gicp.voxelgrid_sampling" title="small_gicp.voxelgrid_sampling"><code class="xref py py-class docutils literal notranslate"><span class="pre">voxelgrid_sampling</span></code></a>).</p>
+</dd>
+<dt>max_correspondence_distance<span class="classifier">float = 1.0</span></dt><dd><p>Maximum distance for matching points between point clouds.</p>
+</dd>
+<dt>num_threads<span class="classifier">int = 1</span></dt><dd><p>Number of threads to use for parallel processing.</p>
+</dd>
+<dt>max_iterations<span class="classifier">int = 20</span></dt><dd><p>Maximum number of iterations for the optimization algorithm.</p>
+</dd>
+<dt>verbose<span class="classifier">bool = False</span></dt><dd><p>If True, print debug information during the optimization process.</p>
+</dd>
+</dl>
+<dl>
+<dt>result<span class="classifier"><a class="reference internal" href="#small_gicp.RegistrationResult" title="small_gicp.RegistrationResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">RegistrationResult</span></code></a></span></dt><dd><p>Object containing the final transformation matrix and convergence status.</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd>
+</dl>
+</li>
+<li><dl>
+<dt>align(target: small_gicp.PointCloud, source: small_gicp.PointCloud, target_tree: small_gicp.KdTree = None, init_T_target_source: numpy.ndarray[numpy.float64[4, 4]] = array([[1., 0., 0., 0.],</dt><dd><blockquote>
+<div><p>[0., 1., 0., 0.],
+[0., 0., 1., 0.],
+[0., 0., 0., 1.]]), registration_type: str = ‘GICP’, max_correspondence_distance: float = 1.0, num_threads: int = 1, max_iterations: int = 20, verbose: bool = False) -&gt; small_gicp.RegistrationResult</p>
+</div></blockquote>
+<p>Align two point clouds using specified ICP-like algorithms, utilizing point cloud and KD-tree inputs.
+Input point clouds are assumed to be preprocessed (downsampled, normals estimated, KD-tree built).
+See also: <a class="reference internal" href="#small_gicp.voxelgrid_sampling" title="small_gicp.voxelgrid_sampling"><code class="xref py py-class docutils literal notranslate"><span class="pre">voxelgrid_sampling</span></code></a> <a class="reference internal" href="#small_gicp.estimate_normals" title="small_gicp.estimate_normals"><code class="xref py py-class docutils literal notranslate"><span class="pre">estimate_normals</span></code></a> <a class="reference internal" href="#small_gicp.preprocess_points" title="small_gicp.preprocess_points"><code class="xref py py-class docutils literal notranslate"><span class="pre">preprocess_points</span></code></a></p>
+<dl>
+<dt>target<span class="classifier"><a class="reference internal" href="#small_gicp.PointCloud" title="small_gicp.PointCloud"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointCloud</span></code></a></span></dt><dd><p>Target point cloud.</p>
+</dd>
+<dt>source<span class="classifier"><a class="reference internal" href="#small_gicp.PointCloud" title="small_gicp.PointCloud"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointCloud</span></code></a></span></dt><dd><p>Source point cloud.</p>
+</dd>
+<dt>target_tree<span class="classifier"><a class="reference internal" href="#small_gicp.KdTree" title="small_gicp.KdTree"><code class="xref py py-class docutils literal notranslate"><span class="pre">KdTree</span></code></a>, optional</span></dt><dd><p>KdTree for the target point cloud. If not given, a new KdTree is built.</p>
+</dd>
+<dt>init_T_target_source<span class="classifier">numpy.ndarray[np.float64]</span></dt><dd><p>4x4 matrix representing the initial transformation from target to source.</p>
+</dd>
+<dt>registration_type<span class="classifier">str = ‘GICP’</span></dt><dd><p>Type of registration algorithm to use (‘ICP’, ‘PLANE_ICP’, ‘GICP’).</p>
+</dd>
+<dt>max_correspondence_distance<span class="classifier">float = 1.0</span></dt><dd><p>Maximum distance for corresponding point pairs.</p>
+</dd>
+<dt>num_threads<span class="classifier">int = 1</span></dt><dd><p>Number of threads to use for computation.</p>
+</dd>
+<dt>max_iterations<span class="classifier">int = 20</span></dt><dd><p>Maximum number of iterations for the optimization algorithm.</p>
+</dd>
+<dt>verbose<span class="classifier">bool = False</span></dt><dd><p>If True, print debug information during the optimization process.</p>
+</dd>
+</dl>
+<dl>
+<dt>result<span class="classifier"><a class="reference internal" href="#small_gicp.RegistrationResult" title="small_gicp.RegistrationResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">RegistrationResult</span></code></a></span></dt><dd><p>Object containing the final transformation matrix and convergence status.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+<li><dl>
+<dt>align(target_voxelmap: small_gicp.GaussianVoxelMap, source: small_gicp.PointCloud, init_T_target_source: numpy.ndarray[numpy.float64[4, 4]] = array([[1., 0., 0., 0.],</dt><dd><blockquote>
+<div><p>[0., 1., 0., 0.],
+[0., 0., 1., 0.],
+[0., 0., 0., 1.]]), max_correspondence_distance: float = 1.0, num_threads: int = 1, max_iterations: int = 20, verbose: bool = False) -&gt; small_gicp.RegistrationResult</p>
+</div></blockquote>
+<p>Align two point clouds using voxel-based GICP algorithm, utilizing a Gaussian Voxel Map.
+Input source point cloud is assumed to be preprocessed (downsampled, normals estimated, KD-tree built).
+See also: <a class="reference internal" href="#small_gicp.voxelgrid_sampling" title="small_gicp.voxelgrid_sampling"><code class="xref py py-class docutils literal notranslate"><span class="pre">voxelgrid_sampling</span></code></a> <a class="reference internal" href="#small_gicp.estimate_normals" title="small_gicp.estimate_normals"><code class="xref py py-class docutils literal notranslate"><span class="pre">estimate_normals</span></code></a> <a class="reference internal" href="#small_gicp.preprocess_points" title="small_gicp.preprocess_points"><code class="xref py py-class docutils literal notranslate"><span class="pre">preprocess_points</span></code></a></p>
+<dl>
+<dt>target_voxelmap<span class="classifier"><a class="reference internal" href="#small_gicp.GaussianVoxelMap" title="small_gicp.GaussianVoxelMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">GaussianVoxelMap</span></code></a></span></dt><dd><p>Voxel map constructed from the target point cloud.</p>
+</dd>
+<dt>source<span class="classifier"><a class="reference internal" href="#small_gicp.PointCloud" title="small_gicp.PointCloud"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointCloud</span></code></a></span></dt><dd><p>Source point cloud to align to the target.</p>
+</dd>
+<dt>init_T_target_source<span class="classifier">numpy.ndarray[np.float64]</span></dt><dd><p>4x4 matrix representing the initial transformation from target to source.</p>
+</dd>
+<dt>max_correspondence_distance<span class="classifier">float = 1.0</span></dt><dd><p>Maximum distance for corresponding point pairs.</p>
+</dd>
+<dt>num_threads<span class="classifier">int = 1</span></dt><dd><p>Number of threads to use for computation.</p>
+</dd>
+<dt>max_iterations<span class="classifier">int = 20</span></dt><dd><p>Maximum number of iterations for the optimization algorithm.</p>
+</dd>
+<dt>verbose<span class="classifier">bool = False</span></dt><dd><p>If True, print debug information during the optimization process.</p>
+</dd>
+</dl>
+<dl>
+<dt>result<span class="classifier"><a class="reference internal" href="#small_gicp.RegistrationResult" title="small_gicp.RegistrationResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">RegistrationResult</span></code></a></span></dt><dd><p>Object containing the final transformation matrix and convergence status.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ol>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="small_gicp.estimate_covariances">
+<span class="sig-prename descclassname"><span class="pre">small_gicp.</span></span><span class="sig-name descname"><span class="pre">estimate_covariances</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.PointCloud" title="small_gicp.PointCloud"><span class="pre">small_gicp.PointCloud</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.KdTree" title="small_gicp.KdTree"><span class="pre">small_gicp.KdTree</span></a></span><span class="w">  </span><span class="o"><span class="pre">=</span></span><span class="w">  </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_neighbors</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">int</span></span><span class="w">  </span><span class="o"><span class="pre">=</span></span><span class="w">  </span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_threads</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">int</span></span><span class="w">  </span><span class="o"><span class="pre">=</span></span><span class="w">  </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#small_gicp.estimate_covariances" title="Permalink to this definition"></a></dt>
+<dd><p>Estimate point covariances.
+If a sufficient number of neighbor points (5 points) is not found, an identity matrix is set to the point.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>points</strong> (<a class="reference internal" href="#small_gicp.PointCloud" title="small_gicp.PointCloud"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointCloud</span></code></a>) – Input point cloud. Covariances will be estimated in-place. (in/out)</p></li>
+<li><p><strong>tree</strong> (<a class="reference internal" href="#small_gicp.KdTree" title="small_gicp.KdTree"><code class="xref py py-class docutils literal notranslate"><span class="pre">KdTree</span></code></a>, optional) – Nearest neighbor search. If None, create a new KdTree (default: None)</p></li>
+<li><p><strong>num_neighbors</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of neighbors. (default: 20)</p></li>
+<li><p><strong>num_threads</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of threads. (default: 1)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="small_gicp.estimate_normals">
+<span class="sig-prename descclassname"><span class="pre">small_gicp.</span></span><span class="sig-name descname"><span class="pre">estimate_normals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.PointCloud" title="small_gicp.PointCloud"><span class="pre">small_gicp.PointCloud</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.KdTree" title="small_gicp.KdTree"><span class="pre">small_gicp.KdTree</span></a></span><span class="w">  </span><span class="o"><span class="pre">=</span></span><span class="w">  </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_neighbors</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">int</span></span><span class="w">  </span><span class="o"><span class="pre">=</span></span><span class="w">  </span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_threads</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">int</span></span><span class="w">  </span><span class="o"><span class="pre">=</span></span><span class="w">  </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#small_gicp.estimate_normals" title="Permalink to this definition"></a></dt>
+<dd><p>Estimate point normals.
+If a sufficient number of neighbor points (5 points) is not found, a zero vector is set to the point.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>points</strong> (<a class="reference internal" href="#small_gicp.PointCloud" title="small_gicp.PointCloud"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointCloud</span></code></a>) – Input point cloud. Normals will be estimated in-place. (in/out)</p></li>
+<li><p><strong>tree</strong> (<a class="reference internal" href="#small_gicp.KdTree" title="small_gicp.KdTree"><code class="xref py py-class docutils literal notranslate"><span class="pre">KdTree</span></code></a>, optional) – Nearest neighbor search. If None, create a new KdTree (default: None)</p></li>
+<li><p><strong>num_neighbors</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of neighbors. (default: 20)</p></li>
+<li><p><strong>num_threads</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of threads. (default: 1)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="small_gicp.estimate_normals_covariances">
+<span class="sig-prename descclassname"><span class="pre">small_gicp.</span></span><span class="sig-name descname"><span class="pre">estimate_normals_covariances</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.PointCloud" title="small_gicp.PointCloud"><span class="pre">small_gicp.PointCloud</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><a class="reference internal" href="index.html#small_gicp.KdTree" title="small_gicp.KdTree"><span class="pre">small_gicp.KdTree</span></a></span><span class="w">  </span><span class="o"><span class="pre">=</span></span><span class="w">  </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_neighbors</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">int</span></span><span class="w">  </span><span class="o"><span class="pre">=</span></span><span class="w">  </span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_threads</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">int</span></span><span class="w">  </span><span class="o"><span class="pre">=</span></span><span class="w">  </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#small_gicp.estimate_normals_covariances" title="Permalink to this definition"></a></dt>
+<dd><p>Estimate point normals and covariances.
+If a sufficient number of neighbor points (5 points) is not found, a zero vector and an identity matrix is set to the point.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>points</strong> (<a class="reference internal" href="#small_gicp.PointCloud" title="small_gicp.PointCloud"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointCloud</span></code></a>) – Input point cloud. Normals and covariances will be estimated in-place. (in/out)</p></li>
+<li><p><strong>tree</strong> (<a class="reference internal" href="#small_gicp.KdTree" title="small_gicp.KdTree"><code class="xref py py-class docutils literal notranslate"><span class="pre">KdTree</span></code></a>, optional) – Nearest neighbor search. If None, create a new KdTree (default: None)</p></li>
+<li><p><strong>num_neighbors</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of neighbors. (default: 20)</p></li>
+<li><p><strong>num_threads</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of threads. (default: 1)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="small_gicp.preprocess_points">
+<span class="sig-prename descclassname"><span class="pre">small_gicp.</span></span><span class="sig-name descname"><span class="pre">preprocess_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#small_gicp.preprocess_points" title="Permalink to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic">
+<li><p>preprocess_points(points: numpy.ndarray[numpy.float64[m, n]], downsampling_resolution: float = 0.25, num_neighbors: int = 10, num_threads: int = 1) -&gt; Tuple[small_gicp.PointCloud, small_gicp.KdTree]</p>
+<blockquote>
+<div><p>Preprocess point cloud (Downsampling and normal/covariance estimation).
+See also: <a class="reference internal" href="#small_gicp.voxelgrid_sampling" title="small_gicp.voxelgrid_sampling"><code class="xref py py-func docutils literal notranslate"><span class="pre">voxelgrid_sampling()</span></code></a>, <a class="reference internal" href="#small_gicp.estimate_normals_covariances" title="small_gicp.estimate_normals_covariances"><code class="xref py py-func docutils literal notranslate"><span class="pre">estimate_normals_covariances()</span></code></a>.</p>
+<dl class="simple">
+<dt>points<span class="classifier">[np.float64]</span></dt><dd><p>Input point cloud. Nx3 or Nx4.</p>
+</dd>
+<dt>downsampling_resolution<span class="classifier">float, optional</span></dt><dd><p>Resolution for downsampling the point clouds. Input points out of 21bit range after discretization are ignored (See also: <a class="reference internal" href="#small_gicp.voxelgrid_sampling" title="small_gicp.voxelgrid_sampling"><code class="xref py py-func docutils literal notranslate"><span class="pre">voxelgrid_sampling()</span></code></a>). (default: 0.25)</p>
+</dd>
+<dt>num_neighbors<span class="classifier">int, optional</span></dt><dd><p>Number of neighbors used for attribute estimation. (default: 10)</p>
+</dd>
+<dt>num_threads<span class="classifier">int, optional</span></dt><dd><p>Number of threads. (default: 1)</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><a class="reference internal" href="#small_gicp.PointCloud" title="small_gicp.PointCloud"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointCloud</span></code></a></dt><dd><p>Downsampled point cloud.</p>
+</dd>
+<dt><a class="reference internal" href="#small_gicp.KdTree" title="small_gicp.KdTree"><code class="xref py py-class docutils literal notranslate"><span class="pre">KdTree</span></code></a></dt><dd><p>KdTree for the downsampled point cloud.</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+<li><p>preprocess_points(points: small_gicp.PointCloud, downsampling_resolution: float = 0.25, num_neighbors: int = 10, num_threads: int = 1) -&gt; Tuple[small_gicp.PointCloud, small_gicp.KdTree]</p>
+<blockquote>
+<div><p>Preprocess point cloud (Downsampling and normal/covariance estimation).
+See also: <a class="reference internal" href="#small_gicp.voxelgrid_sampling" title="small_gicp.voxelgrid_sampling"><code class="xref py py-func docutils literal notranslate"><span class="pre">voxelgrid_sampling()</span></code></a>, <a class="reference internal" href="#small_gicp.estimate_normals_covariances" title="small_gicp.estimate_normals_covariances"><code class="xref py py-func docutils literal notranslate"><span class="pre">estimate_normals_covariances()</span></code></a>.</p>
+<dl>
+<dt>points<span class="classifier"><a class="reference internal" href="#small_gicp.PointCloud" title="small_gicp.PointCloud"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointCloud</span></code></a></span></dt><dd><p>Input point cloud.</p>
+</dd>
+<dt>downsampling_resolution<span class="classifier">float, optional</span></dt><dd><p>Resolution for downsampling the point clouds. Input points out of 21bit range after discretization are ignored (See also: <a class="reference internal" href="#small_gicp.voxelgrid_sampling" title="small_gicp.voxelgrid_sampling"><code class="xref py py-func docutils literal notranslate"><span class="pre">voxelgrid_sampling()</span></code></a>). (default: 0.25)</p>
+</dd>
+<dt>num_neighbors<span class="classifier">int, optional</span></dt><dd><p>Number of neighbors used for attribute estimation. (default: 10)</p>
+</dd>
+<dt>num_threads<span class="classifier">int, optional</span></dt><dd><p>Number of threads. (default: 1)</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><a class="reference internal" href="#small_gicp.PointCloud" title="small_gicp.PointCloud"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointCloud</span></code></a></dt><dd><p>Downsampled point cloud.</p>
+</dd>
+<dt><a class="reference internal" href="#small_gicp.KdTree" title="small_gicp.KdTree"><code class="xref py py-class docutils literal notranslate"><span class="pre">KdTree</span></code></a></dt><dd><p>KdTree for the downsampled point cloud.</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+</ol>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="small_gicp.read_ply">
+<span class="sig-prename descclassname"><span class="pre">small_gicp.</span></span><span class="sig-name descname"><span class="pre">read_ply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w">  </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="index.html#small_gicp.PointCloud" title="small_gicp.PointCloud"><span class="pre">small_gicp.PointCloud</span></a></span></span><a class="headerlink" href="#small_gicp.read_ply" title="Permalink to this definition"></a></dt>
+<dd><p>Read PLY file. This function can only read simple point clouds with XYZ properties for testing purposes. Do not use this for general PLY IO.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="small_gicp.voxelgrid_sampling">
+<span class="sig-prename descclassname"><span class="pre">small_gicp.</span></span><span class="sig-name descname"><span class="pre">voxelgrid_sampling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#small_gicp.voxelgrid_sampling" title="Permalink to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic">
+<li><p>voxelgrid_sampling(points: small_gicp.PointCloud, downsampling_resolution: float, num_threads: int = 1) -&gt; small_gicp.PointCloud</p>
+<blockquote>
+<div><p>Voxelgrid downsampling.</p>
+<p>When multi-threading is enabled, this function has minor run-by-run non-deterministic behavior due to parallel data collection that results
+in a deviation of the number of points in the downsampling results (up to 10% increase from the single-thread version).</p>
+<p>Discretized voxel coords must be in 21bit range [-1048576, 1048575].
+For example, if the downsampling resolution is 0.01 m, point coordinates must be in [-10485.76, 10485.75] m.
+Points outside the valid range will be ignored.</p>
+<dl>
+<dt>points<span class="classifier"><a class="reference internal" href="#small_gicp.PointCloud" title="small_gicp.PointCloud"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointCloud</span></code></a></span></dt><dd><p>Input point cloud.</p>
+</dd>
+<dt>resolution<span class="classifier">float</span></dt><dd><p>Voxel size.</p>
+</dd>
+<dt>num_threads<span class="classifier">int, optional</span></dt><dd><p>Number of threads. (default: 1)</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><a class="reference internal" href="#small_gicp.PointCloud" title="small_gicp.PointCloud"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointCloud</span></code></a></dt><dd><p>Downsampled point cloud.</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+<li><p>voxelgrid_sampling(points: numpy.ndarray[numpy.float64[m, n]], downsampling_resolution: float, num_threads: int = 1) -&gt; small_gicp.PointCloud</p>
+<blockquote>
+<div><p>Voxelgrid downsampling.</p>
+<p>When multi-threading is enabled, this function has minor run-by-run non-deterministic behavior due to parallel data collection that results
+in a deviation of the number of points in the downsampling results (up to 10% increase from the single-thread version).</p>
+<p>Discretized voxel coords must be in 21bit range [-1048576, 1048575].
+For example, if the downsampling resolution is 0.01 m, point coordinates must be in [-10485.76, 10485.75] m.
+Points outside the valid range will be ignored.</p>
+<dl class="simple">
+<dt>points<span class="classifier">[np.float64]</span></dt><dd><p>Input point cloud. Nx3 or Nx4.</p>
+</dd>
+<dt>resolution<span class="classifier">float</span></dt><dd><p>Voxel size.</p>
+</dd>
+<dt>num_threads<span class="classifier">int, optional</span></dt><dd><p>Number of threads. (default: 1)</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><a class="reference internal" href="#small_gicp.PointCloud" title="small_gicp.PointCloud"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointCloud</span></code></a></dt><dd><p>Downsampled point cloud.</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+</ol>
+</dd></dl>
+
+</section>
+</div>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline"></a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, k.koide.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

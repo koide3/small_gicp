@@ -1,0 +1,10 @@
+var searchData=
+[
+  ['radix_5fsort_5ftbb_522',['radix_sort_tbb',['../namespacesmall__gicp.html#a32f0523ba72ba84906680696221f61b9',1,'small_gicp::radix_sort_tbb(T *first_, T *last_, const KeyFunc &amp;key_, RadixSortBuffers&lt; T &gt; &amp;buffers)'],['../namespacesmall__gicp.html#adede4866e7e22d9f0494e3d3c00de1a3',1,'small_gicp::radix_sort_tbb(T *first_, T *last_, const KeyFunc &amp;key_)']]],
+  ['random_5fsampling_523',['random_sampling',['../namespacesmall__gicp.html#a9aafc25321a0484261582ac5160770ae',1,'small_gicp']]],
+  ['registrationpcl_524',['RegistrationPCL',['../classsmall__gicp_1_1RegistrationPCL.html#a0f322a2176157fb3b6ef50570b3fb5ee',1,'small_gicp::RegistrationPCL']]],
+  ['registrationresult_525',['RegistrationResult',['../structsmall__gicp_1_1RegistrationResult.html#a8a735bc874cae9d9007b357cc27ad377',1,'small_gicp::RegistrationResult']]],
+  ['resize_526',['resize',['../structsmall__gicp_1_1traits_1_1Traits_3_01pcl_1_1PointCloud_3_01PointType_01_4_01_4.html#a3ff39bc1887c882141af04ce8a506bb4',1,'small_gicp::traits::Traits&lt; pcl::PointCloud&lt; PointType &gt; &gt;::resize()'],['../structsmall__gicp_1_1traits_1_1Traits_3_01PointCloudProxy_3_01PointT_01_4_01_4.html#a905fe72d1baf786569d5a30d8c0f6084',1,'small_gicp::traits::Traits&lt; PointCloudProxy&lt; PointT &gt; &gt;::resize()'],['../structsmall__gicp_1_1PointCloud.html#ad40378aae8d918bc85c4fbc97a55e3b2',1,'small_gicp::PointCloud::resize()'],['../structsmall__gicp_1_1traits_1_1Traits_3_01PointCloud_01_4.html#a485f57784a6553c2872241d511981adf',1,'small_gicp::traits::Traits&lt; PointCloud &gt;::resize()'],['../namespacesmall__gicp_1_1traits.html#ae35e34068062341652ed9dbf7c3eba25',1,'small_gicp::traits::resize()']]],
+  ['restrictdoffactor_527',['RestrictDoFFactor',['../structsmall__gicp_1_1RestrictDoFFactor.html#a40be8166c4ccc4d03afa7e7a15069fc5',1,'small_gicp::RestrictDoFFactor']]],
+  ['robustfactor_528',['RobustFactor',['../structsmall__gicp_1_1RobustFactor.html#aec0efc27610875bab44db5ff7a2438ce',1,'small_gicp::RobustFactor']]]
+];
