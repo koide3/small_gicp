@@ -1,0 +1,32 @@
+cff-version: "1.2.0"
+authors:
+- family-names: Koide
+  given-names: Kenji
+  orcid: "https://orcid.org/0000-0001-5361-1428"
+contact:
+- family-names: Koide
+  given-names: Kenji
+  orcid: "https://orcid.org/0000-0001-5361-1428"
+doi: 10.5281/zenodo.13283012
+message: If you use this software, please cite our article in the
+  Journal of Open Source Software.
+preferred-citation:
+  authors:
+  - family-names: Koide
+    given-names: Kenji
+    orcid: "https://orcid.org/0000-0001-5361-1428"
+  date-published: 2024-08-10
+  doi: 10.21105/joss.06948
+  issn: 2475-9066
+  issue: 100
+  journal: Journal of Open Source Software
+  publisher:
+    name: Open Journals
+  start: 6948
+  title: "small_gicp: Efficient and parallel algorithms for point cloud
+    registration"
+  type: article
+  url: "https://joss.theoj.org/papers/10.21105/joss.06948"
+  volume: 9
+title: "small_gicp: Efficient and parallel algorithms for point cloud
+  registration"
