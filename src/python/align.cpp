@@ -33,6 +33,8 @@ void define_align(py::module& m) {
       double max_correspondence_distance,
       int num_threads,
       int max_iterations,
+      double rotation_epsilon,
+      double translation_epsilon,
       bool verbose) {
       if (target_points.cols() != 3 && target_points.cols() != 4) {
         std::cerr << "target_points must be Nx3 or Nx4" << std::endl;
@@ -62,6 +64,8 @@ void define_align(py::module& m) {
       setting.max_correspondence_distance = max_correspondence_distance;
       setting.num_threads = num_threads;
       setting.max_iterations = max_iterations;
+      setting.rotation_eps = rotation_epsilon;
+      setting.translation_eps = translation_epsilon;
       setting.verbose = verbose;
 
       std::vector<Eigen::Vector4d> target(target_points.rows());
@@ -97,6 +101,8 @@ void define_align(py::module& m) {
     py::arg("max_correspondence_distance") = 1.0,
     py::arg("num_threads") = 1,
     py::arg("max_iterations") = 20,
+    py::arg("rotation_epsilon") = 0.1 * M_PI / 180.0,
+    py::arg("translation_epsilon") = 1e-3,
     py::arg("verbose") = false,
     R"pbdoc(
         Align two point clouds using various ICP-like algorithms.
@@ -125,6 +131,10 @@ void define_align(py::module& m) {
             Number of threads to use for parallel processing.
         max_iterations : int = 20
             Maximum number of iterations for the optimization algorithm.
+        rotation_epsilon: double = 0.1 * M_PI / 180.0
+            Convergence criteria for rotation change
+        translation_epsilon: double = 1e-3
+            Convergence criteria for transformation change
         verbose : bool = False
             If True, print debug information during the optimization process.
 
@@ -146,6 +156,8 @@ void define_align(py::module& m) {
       double max_correspondence_distance,
       int num_threads,
       int max_iterations,
+      double rotation_epsilon,
+      double translation_epsilon,
       bool verbose) {
       RegistrationSetting setting;
       if (registration_type == "ICP") {
@@ -161,6 +173,8 @@ void define_align(py::module& m) {
       setting.max_correspondence_distance = max_correspondence_distance;
       setting.num_threads = num_threads;
       setting.max_iterations = max_iterations;
+      setting.rotation_eps = rotation_epsilon;
+      setting.translation_eps = translation_epsilon;
       setting.verbose = verbose;
 
       if (target_tree == nullptr) {
@@ -176,6 +190,8 @@ void define_align(py::module& m) {
     py::arg("max_correspondence_distance") = 1.0,
     py::arg("num_threads") = 1,
     py::arg("max_iterations") = 20,
+    py::arg("rotation_epsilon") = 0.1 * M_PI / 180.0,
+    py::arg("translation_epsilon") = 1e-3,
     py::arg("verbose") = false,
     R"pbdoc(
     Align two point clouds using specified ICP-like algorithms, utilizing point cloud and KD-tree inputs.
@@ -200,6 +216,10 @@ void define_align(py::module& m) {
         Number of threads to use for computation.
     max_iterations : int = 20
         Maximum number of iterations for the optimization algorithm.
+    rotation_epsilon: double = 0.1 * M_PI / 180.0
+        Convergence criteria for rotation change
+    translation_epsilon: double = 1e-3
+        Convergence criteria for transformation change
     verbose : bool = False
         If True, print debug information during the optimization process.
 
@@ -219,11 +239,15 @@ void define_align(py::module& m) {
       double max_correspondence_distance,
       int num_threads,
       int max_iterations,
+      double rotation_epsilon,
+      double translation_epsilon,
       bool verbose) {
       Registration<GICPFactor, ParallelReductionOMP> registration;
       registration.rejector.max_dist_sq = max_correspondence_distance * max_correspondence_distance;
       registration.reduction.num_threads = num_threads;
       registration.optimizer.max_iterations = max_iterations;
+      registration.criteria.rotation_eps = rotation_epsilon;
+      registration.criteria.translation_eps = translation_epsilon;
       registration.optimizer.verbose = verbose;
 
       return registration.align(target_voxelmap, source, target_voxelmap, Eigen::Isometry3d(init_T_target_source));
@@ -234,6 +258,8 @@ void define_align(py::module& m) {
     py::arg("max_correspondence_distance") = 1.0,
     py::arg("num_threads") = 1,
     py::arg("max_iterations") = 20,
+    py::arg("rotation_epsilon") = 0.1 * M_PI / 180.0,
+    py::arg("translation_epsilon") = 1e-3,
     py::arg("verbose") = false,
     R"pbdoc(
     Align two point clouds using voxel-based GICP algorithm, utilizing a Gaussian Voxel Map.
@@ -254,6 +280,10 @@ void define_align(py::module& m) {
         Number of threads to use for computation.
     max_iterations : int = 20
         Maximum number of iterations for the optimization algorithm.
+    rotation_epsilon: double = 0.1 * M_PI / 180.0
+        Convergence criteria for rotation change
+    translation_epsilon: double = 1e-3
+        Convergence criteria for transformation change
     verbose : bool = False
         If True, print debug information during the optimization process.
 
