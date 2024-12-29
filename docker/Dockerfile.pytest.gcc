@@ -7,7 +7,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install --no-install-recommends -y \
   && apt-get install --no-install-recommends -y \
   wget nano build-essential git cmake python3-dev python3-pip pybind11-dev \
-  libeigen3-dev libomp-dev
+  libeigen3-dev libomp-dev ninja-build
 
 RUN mkdir -p ~/.config/pip
 RUN echo "[global]\nbreak-system-packages=true" > ~/.config/pip/pip.conf
