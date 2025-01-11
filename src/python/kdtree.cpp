@@ -129,7 +129,7 @@ void define_kdtree(py::module& m) {
         std::vector<size_t> k_indices(pts.rows(), -1);
         std::vector<double> k_sq_dists(pts.rows(), std::numeric_limits<double>::max());
 
-#pragma omp parallel for num_threads(num_threads)
+#pragma omp parallel for num_threads(num_threads) schedule(guided, 4)
         for (int i = 0; i < pts.rows(); ++i) {
           const size_t found = traits::nearest_neighbor_search(kdtree, Eigen::Vector4d(pts(i, 0), pts(i, 1), pts(i, 2), 1.0), &k_indices[i], &k_sq_dists[i]);
           if (!found) {
@@ -154,9 +154,9 @@ void define_kdtree(py::module& m) {
 
         Returns
         -------
-        k_indices : numpy.ndarray, shape (n,)
+        k_indices : numpy.ndarray, shape (n, k)
             The indices of the nearest neighbors for each input point. If a neighbor was not found, the index is -1.
-        k_sq_dists : numpy.ndarray, shape (n,)
+        k_sq_dists : numpy.ndarray, shape (n, k)
             The squared distances to the nearest neighbors for each input point.
      )""")
 
@@ -167,16 +167,21 @@ void define_kdtree(py::module& m) {
           throw std::invalid_argument("pts must have shape (n, 3) or (n, 4)");
         }
 
-        std::vector<std::vector<size_t>> k_indices(pts.rows(), std::vector<size_t>(k, -1));
-        std::vector<std::vector<double>> k_sq_dists(pts.rows(), std::vector<double>(k, std::numeric_limits<double>::max()));
+        Eigen::Matrix<size_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> k_indices(pts.rows(), k);
+        Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> k_sq_dists(pts.rows(), k);
+        k_indices.setConstant(-1);
+        k_sq_dists.setConstant(std::numeric_limits<double>::max());
 
-#pragma omp parallel for num_threads(num_threads)
+#pragma omp parallel for num_threads(num_threads) schedule(guided, 4)
         for (int i = 0; i < pts.rows(); ++i) {
-          const size_t found = traits::knn_search(kdtree, Eigen::Vector4d(pts(i, 0), pts(i, 1), pts(i, 2), 1.0), k, k_indices[i].data(), k_sq_dists[i].data());
+          size_t* k_indices_begin = k_indices.data() + i * k;
+          double* k_sq_dists_begin = k_sq_dists.data() + i * k;
+
+          const size_t found = traits::knn_search(kdtree, Eigen::Vector4d(pts(i, 0), pts(i, 1), pts(i, 2), 1.0), k, k_indices_begin, k_sq_dists_begin);
           if (found < k) {
             for (size_t j = found; j < k; ++j) {
-              k_indices[i][j] = -1;
-              k_sq_dists[i][j] = std::numeric_limits<double>::max();
+              k_indices_begin[j] = -1;
+              k_sq_dists_begin[j] = std::numeric_limits<double>::max();
             }
           }
         }
