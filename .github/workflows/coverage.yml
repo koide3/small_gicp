@@ -24,7 +24,8 @@ jobs:
         run: |
           sudo apt-get -y update
           sudo apt-get install --no-install-recommends -y build-essential cmake python3-pip pybind11-dev libeigen3-dev libfmt-dev libtbb-dev libomp-dev libpcl-dev libgtest-dev lcov ninja-build
-          pip install -U setuptools pytest pytest-cov numpy scipy packaging
+          pip install -U setuptools pytest pytest-cov numpy scipy
+          pip install -U packaging
 
       - name: Build (C++)
         run: |
