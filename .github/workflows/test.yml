@@ -24,7 +24,7 @@ jobs:
         run: |
           sudo apt-get -y update
           sudo apt-get install --no-install-recommends -y build-essential cmake python3-pip pybind11-dev libeigen3-dev libfmt-dev libtbb-dev libomp-dev libpcl-dev libgtest-dev ninja-build
-          pip install -U setuptools pytest numpy scipy
+          pip install -U setuptools pytest numpy scipy packaging
 
       - name: Build
         run: |
