@@ -108,7 +108,7 @@ struct LevenbergMarquardtOptimizer {
         // Solve with damping
         const Eigen::Matrix<double, 6, 1> delta = (H + lambda * Eigen::Matrix<double, 6, 6>::Identity()).ldlt().solve(-b);
 
-        // Validte new solution
+        // Validate new solution
         const Eigen::Isometry3d new_T = result.T_target_source * se3_exp(delta);
         double new_e = reduction.error(target, source, new_T, factors);
         general_factor.update_error(target, source, new_T, &e);
@@ -150,7 +150,7 @@ struct LevenbergMarquardtOptimizer {
 
   bool verbose;              ///< If true, print debug messages
   int max_iterations;        ///< Max number of optimization iterations
-  int max_inner_iterations;  ///< Max  number of inner iterations (lambda-trial)
+  int max_inner_iterations;  ///< Max number of inner iterations (lambda-trial)
   double init_lambda;        ///< Initial lambda (damping factor)
   double lambda_factor;      ///< Lambda increase factor
 };
