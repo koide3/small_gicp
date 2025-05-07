@@ -46,7 +46,7 @@ template <typename VoxelMap>
 struct traits::Traits<SequentialVoxelMapAccessor<VoxelMap>> {
   static size_t size(const SequentialVoxelMapAccessor<VoxelMap>& accessor) { return accessor.size(); }
 
-  static bool has_points(const SequentialVoxelMapAccessor<VoxelMap>& accessor) { traits::has_points(accessor.voxelmap); }
+  static bool has_points(const SequentialVoxelMapAccessor<VoxelMap>& accessor) { return traits::has_points(accessor.voxelmap); }
   static bool has_normals(const SequentialVoxelMapAccessor<VoxelMap>& accessor) { return traits::has_normals(accessor.voxelmap); }
   static bool has_covs(const SequentialVoxelMapAccessor<VoxelMap>& accessor) { return traits::has_covs(accessor.voxelmap); }
 
