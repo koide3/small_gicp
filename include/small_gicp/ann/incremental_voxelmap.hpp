@@ -34,6 +34,7 @@ public:
 ///        This class supports incremental point cloud insertion and LRU-based voxel deletion that removes voxels that are not recently referenced.
 /// @note  This class can be used as a point cloud as well as a neighbor search structure.
 /// @note  This class can handle arbitrary number of voxels and arbitrary range of voxel coordinates (in 32-bit int range).
+/// @note  To use this as a source point cloud for registration, use `SequentialVoxelMapAccessor`.
 template <typename VoxelContents>
 struct IncrementalVoxelMap {
 public:

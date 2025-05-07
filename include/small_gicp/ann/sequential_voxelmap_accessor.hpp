@@ -22,11 +22,11 @@ namespace small_gicp {
     auto result = registration.align(*last_voxelmap, accessor, *last_voxelmap, Eigen::Isometry3d::Identity());
  */
 template <typename VoxelMap>
-class SequentialVoxelmapAccessor {
+class SequentialVoxelMapAccessor {
 public:
   /// @brief Constructor.
   /// @param voxelmap Voxelmap
-  SequentialVoxelmapAccessor(const VoxelMap& voxelmap) : voxelmap(voxelmap), indices(traits::point_indices(voxelmap)) {}
+  SequentialVoxelMapAccessor(const VoxelMap& voxelmap) : voxelmap(voxelmap), indices(traits::point_indices(voxelmap)) {}
 
   /// @brief Number of points in the voxelmap.
   size_t size() const { return indices.size(); }
@@ -38,21 +38,21 @@ public:
 
 /// @brief Create a sequential voxelmap accessor.
 template <typename VoxelMap>
-SequentialVoxelmapAccessor<VoxelMap> create_sequential_accessor(const VoxelMap& voxelmap) {
-  return SequentialVoxelmapAccessor<VoxelMap>(voxelmap);
+SequentialVoxelMapAccessor<VoxelMap> create_sequential_accessor(const VoxelMap& voxelmap) {
+  return SequentialVoxelMapAccessor<VoxelMap>(voxelmap);
 }
 
 template <typename VoxelMap>
-struct traits::Traits<SequentialVoxelmapAccessor<VoxelMap>> {
-  static size_t size(const SequentialVoxelmapAccessor<VoxelMap>& accessor) { return accessor.size(); }
+struct traits::Traits<SequentialVoxelMapAccessor<VoxelMap>> {
+  static size_t size(const SequentialVoxelMapAccessor<VoxelMap>& accessor) { return accessor.size(); }
 
-  static bool has_points(const SequentialVoxelmapAccessor<VoxelMap>& accessor) { traits::has_points(accessor.voxelmap); }
-  static bool has_normals(const SequentialVoxelmapAccessor<VoxelMap>& accessor) { return traits::has_normals(accessor.voxelmap); }
-  static bool has_covs(const SequentialVoxelmapAccessor<VoxelMap>& accessor) { return traits::has_covs(accessor.voxelmap); }
+  static bool has_points(const SequentialVoxelMapAccessor<VoxelMap>& accessor) { traits::has_points(accessor.voxelmap); }
+  static bool has_normals(const SequentialVoxelMapAccessor<VoxelMap>& accessor) { return traits::has_normals(accessor.voxelmap); }
+  static bool has_covs(const SequentialVoxelMapAccessor<VoxelMap>& accessor) { return traits::has_covs(accessor.voxelmap); }
 
-  static Eigen::Vector4d point(const SequentialVoxelmapAccessor<VoxelMap>& accessor, size_t i) { return traits::point(accessor.voxelmap, accessor.indices[i]); }
-  static Eigen::Vector4d normal(const SequentialVoxelmapAccessor<VoxelMap>& accessor, size_t i) { return traits::normal(accessor.voxelmap, accessor.indices[i]); }
-  static Eigen::Matrix4d cov(const SequentialVoxelmapAccessor<VoxelMap>& accessor, size_t i) { return traits::cov(accessor.voxelmap, accessor.indices[i]); }
+  static Eigen::Vector4d point(const SequentialVoxelMapAccessor<VoxelMap>& accessor, size_t i) { return traits::point(accessor.voxelmap, accessor.indices[i]); }
+  static Eigen::Vector4d normal(const SequentialVoxelMapAccessor<VoxelMap>& accessor, size_t i) { return traits::normal(accessor.voxelmap, accessor.indices[i]); }
+  static Eigen::Matrix4d cov(const SequentialVoxelMapAccessor<VoxelMap>& accessor, size_t i) { return traits::cov(accessor.voxelmap, accessor.indices[i]); }
 };
 
 }  // namespace small_gicp
