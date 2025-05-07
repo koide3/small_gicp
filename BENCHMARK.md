@@ -129,5 +129,5 @@ small_vgicp          : APE=5.956 +- 2.725  RPE(100)=1.315 +- 0.762  RPE(400)=6.8
 
 [Code](https://github.com/koide3/small_gicp/blob/pybench/src/benchmark/odometry_benchmark.py)
 
-Processing speed comparison between small_gicp and Open3D ([youtube]((https://youtu.be/LNESzGXPr4c?feature=shared))).
+Processing speed comparison between small_gicp and Open3D ([youtube](https://youtu.be/LNESzGXPr4c?feature=shared)).
 [![small_comp](https://github.com/koide3/small_gicp/assets/31344317/7959edd6-f0e4-4318-b4c1-a3f8755c407f)](https://youtu.be/LNESzGXPr4c?feature=shared)
