@@ -110,15 +110,15 @@ private:
     const int u = uv[0] * index_map.cols();
     const int v = uv[1] * index_map.rows();
 
-    for (int dv = -search_window_v; dv <= search_window_v; dv++) {
-      const int v_clamped = border_v(v + dv, index_map.rows());
-      if (v_clamped < 0 || v_clamped >= index_map.rows()) {
+    for (int du = -search_window_h; du <= search_window_h; du++) {
+      const int u_clamped = border_h(u + du, index_map.cols());
+      if (u_clamped < 0 || u_clamped >= index_map.cols()) {
         continue;
       }
 
-      for (int du = -search_window_h; du <= search_window_h; du++) {
-        const int u_clamped = border_h(u + du, index_map.cols());
-        if (u_clamped < 0 || u_clamped >= index_map.cols()) {
+      for (int dv = -search_window_v; dv <= search_window_v; dv++) {
+        const int v_clamped = border_v(v + dv, index_map.rows());
+        if (v_clamped < 0 || v_clamped >= index_map.rows()) {
           continue;
         }
 
