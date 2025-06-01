@@ -97,7 +97,10 @@ endif()
 
 if(MSVC)
   add_compile_definitions(_USE_MATH_DEFINES)
-  # add_compile_options(/openmp:llvm)
+  add_compile_options(/bigobj)
+  if(BUILD_WITH_OPENMP)
+    add_compile_options(/openmp:llvm)
+  endif()
 endif()
 
 ##############

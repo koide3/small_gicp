@@ -44,7 +44,7 @@ void RegistrationPCL<PointSource, PointTarget>::setInputSource(const PointCloudS
   }
 
   pcl::Registration<PointSource, PointTarget, Scalar>::setInputSource(cloud);
-  source_tree_ = std::make_shared<KdTree<pcl::PointCloud<PointSource>>>(input_, KdTreeBuilderOMP(num_threads_));
+  source_tree_ = std::make_shared<small_gicp::KdTree<pcl::PointCloud<PointSource>>>(input_, KdTreeBuilderOMP(num_threads_));
   source_covs_.clear();
   source_voxelmap_.reset();
 }
@@ -56,7 +56,7 @@ void RegistrationPCL<PointSource, PointTarget>::setInputTarget(const PointCloudT
   }
 
   pcl::Registration<PointSource, PointTarget, Scalar>::setInputTarget(cloud);
-  target_tree_ = std::make_shared<KdTree<pcl::PointCloud<PointTarget>>>(target_, KdTreeBuilderOMP(num_threads_));
+  target_tree_ = std::make_shared<small_gicp::KdTree<pcl::PointCloud<PointTarget>>>(target_, KdTreeBuilderOMP(num_threads_));
   target_covs_.clear();
   target_voxelmap_.reset();
 }
@@ -214,7 +214,7 @@ void RegistrationPCL<PointSource, PointTarget>::computeTransformation(PointCloud
     estimate_covariances_omp(target_proxy, *target_tree_, k_correspondences_, num_threads_);
   }
 
-  Registration<GICPFactor, ParallelReductionOMP> registration;
+  small_gicp::Registration<GICPFactor, ParallelReductionOMP> registration;
   registration.criteria.rotation_eps = rotation_epsilon_;
   registration.criteria.translation_eps = transformation_epsilon_;
   registration.reduction.num_threads = num_threads_;

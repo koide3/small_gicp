@@ -7,7 +7,11 @@
 namespace small_gicp {
 
 #ifndef _OPENMP
+#ifdef _WIN32
+#pragma message(__FILE__, " OpenMP is not available.Parallel reduction will be disabled.")
+#else
 #warning "OpenMP is not available. Parallel reduction will be disabled."
+#endif
 inline int omp_get_thread_num() {
   return 0;
 }
