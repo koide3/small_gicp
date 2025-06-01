@@ -99,8 +99,8 @@ protected:
   std::string registration_type_;  ///< Registration type ("GICP" or "VGICP").
   bool verbose_;                   ///< Verbosity flag.
 
-  std::shared_ptr<KdTree<pcl::PointCloud<PointSource>>> target_tree_;  ///< KdTree for target point cloud.
-  std::shared_ptr<KdTree<pcl::PointCloud<PointSource>>> source_tree_;  ///< KdTree for source point cloud.
+  std::shared_ptr<small_gicp::KdTree<pcl::PointCloud<PointSource>>> target_tree_;  ///< KdTree for target point cloud.
+  std::shared_ptr<small_gicp::KdTree<pcl::PointCloud<PointSource>>> source_tree_;  ///< KdTree for source point cloud.
 
   std::shared_ptr<GaussianVoxelMap> target_voxelmap_;  ///< VoxelMap for target point cloud.
   std::shared_ptr<GaussianVoxelMap> source_voxelmap_;  ///< VoxelMap for source point cloud.
