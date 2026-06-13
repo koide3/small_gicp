@@ -4,7 +4,7 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "small_gicp"
-version = "1.0.0"
+version = "1.0.1"
 authors = [{name = "Kenji Koide", email = "k.koide@aist.go.jp"}]
 description = "Efficient and parallelized algorithms for fine point cloud registration"
 readme = "README.md"
@@ -21,7 +21,6 @@ zip_safe = false
 wheel.license-files = ["LICENSE"]
 install.components = ["python"]
 build-dir = "build/{wheel_tag}"
-wheel.py-api = "cp312" # Build stable ABI wheels for CPython 3.12+
 
 [tool.scikit-build.cmake.define]
 BUILD_PYTHON_BINDINGS = true
