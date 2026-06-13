@@ -82,17 +82,32 @@ def test_load_points(load_points):
 def test_points(load_points):
   _, points_numpy, _ = load_points
 
-  points = small_gicp.PointCloud(points_numpy)
+  empty_normals = numpy.array([])
+  empty_covs = []
+  points = small_gicp.PointCloud(points_numpy, empty_normals, empty_covs)
   assert points.size() == points_numpy.shape[0]
   assert numpy.all(numpy.abs(points.points() - points_numpy) < 1e-6)
 
-  points = small_gicp.PointCloud(points_numpy[:, :3])
+  points = small_gicp.PointCloud(points_numpy[:, :3], empty_normals, empty_covs)
   assert points.size() == points_numpy.shape[0]
   assert numpy.all(numpy.abs(points.points() - points_numpy) < 1e-6)
   
   for i in range(10):
     assert numpy.all(numpy.abs(points.point(i) - points_numpy[i]) < 1e-6)
-  
+
+  # Now test setting and getting pre-determined normals and covariances.
+  N = 10
+  points_numpy = numpy.cumsum(numpy.tile(numpy.array([1.0, 2.0, 3.0]), (N, 1)), axis=0)
+  # Like the C++ API, setting non-unit norms and non-positive-definite
+  # covariances is not enforced, and that's ok.
+  nonsense_normals = numpy.cumsum(numpy.tile(numpy.array([4.0, 5.0, 6.0]), (N, 1)), axis=0)
+  nonsense_covs = [numpy.array(list(range(9))).astype(numpy.float64).reshape(3, 3) * i for i in range(N)]
+  points_with_normals_and_covs = small_gicp.PointCloud(points_numpy, nonsense_normals, nonsense_covs)
+
+  assert points_with_normals_and_covs.size() == N
+  for i in range(points_with_normals_and_covs.size()):
+    numpy.testing.assert_equal(points_with_normals_and_covs.cov(i)[:3, :3], nonsense_covs[i])
+    numpy.testing.assert_equal(points_with_normals_and_covs.normal(i)[:3], nonsense_normals[i])
 
 # Downsampling test
 def test_downsampling(load_points):
@@ -103,11 +118,13 @@ def test_downsampling(load_points):
     
   downsampled2 = small_gicp.voxelgrid_sampling(points_numpy, 0.25, num_threads=2)
   assert abs(1.0 - downsampled.size() / downsampled2.size()) < 0.05
-  
-  downsampled2 = small_gicp.voxelgrid_sampling(small_gicp.PointCloud(points_numpy), 0.25)
+
+  empty_normals = numpy.array([])
+  empty_covs = []
+  downsampled2 = small_gicp.voxelgrid_sampling(small_gicp.PointCloud(points_numpy, empty_normals, empty_covs), 0.25)
   assert downsampled.size() == downsampled2.size()
-  
-  downsampled2 = small_gicp.voxelgrid_sampling(small_gicp.PointCloud(points_numpy), 0.25, num_threads=2)
+
+  downsampled2 = small_gicp.voxelgrid_sampling(small_gicp.PointCloud(points_numpy, empty_normals, empty_covs), 0.25, num_threads=2)
   assert abs(1.0 - downsampled.size() / downsampled2.size()) < 0.05
 
 # Preprocess test
@@ -117,13 +134,15 @@ def test_preprocess(load_points):
   downsampled, _ = small_gicp.preprocess_points(points_numpy, downsampling_resolution=0.25)
   assert downsampled.size() > 0
 
+  empty_normals = numpy.array([])
+  empty_covs = []
   downsampled2, _ = small_gicp.preprocess_points(points_numpy, downsampling_resolution=0.25, num_threads=2)
   assert abs(1.0 - downsampled.size() / downsampled2.size()) < 0.05
-  
-  downsampled2, _ = small_gicp.preprocess_points(small_gicp.PointCloud(points_numpy), downsampling_resolution=0.25)
+
+  downsampled2, _ = small_gicp.preprocess_points(small_gicp.PointCloud(points_numpy, empty_normals, empty_covs), downsampling_resolution=0.25)
   assert downsampled.size() == downsampled2.size()
-  
-  downsampled2, _ = small_gicp.preprocess_points(small_gicp.PointCloud(points_numpy), downsampling_resolution=0.25, num_threads=2)
+
+  downsampled2, _ = small_gicp.preprocess_points(small_gicp.PointCloud(points_numpy, empty_normals, empty_covs), downsampling_resolution=0.25, num_threads=2)
   assert abs(1.0 - downsampled.size() / downsampled2.size()) < 0.05
 
 # Voxelmap test
