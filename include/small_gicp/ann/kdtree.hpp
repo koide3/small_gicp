@@ -251,13 +251,12 @@ public:
   explicit KdTree(std::shared_ptr<const PointCloud> points, const Builder& builder = Builder()) : points(points),
                                                                                                   kdtree(*points, builder) {}
 
-  /// @brief  Find k-nearest neighbors. This method uses dynamic memory allocation.
+  /// @brief  Find the nearest neighbor.
   /// @param  query       Query point
-  /// @param  k           Number of neighbors
-  /// @param  k_indices   Indices of neighbors
-  /// @param  k_sq_dists  Squared distances to neighbors (sorted in ascending order)
+  /// @param  k_indices   Index of the nearest neighbor (uninitialized if not found)
+  /// @param  k_sq_dists  Squared distance to the nearest neighbor (uninitialized if not found)
   /// @param  setting     KNN search setting
-  /// @return             Number of found neighbors
+  /// @return             Number of found neighbors (0 or 1)
   size_t nearest_neighbor_search(const Eigen::Vector4d& query, size_t* k_indices, double* k_sq_dists, const KnnSetting& setting = KnnSetting()) const {
     return kdtree.nearest_neighbor_search(query, k_indices, k_sq_dists, setting);
   }
