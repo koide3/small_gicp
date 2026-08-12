@@ -78,8 +78,8 @@ public:
   /// @brief Find k nearest neighbors.
   /// @param pt           Query point
   /// @param k            Number of neighbors
-  /// @param k_index      Indices of nearest neighbors
-  /// @param k_sq_dist    Squared distances to nearest neighbors (sorted in ascending order)
+  /// @param k_indices    Indices of nearest neighbors
+  /// @param k_sq_dists   Squared distances to nearest neighbors (sorted in ascending order)
   /// @return             Number of found points
   size_t knn_search(const Eigen::Vector4d& pt, int k, size_t* k_indices, double* k_sq_dists) const {
     if (points.empty()) {
@@ -91,12 +91,9 @@ public:
     return result.num_found();
   }
 
-  /// @brief Find k nearest neighbors.
+  /// @brief Find k nearest neighbors and push them into the given result.
   /// @param pt           Query point
-  /// @param k            Number of neighbors
-  /// @param k_index      Indices of nearest neighbors
-  /// @param k_sq_dist    Squared distances to nearest neighbors (sorted in ascending order)
-  /// @return             Number of found points
+  /// @param result       Result collector that receives the candidates
   template <typename Result>
   void knn_search(const Eigen::Vector4d& pt, Result& result) const {
     if (points.empty()) {
