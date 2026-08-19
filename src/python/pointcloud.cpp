@@ -17,9 +17,24 @@ void define_pointcloud(py::module& m) {
   // PointCloud
   py::class_<PointCloud, std::shared_ptr<PointCloud>>(m, "PointCloud")  //
     .def(
-      py::init([](const Eigen::MatrixXd& points) {
+        py::init([](const Eigen::MatrixXd& points, const Eigen::MatrixXd& normals, const std::vector<Eigen::MatrixXd>& covs) {
         if (points.cols() != 3 && points.cols() != 4) {
           std::cerr << "points must be Nx3 or Nx4" << std::endl;
+          return std::make_shared<PointCloud>();
+        }
+
+        if (normals.rows() != 0 && normals.cols() != 0 && points.rows() != normals.rows()) {
+          std::cerr << "The number of points and normals must be equal" << std::endl;
+          return std::make_shared<PointCloud>();
+        }
+
+        if (normals.rows() != 0 && normals.cols() != 0 && normals.cols() != 3 && normals.cols() != 4) {
+          std::cerr << "normals must be Nx3 or Nx4" << std::endl;
+          return std::make_shared<PointCloud>();
+        }
+
+        if (!covs.empty() && points.rows() != covs.size()) {
+          std::cerr << "points and covs must be same size" << std::endl;
           return std::make_shared<PointCloud>();
         }
 
@@ -35,9 +50,26 @@ void define_pointcloud(py::module& m) {
           }
         }
 
+        for (size_t i = 0; i < covs.size(); ++i) {
+          pc->cov(i).setZero();
+          pc->cov(i).block<3, 3>(0, 0) = covs[i];
+        }
+
+        if (normals.cols() == 3) {
+          for (size_t i = 0; i < normals.rows(); i++) {
+            pc->normal(i) << normals.row(i).transpose(), 1.0;
+          }
+        } else {
+          for (size_t i = 0; i < normals.rows(); i++) {
+            pc->normal(i) << normals.row(i).transpose();
+          }
+        }
+
         return pc;
       }),
       py::arg("points"),
+      py::arg("normals"),
+      py::arg("covs"),
       R"""(
       PointCloud(points: numpy.ndarray)
 
@@ -47,6 +79,12 @@ void define_pointcloud(py::module& m) {
       ----------
       points : numpy.ndarray, shape (n, 3) or (n, 4)
           The input point cloud.
+
+      normals : numpy.ndarray, shape (n, 3) or (n, 4)
+          The normals corresponding to points. Ignored if empty (0-by-0).
+
+      covs : list of numpy.ndarray, each shape (3, 3) or (4, 4)
+          The input point cloud covariances (only 3x3 upper block is used). Ignored if empty.
       )""")
     .def("__repr__", [](const PointCloud& points) { return "small_gicp.PointCloud (" + std::to_string(points.size()) + " points)"; })
     .def("__len__", [](const PointCloud& points) { return points.size(); })
