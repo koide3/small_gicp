@@ -15,6 +15,8 @@
 #include <small_gicp/util/downsampling_omp.hpp>
 #include <small_gicp/util/normal_estimation.hpp>
 #include <small_gicp/util/normal_estimation_omp.hpp>
+#include <small_gicp/util/color_gradient.hpp>
+#include <small_gicp/util/color_gradient_omp.hpp>
 
 namespace py = pybind11;
 using namespace small_gicp;
@@ -204,6 +206,44 @@ void define_preprocess(py::module& m) {
             Number of neighbors. (default: 20)
         num_threads : int, optional
             Number of threads. (default: 1)
+        )pbdoc");
+
+  // estimate_color_gradients
+  m.def(
+    "estimate_color_gradients",
+    [](PointCloud::Ptr points, std::shared_ptr<KdTree<PointCloud>> tree, int num_neighbors, int num_threads, double max_radius) {
+      if (tree == nullptr) {
+        tree = std::make_shared<KdTree<PointCloud>>(points, KdTreeBuilderOMP(num_threads));
+      }
+
+      if (num_threads == 1) {
+        estimate_color_gradients(*points, *tree, num_neighbors, max_radius);
+      } else {
+        estimate_color_gradients_omp(*points, *tree, num_neighbors, num_threads, max_radius);
+      }
+    },
+    py::arg("points"),
+    py::arg("tree") = nullptr,
+    py::arg("num_neighbors") = 30,
+    py::arg("num_threads") = 1,
+    py::arg("max_radius") = std::numeric_limits<double>::max(),
+    R"pbdoc(
+        Estimate per-point color gradients for colored ICP.
+        Point normals must be estimated beforehand (See also: :func:`estimate_normals`).
+        Neighbors are searched with knn (num_neighbors) and filtered by max_radius (hybrid search).
+
+        Parameters
+        ----------
+        points : :class:`PointCloud`
+            Input point cloud. Color gradients will be estimated in-place. (in/out)
+        tree : :class:`KdTree`, optional
+            Nearest neighbor search. If None, create a new KdTree (default: None)
+        num_neighbors : int, optional
+            Number of neighbors. (default: 30)
+        num_threads : int, optional
+            Number of threads. (default: 1)
+        max_radius : float, optional
+            Maximum neighbor search radius. (default: inf)
         )pbdoc");
 
   // preprocess_points (numpy)

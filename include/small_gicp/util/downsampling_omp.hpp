@@ -58,6 +58,13 @@ std::shared_ptr<OutputPointCloud> voxelgrid_sampling_omp(const InputPointCloud& 
   auto downsampled = std::make_shared<OutputPointCloud>();
   traits::resize(*downsampled, traits::size(points));
 
+  // Color averaging is enabled only when both input and output point clouds support color attributes and the input actually has colors
+  constexpr bool color_capable = traits::has_set_color<InputPointCloud>::value && traits::has_set_color<OutputPointCloud>::value;
+  bool with_colors = false;
+  if constexpr (color_capable) {
+    with_colors = traits::has_colors(points);
+  }
+
   // Take block-wise sum
   const int block_size = 1024;
   std::atomic_uint64_t num_points = 0;
@@ -66,10 +73,22 @@ std::shared_ptr<OutputPointCloud> voxelgrid_sampling_omp(const InputPointCloud& 
   for (std::int64_t block_begin = 0; block_begin < traits::size(points); block_begin += block_size) {
     std::vector<Eigen::Vector4d> sub_points;
     sub_points.reserve(block_size);
+    std::vector<Eigen::Vector4d> sub_colors;
+    if constexpr (color_capable) {
+      if (with_colors) {
+        sub_colors.reserve(block_size);
+      }
+    }
 
     const size_t block_end = std::min<size_t>(traits::size(points), block_begin + block_size);
 
     Eigen::Vector4d sum_pt = traits::point(points, coord_pt[block_begin].second);
+    Eigen::Vector4d sum_color = Eigen::Vector4d::Zero();
+    if constexpr (color_capable) {
+      if (with_colors) {
+        sum_color = traits::color(points, coord_pt[block_begin].second);
+      }
+    }
     for (size_t i = block_begin + 1; i != block_end; i++) {
       if (coord_pt[i].first == invalid_coord) {
         continue;
@@ -77,15 +96,36 @@ std::shared_ptr<OutputPointCloud> voxelgrid_sampling_omp(const InputPointCloud& 
 
       if (coord_pt[i - 1].first != coord_pt[i].first) {
         sub_points.emplace_back(sum_pt / sum_pt.w());
+        if constexpr (color_capable) {
+          if (with_colors) {
+            sub_colors.emplace_back(sum_color / sum_pt.w());
+          }
+        }
         sum_pt.setZero();
+        sum_color.setZero();
       }
       sum_pt += traits::point(points, coord_pt[i].second);
+      if constexpr (color_capable) {
+        if (with_colors) {
+          sum_color += traits::color(points, coord_pt[i].second);
+        }
+      }
     }
     sub_points.emplace_back(sum_pt / sum_pt.w());
+    if constexpr (color_capable) {
+      if (with_colors) {
+        sub_colors.emplace_back(sum_color / sum_pt.w());
+      }
+    }
 
     const size_t point_index_begin = num_points.fetch_add(sub_points.size());
     for (size_t i = 0; i < sub_points.size(); i++) {
       traits::set_point(*downsampled, point_index_begin + i, sub_points[i]);
+      if constexpr (color_capable) {
+        if (with_colors) {
+          traits::set_color(*downsampled, point_index_begin + i, sub_colors[i]);
+        }
+      }
     }
   }
 

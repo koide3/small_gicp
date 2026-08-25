@@ -13,6 +13,9 @@
 #include <small_gicp/factors/icp_factor.hpp>
 #include <small_gicp/factors/plane_icp_factor.hpp>
 #include <small_gicp/factors/gicp_factor.hpp>
+#include <small_gicp/factors/colored_icp_factor.hpp>
+#include <small_gicp/util/color_gradient.hpp>
+#include <small_gicp/util/color_gradient_omp.hpp>
 #include <small_gicp/registration/reduction_omp.hpp>
 #include <small_gicp/registration/registration.hpp>
 
@@ -57,6 +60,11 @@ GaussianVoxelMap::Ptr create_gaussian_voxelmap(const PointCloud& points, double 
 template <typename T, int D>
 RegistrationResult
 align(const std::vector<Eigen::Matrix<T, D, 1>>& target, const std::vector<Eigen::Matrix<T, D, 1>>& source, const Eigen::Isometry3d& init_T, const RegistrationSetting& setting) {
+  if (setting.type == RegistrationSetting::COLORED_ICP) {
+    std::cerr << "error: COLORED_ICP requires PointCloud input with colors (use the PointCloud overload)" << std::endl;
+    return RegistrationResult(Eigen::Isometry3d::Identity());
+  }
+
   auto [target_points, target_tree] = preprocess_points(*std::make_shared<PointCloud>(target), setting.downsampling_resolution, 10, setting.num_threads);
   auto [source_points, source_tree] = preprocess_points(*std::make_shared<PointCloud>(source), setting.downsampling_resolution, 10, setting.num_threads);
 
@@ -117,6 +125,29 @@ align(const PointCloud& target, const PointCloud& source, const KdTree<PointClou
     case RegistrationSetting::VGICP: {
       std::cerr << "error: use align(const GaussianVoxelMap&, const GaussianVoxelMap&, const Eigen::Isometry3d&, const RegistrationSetting&) for VGICP" << std::endl;
       return RegistrationResult(Eigen::Isometry3d::Identity());
+    }
+    case RegistrationSetting::COLORED_ICP: {
+      if (!traits::has_colors(target) || !traits::has_colors(source)) {
+        std::cerr << "error: COLORED_ICP requires colors on both point clouds" << std::endl;
+        return RegistrationResult(Eigen::Isometry3d::Identity());
+      }
+      if (!traits::has_normals(target)) {
+        std::cerr << "error: COLORED_ICP requires target normals" << std::endl;
+        return RegistrationResult(Eigen::Isometry3d::Identity());
+      }
+      if (!traits::has_color_grads(target)) {
+        std::cerr << "error: COLORED_ICP requires target color gradients (call estimate_color_gradients first)" << std::endl;
+        return RegistrationResult(Eigen::Isometry3d::Identity());
+      }
+
+      Registration<ColoredICPFactor, ParallelReductionOMP> registration;
+      registration.reduction.num_threads = setting.num_threads;
+      registration.rejector.max_dist_sq = setting.max_correspondence_distance * setting.max_correspondence_distance;
+      registration.criteria.rotation_eps = setting.rotation_eps;
+      registration.criteria.translation_eps = setting.translation_eps;
+      registration.optimizer.max_iterations = setting.max_iterations;
+      registration.optimizer.verbose = setting.verbose;
+      return registration.align(target, source, target_tree, init_T);
     }
   }
 }
