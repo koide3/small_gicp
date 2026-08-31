@@ -106,6 +106,38 @@ void define_pointcloud(py::module& m) {
             Covariance matrices.
         )pbdoc")
     .def(
+      "colors",
+      [](const PointCloud& points) -> Eigen::MatrixXd {
+        if (points.points.empty()) {
+          return Eigen::MatrixXd(0, 4);
+        }
+        return Eigen::Map<const Eigen::Matrix<double, -1, -1, Eigen::RowMajor>>(points.colors[0].data(), points.size(), 4);
+      },
+      R"pbdoc(
+        Get the colors as a Nx4 matrix.
+
+        Returns
+        -------
+        colors : numpy.ndarray
+            Colors (r, g, b, 0) x N.
+        )pbdoc")
+    .def(
+      "color_grads",
+      [](const PointCloud& points) -> Eigen::MatrixXd {
+        if (points.points.empty()) {
+          return Eigen::MatrixXd(0, 4);
+        }
+        return Eigen::Map<const Eigen::Matrix<double, -1, -1, Eigen::RowMajor>>(points.color_grads[0].data(), points.size(), 4);
+      },
+      R"pbdoc(
+        Get the color gradients as a Nx4 matrix.
+
+        Returns
+        -------
+        color_grads : numpy.ndarray
+            Color gradients (dx, dy, dz, 0) x N.
+        )pbdoc")
+    .def(
       "point",
       [](const PointCloud& points, size_t i) -> Eigen::Vector4d { return points.point(i); },
       py::arg("i"),
@@ -140,6 +172,40 @@ void define_pointcloud(py::module& m) {
             Normal.
         )pbdoc")
     .def(
+      "color",
+      [](const PointCloud& points, size_t i) -> Eigen::Vector4d { return points.color(i); },
+      py::arg("i"),
+      R"pbdoc(
+        Get the i-th color.
+
+        Parameters
+        ----------
+        i : int
+            Index of the point.
+
+        Returns
+        -------
+        color : numpy.ndarray, shape (4,)
+            Color (r, g, b, 0).
+        )pbdoc")
+    .def(
+      "color_grad",
+      [](const PointCloud& points, size_t i) -> Eigen::Vector4d { return points.color_grad(i); },
+      py::arg("i"),
+      R"pbdoc(
+        Get the i-th color gradient.
+
+        Parameters
+        ----------
+        i : int
+            Index of the point.
+
+        Returns
+        -------
+        color_grad : numpy.ndarray, shape (4,)
+            Color gradient (dx, dy, dz, 0).
+        )pbdoc")
+    .def(
       "cov",
       [](const PointCloud& points, size_t i) -> Eigen::Matrix4d { return points.cov(i); },
       py::arg("i"),
@@ -155,5 +221,39 @@ void define_pointcloud(py::module& m) {
         -------
         cov : numpy.ndarray, shape (4, 4)
             Covariance matrix.
+        )pbdoc")
+    .def(
+      "set_colors",
+      [](PointCloud& points, const Eigen::MatrixXd& colors) {
+        if (colors.cols() != 3 && colors.cols() != 4) {
+          std::cerr << "colors must be Nx3 or Nx4" << std::endl;
+          return;
+        }
+        if ((size_t)colors.rows() != points.size()) {
+          std::cerr << "colors rows must match point count" << std::endl;
+          return;
+        }
+
+        for (size_t i = 0; i < points.size(); i++) {
+          if (colors.cols() == 3) {
+            points.color(i) << colors.row(i).transpose(), 0.0;
+          } else {
+            points.color(i) << colors.row(i).transpose();
+          }
+        }
+      },
+      py::arg("colors"),
+      R"pbdoc(
+        Set colors from a numpy array (Nx3 or Nx4).
+        Invalid shapes (wrong columns or row count mismatch with points) are rejected with a warning and leave the colors unchanged.
+
+        Parameters
+        ----------
+        colors : numpy.ndarray, shape (n, 3) or (n, 4)
+            Colors to be set. For Nx3 input, the fourth component (w) is set to zero.
+
+        Returns
+        -------
+        None
         )pbdoc");
 }

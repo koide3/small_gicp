@@ -35,7 +35,13 @@ GaussianVoxelMap::Ptr create_gaussian_voxelmap(const PointCloud& points, double 
 
 /// @brief Registration setting
 struct RegistrationSetting {
-  enum RegistrationType { ICP, PLANE_ICP, GICP, VGICP };
+  enum RegistrationType {
+    ICP,
+    PLANE_ICP,
+    GICP,
+    VGICP,
+    COLORED_ICP  ///< Colored ICP (requires colors, normals, and color gradients on the point clouds)
+  };
 
   RegistrationType type = GICP;              ///< Registration type
   double voxel_resolution = 1.0;             ///< Voxel resolution for VGICP

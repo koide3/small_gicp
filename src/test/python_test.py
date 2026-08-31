@@ -255,3 +255,86 @@ def test_kdtree(load_points):
     batch_test(target.points(), target.points(), target_tree, target_tree_ref, num_threads=num_threads)
     batch_test(target.points(), source.points(), target_tree, target_tree_ref, num_threads=num_threads)
     batch_test(source.points(), target.points(), source_tree, source_tree_ref, num_threads=num_threads)
+
+# Build colored point clouds for colored ICP.
+# Colors are a linear function of the position in the target frame; source points are mapped into the
+# target frame with the ground truth transformation so that both clouds share the same color field.
+def make_colored_clouds(gt_T_target_source, target_raw_numpy, source_raw_numpy, downsampling_resolution=0.25, num_threads=2):
+  def color_field(points_xyz):
+    x, y, z = points_xyz[:, 0], points_xyz[:, 1], points_xyz[:, 2]
+    return numpy.stack([0.5 + 0.3 * x, 0.2 * y + 0.1, 0.5 + 0.25 * z], axis=1)
+
+  target_raw = small_gicp.PointCloud(target_raw_numpy)
+  target_raw.set_colors(color_field(target_raw_numpy[:, :3]))
+
+  source_in_target = source_raw_numpy[:, :3] @ gt_T_target_source[:3, :3].T + gt_T_target_source[:3, 3]
+  source_raw = small_gicp.PointCloud(source_raw_numpy)
+  source_raw.set_colors(color_field(source_in_target))
+
+  # Downsampling averages the colors within each voxel together with the points
+  target = small_gicp.voxelgrid_sampling(target_raw, downsampling_resolution, num_threads=num_threads)
+  source = small_gicp.voxelgrid_sampling(source_raw, downsampling_resolution, num_threads=num_threads)
+
+  target_tree = small_gicp.KdTree(target)
+  small_gicp.estimate_normals(target, target_tree, num_threads=num_threads)
+  small_gicp.estimate_color_gradients(target, target_tree, num_neighbors=30, num_threads=num_threads, max_radius=2.0)
+
+  return target, source, target_tree
+
+# Colored ICP registration test
+def test_colored_icp_registration(load_points):
+  gt_T_target_source, target_raw_numpy, source_raw_numpy = load_points
+
+  target, source, target_tree = make_colored_clouds(gt_T_target_source, target_raw_numpy, source_raw_numpy)
+  assert target.size() > 0 and source.size() > 0
+  assert numpy.any(numpy.abs(target.colors()[:, :3]) > 1e-3)
+  assert numpy.any(numpy.abs(target.color_grads()[:, :3]) > 1e-3)
+
+  result = small_gicp.align(target, source, target_tree, registration_type='COLORED_ICP', max_correspondence_distance=1.0, num_threads=2)
+  verify_result(result.T_target_source, gt_T_target_source)
+
+  # COLORED_ICP is not supported with numpy inputs and returns the identity transformation
+  result = small_gicp.align(target_raw_numpy, source_raw_numpy, registration_type='COLORED_ICP', downsampling_resolution=0.25)
+  assert numpy.allclose(result.T_target_source, numpy.eye(4))
+
+# Color gradient estimation test with a linear color field on a plane
+def test_estimate_color_gradients_linear(load_points):
+  n = 20
+  grid = numpy.linspace(-1.0, 1.0, n)
+  x, y = numpy.meshgrid(grid, grid)
+  points = numpy.stack([x.ravel(), y.ravel(), numpy.zeros(n * n)], axis=1)
+
+  # I(p) = a . p with equal RGB channels; the gradient projected on the plane (normal = z) is (a0, a1, 0)
+  a = numpy.array([0.3, -0.2, 0.15])
+  intensity = points @ a
+  colors = numpy.stack([intensity, intensity, intensity], axis=1)
+
+  cloud = small_gicp.PointCloud(points)
+  cloud.set_colors(colors)
+  tree = small_gicp.KdTree(cloud)
+  small_gicp.estimate_normals(cloud, tree)
+  small_gicp.estimate_color_gradients(cloud, tree, num_neighbors=8, max_radius=0.5)
+
+  grads = cloud.color_grads().reshape(n, n, 4)
+  interior = grads[2:-2, 2:-2, :].reshape(-1, 4)
+  assert numpy.allclose(interior[:, :3], numpy.array([a[0], a[1], 0.0]), atol=1e-5)
+
+# set_colors input validation test
+def test_set_colors_validation(load_points):
+  _, points_numpy, _ = load_points
+
+  points = small_gicp.PointCloud(points_numpy)
+  points.set_colors(numpy.full((points_numpy.shape[0], 3), 0.5))
+  assert numpy.allclose(points.colors()[:, :3], 0.5)
+  assert numpy.allclose(points.colors()[:, 3], 0.0)
+  assert numpy.allclose(points.color(0), [0.5, 0.5, 0.5, 0.0])
+
+  # Invalid shapes are rejected with a warning and leave the colors unchanged
+  points.set_colors(numpy.ones((points_numpy.shape[0], 2)))
+  points.set_colors(numpy.ones((points_numpy.shape[0] + 3, 3)))
+  points.set_colors(numpy.ones((points_numpy.shape[0] + 3, 4)))
+  assert numpy.allclose(points.colors()[:, :3], 0.5)
+
+  # Nx4 colors are accepted as-is
+  points.set_colors(numpy.concatenate([numpy.full((points_numpy.shape[0], 3), 0.25), numpy.zeros((points_numpy.shape[0], 1))], axis=1))
+  assert numpy.allclose(points.color(0), [0.25, 0.25, 0.25, 0.0])

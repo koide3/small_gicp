@@ -54,6 +54,8 @@ void define_align(py::module& m) {
         setting.type = RegistrationSetting::GICP;
       } else if (registration_type == "VGICP") {
         setting.type = RegistrationSetting::VGICP;
+      } else if (registration_type == "COLORED_ICP") {
+        setting.type = RegistrationSetting::COLORED_ICP;
       } else {
         std::cerr << "invalid registration type" << std::endl;
         return RegistrationResult(Eigen::Isometry3d::Identity());
@@ -119,7 +121,8 @@ void define_align(py::module& m) {
         init_T_target_source : numpy.ndarray[np.float64]
             4x4 matrix representing the initial transformation from target to source.
         registration_type : str = 'GICP'
-            Type of registration algorithm to use ('ICP', 'PLANE_ICP', 'GICP', 'VGICP').
+            Type of registration algorithm to use ('ICP', 'PLANE_ICP', 'GICP', 'VGICP', 'COLORED_ICP').
+            'COLORED_ICP' requires point cloud inputs with colors and is not supported with numpy inputs (it returns an identity transformation).
         voxel_resolution : float = 1.0
             Resolution of voxels used for correspondence search (used only in VGICP).
         downsampling_resolution : float = 0.25
@@ -166,6 +169,8 @@ void define_align(py::module& m) {
         setting.type = RegistrationSetting::PLANE_ICP;
       } else if (registration_type == "GICP") {
         setting.type = RegistrationSetting::GICP;
+      } else if (registration_type == "COLORED_ICP") {
+        setting.type = RegistrationSetting::COLORED_ICP;
       } else {
         std::cerr << "invalid registration type:" << registration_type << std::endl;
         return RegistrationResult(Eigen::Isometry3d::Identity());
@@ -209,7 +214,9 @@ void define_align(py::module& m) {
     init_T_target_source : numpy.ndarray[np.float64]
         4x4 matrix representing the initial transformation from target to source.
     registration_type : str = 'GICP'
-        Type of registration algorithm to use ('ICP', 'PLANE_ICP', 'GICP').
+        Type of registration algorithm to use ('ICP', 'PLANE_ICP', 'GICP', 'COLORED_ICP').
+        'COLORED_ICP' requires the target to have colors, normals, and color gradients
+        (:func:`estimate_normals` and :func:`estimate_color_gradients`), and the source to have colors.
     max_correspondence_distance : float = 1.0
         Maximum distance for corresponding point pairs.
     num_threads : int = 1
