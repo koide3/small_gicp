@@ -160,6 +160,7 @@ RegistrationResult align(const GaussianVoxelMap& target, const PointCloud& sourc
 
   Registration<GICPFactor, ParallelReductionOMP> registration;
   registration.reduction.num_threads = setting.num_threads;
+  registration.rejector.max_dist_sq = setting.max_correspondence_distance * setting.max_correspondence_distance;
   registration.criteria.rotation_eps = setting.rotation_eps;
   registration.criteria.translation_eps = setting.translation_eps;
   registration.optimizer.max_iterations = setting.max_iterations;
