@@ -281,6 +281,29 @@ TEST_F(RegistrationTest, PCLInterfaceTest) {
   EXPECT_TRUE(compare_transformation(T_target_source, Eigen::Isometry3d(registration.getFinalTransformation().cast<double>())));
 }
 
+TEST(RegistrationHelperTest, VGICPRespectsMaxCorrespondenceDistance) {
+  PointCloud target;
+  target.resize(1);
+  target.point(0) << 0.0, 0.0, 0.0, 1.0;
+  target.cov(0) = Eigen::Matrix4d::Identity();
+
+  PointCloud source;
+  source.resize(1);
+  source.point(0) << 0.25, 0.0, 0.0, 1.0;
+  source.cov(0) = Eigen::Matrix4d::Identity();
+
+  auto target_voxelmap = create_gaussian_voxelmap(target, 1.0);
+  RegistrationSetting setting;
+  setting.type = RegistrationSetting::VGICP;
+  setting.num_threads = 1;
+  setting.max_iterations = 1;
+
+  setting.max_correspondence_distance = 0.1;
+  EXPECT_EQ(align(*target_voxelmap, source, Eigen::Isometry3d::Identity(), setting).num_inliers, 0);
+
+  setting.max_correspondence_distance = 0.5;
+  EXPECT_EQ(align(*target_voxelmap, source, Eigen::Isometry3d::Identity(), setting).num_inliers, 1);
+
 // Non-orthogonal initial guess test
 TEST_F(RegistrationTest, NonOrthogonalInitialGuess) {
   Registration<GICPFactor, ParallelReductionOMP> registration;
