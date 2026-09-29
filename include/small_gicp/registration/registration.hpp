@@ -26,7 +26,7 @@ public:
   /// @param target       Target point cloud
   /// @param source       Source point cloud
   /// @param target_tree  Nearest neighbor search for the target point cloud
-  /// @param init_T       Initial guess
+  /// @param init_T       Initial guess. Its rotation part is re-orthonormalized, so it must be a rigid transformation (no scale or reflection).
   /// @return             Registration result
   template <typename TargetPointCloud, typename SourcePointCloud, typename TargetTree>
   RegistrationResult
@@ -38,8 +38,13 @@ public:
       std::cerr << "warning: source point cloud is too small. |source|=" << traits::size(source) << std::endl;
     }
 
+    // The optimizers only right-multiply init_T by rigid increments, so any non-orthonormality of init_T.linear() would carry over to the result.
+    // A guess composed from previous results (e.g., T_world_lidar * T_last_current) drifts from SO(3) over time, so re-orthonormalize it here.
+    Eigen::Isometry3d init_T_normalized = init_T;
+    init_T_normalized.linear() = Eigen::Quaterniond(init_T.linear()).normalized().toRotationMatrix();
+
     std::vector<PointFactor> factors(traits::size(source), PointFactor(point_factor));
-    return optimizer.optimize(target, source, target_tree, rejector, criteria, reduction, init_T, factors, general_factor);
+    return optimizer.optimize(target, source, target_tree, rejector, criteria, reduction, init_T_normalized, factors, general_factor);
   }
 
 public:

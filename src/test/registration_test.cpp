@@ -281,6 +281,47 @@ TEST_F(RegistrationTest, PCLInterfaceTest) {
   EXPECT_TRUE(compare_transformation(T_target_source, Eigen::Isometry3d(registration.getFinalTransformation().cast<double>())));
 }
 
+// Non-orthogonal initial guess test
+TEST_F(RegistrationTest, NonOrthogonalInitialGuess) {
+  Registration<GICPFactor, ParallelReductionOMP> registration;
+  registration.rejector.max_dist_sq = 1.0;
+
+  // Initial guess whose rotation has drifted from SO(3)
+  Eigen::Isometry3d init_T = T_target_source;
+  init_T.linear() += 1e-3 * Eigen::Matrix3d::Ones();
+  const Eigen::Matrix3d R_init = init_T.linear();
+  ASSERT_GT((R_init.transpose() * R_init - Eigen::Matrix3d::Identity()).norm(), 1e-3);
+
+  const auto result = registration.align(*target, *source, *target_tree, init_T);
+  const Eigen::Matrix3d R = result.T_target_source.linear();
+  EXPECT_LT((R.transpose() * R - Eigen::Matrix3d::Identity()).norm(), 1e-9);
+  EXPECT_TRUE(compare_transformation(T_target_source, result.T_target_source));
+}
+
+// Repeated registration with a constant velocity initial guess (#127)
+TEST_F(RegistrationTest, RepeatedRegistrationWithConstantVelocityGuess) {
+  auto voxelmap = std::make_shared<GaussianVoxelMap>(1.0);
+  voxelmap->insert(*target);
+
+  Registration<GICPFactor, ParallelReductionOMP> registration;
+  registration.rejector.max_dist_sq = 1.0;
+
+  // Register the same (stationary) scan again and again and keep inserting it into the map
+  Eigen::Isometry3d T_world_lidar = Eigen::Isometry3d::Identity();
+  Eigen::Isometry3d T_last_current = Eigen::Isometry3d::Identity();
+  for (int i = 0; i < 60; i++) {
+    const auto result = registration.align(*voxelmap, *target, *voxelmap, T_world_lidar * T_last_current);
+    const Eigen::Matrix3d R = result.T_target_source.linear();
+    ASSERT_TRUE(result.T_target_source.matrix().allFinite()) << "frame=" << i;
+    ASSERT_LT((R.transpose() * R - Eigen::Matrix3d::Identity()).norm(), 1e-9) << "frame=" << i;
+    ASSERT_LT(result.T_target_source.translation().norm(), 0.1) << "frame=" << i;
+
+    T_last_current = T_world_lidar.inverse() * result.T_target_source;
+    T_world_lidar = result.T_target_source;
+    voxelmap->insert(*target, T_world_lidar);
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(
   RegistrationTest,
   RegistrationTest,
