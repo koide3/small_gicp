@@ -303,6 +303,7 @@ TEST(RegistrationHelperTest, VGICPRespectsMaxCorrespondenceDistance) {
 
   setting.max_correspondence_distance = 0.5;
   EXPECT_EQ(align(*target_voxelmap, source, Eigen::Isometry3d::Identity(), setting).num_inliers, 1);
+}
 
 // Non-orthogonal initial guess test
 TEST_F(RegistrationTest, NonOrthogonalInitialGuess) {
