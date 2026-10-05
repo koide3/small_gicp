@@ -71,6 +71,10 @@ std::shared_ptr<OutputPointCloud> voxelgrid_sampling_omp(const InputPointCloud& 
 
 #pragma omp parallel for num_threads(num_threads) schedule(guided, 4)
   for (std::int64_t block_begin = 0; block_begin < traits::size(points); block_begin += block_size) {
+    if (coord_pt[block_begin].first == invalid_coord) {
+      continue;
+    }
+
     std::vector<Eigen::Vector4d> sub_points;
     sub_points.reserve(block_size);
     std::vector<Eigen::Vector4d> sub_colors;

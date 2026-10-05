@@ -53,6 +53,10 @@ std::shared_ptr<OutputPointCloud> voxelgrid_sampling(const InputPointCloud& poin
   const auto compare = [](const auto& lhs, const auto& rhs) { return lhs.first < rhs.first; };
   std::sort(coord_pt.begin(), coord_pt.end(), compare);
 
+  if (coord_pt.front().first == invalid_coord) {
+    return std::make_shared<OutputPointCloud>();
+  }
+
   auto downsampled = std::make_shared<OutputPointCloud>();
   traits::resize(*downsampled, traits::size(points));
 
