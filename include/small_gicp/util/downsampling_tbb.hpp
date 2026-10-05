@@ -71,6 +71,10 @@ std::shared_ptr<OutputPointCloud> voxelgrid_sampling_tbb(const InputPointCloud& 
   const int block_size = 2048;
   std::atomic_uint64_t num_points = 0;
   tbb::parallel_for(tbb::blocked_range<size_t>(0, traits::size(points), block_size), [&](const tbb::blocked_range<size_t>& range) {
+    if (coord_pt[range.begin()].first == invalid_coord) {
+      return;
+    }
+
     std::vector<Eigen::Vector4d> sub_points;
     sub_points.reserve(block_size);
     std::vector<Eigen::Vector4d> sub_colors;
