@@ -192,6 +192,10 @@ private:
   /// @brief Find k-nearest neighbors.
   template <typename Result>
   bool knn_search(const Eigen::Vector4d& query, NodeIndexType node_index, Result& result, const KnnSetting& setting) const {
+    if (node_index == INVALID_NODE) {
+      return false;
+    }
+
     const auto& node = nodes[node_index];
 
     // Check if it's a leaf node.
@@ -236,7 +240,7 @@ public:
   const PointCloud& points;     ///< Input points
   std::vector<size_t> indices;  ///< Point indices refered by nodes
 
-  NodeIndexType root;       ///< Root node index (should be zero)
+  NodeIndexType root = INVALID_NODE;  ///< Root node index (invalid for an empty tree)
   std::vector<Node> nodes;  ///< Kd-tree nodes
 };
 
