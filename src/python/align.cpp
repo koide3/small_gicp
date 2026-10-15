@@ -35,7 +35,8 @@ void define_align(py::module& m) {
       int max_iterations,
       double rotation_epsilon,
       double translation_epsilon,
-      bool verbose) {
+      bool verbose,
+      bool record_history) {
       if (target_points.cols() != 3 && target_points.cols() != 4) {
         std::cerr << "target_points must be Nx3 or Nx4" << std::endl;
         return RegistrationResult(Eigen::Isometry3d::Identity());
@@ -69,6 +70,7 @@ void define_align(py::module& m) {
       setting.rotation_eps = rotation_epsilon;
       setting.translation_eps = translation_epsilon;
       setting.verbose = verbose;
+      setting.record_history = record_history;
 
       std::vector<Eigen::Vector4d> target(target_points.rows());
       if (target_points.cols() == 3) {
@@ -106,6 +108,7 @@ void define_align(py::module& m) {
     py::arg("rotation_epsilon") = 0.1 * M_PI / 180.0,
     py::arg("translation_epsilon") = 1e-3,
     py::arg("verbose") = false,
+    py::arg("record_history") = false,
     R"pbdoc(
         Align two point clouds using various ICP-like algorithms.
         This function first performs preprocessing (downsampling, normal estimation, KdTree construction) and then estimates the transformation.
@@ -161,7 +164,8 @@ void define_align(py::module& m) {
       int max_iterations,
       double rotation_epsilon,
       double translation_epsilon,
-      bool verbose) {
+      bool verbose,
+      bool record_history) {
       RegistrationSetting setting;
       if (registration_type == "ICP") {
         setting.type = RegistrationSetting::ICP;
@@ -181,6 +185,7 @@ void define_align(py::module& m) {
       setting.rotation_eps = rotation_epsilon;
       setting.translation_eps = translation_epsilon;
       setting.verbose = verbose;
+      setting.record_history = record_history;
 
       if (target_tree == nullptr) {
         target_tree = std::make_shared<KdTree<PointCloud>>(target, KdTreeBuilderOMP(num_threads));
@@ -198,6 +203,7 @@ void define_align(py::module& m) {
     py::arg("rotation_epsilon") = 0.1 * M_PI / 180.0,
     py::arg("translation_epsilon") = 1e-3,
     py::arg("verbose") = false,
+    py::arg("record_history") = false,
     R"pbdoc(
     Align two point clouds using specified ICP-like algorithms, utilizing point cloud and KD-tree inputs.
     Input point clouds are assumed to be preprocessed (downsampled, normals estimated, KD-tree built).
@@ -248,7 +254,8 @@ void define_align(py::module& m) {
       int max_iterations,
       double rotation_epsilon,
       double translation_epsilon,
-      bool verbose) {
+      bool verbose,
+      bool record_history) {
       Registration<GICPFactor, ParallelReductionOMP> registration;
       registration.rejector.max_dist_sq = max_correspondence_distance * max_correspondence_distance;
       registration.reduction.num_threads = num_threads;
@@ -256,6 +263,7 @@ void define_align(py::module& m) {
       registration.criteria.rotation_eps = rotation_epsilon;
       registration.criteria.translation_eps = translation_epsilon;
       registration.optimizer.verbose = verbose;
+      registration.optimizer.record_history = record_history;
 
       return registration.align(target_voxelmap, source, target_voxelmap, Eigen::Isometry3d(init_T_target_source));
     },
@@ -268,6 +276,7 @@ void define_align(py::module& m) {
     py::arg("rotation_epsilon") = 0.1 * M_PI / 180.0,
     py::arg("translation_epsilon") = 1e-3,
     py::arg("verbose") = false,
+    py::arg("record_history") = false,
     R"pbdoc(
     Align two point clouds using voxel-based GICP algorithm, utilizing a Gaussian Voxel Map.
     Input source point cloud is assumed to be preprocessed (downsampled, normals estimated, KD-tree built).

@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
+#include <algorithm>
 #include <iostream>
+#include <optional>
+#include <utility>
 #include <small_gicp/util/lie.hpp>
 #include <small_gicp/registration/registration_result.hpp>
 
@@ -42,6 +45,18 @@ struct GaussNewtonOptimizer {
       auto [H, b, e] = reduction.linearize(target, source, target_tree, rejector, result.T_target_source, factors);
       general_factor.update_linearized_system(target, source, target_tree, result.T_target_source, &H, &b, &e);
 
+      std::optional<IterationRecord> record;
+      if (record_history) {
+        record.emplace();
+        record->iteration = static_cast<size_t>(i);
+        record->T_before = result.T_target_source.matrix();
+        record->H = H;
+        record->b = b;
+        record->linearized_error = e;
+        record->lambda_before = lambda;
+        record->num_inliers = std::count_if(factors.begin(), factors.end(), [](const auto& factor) { return factor.inlier(); });
+      }
+
       // Solve linear system
       const Eigen::Matrix<double, 6, 1> delta = (H + lambda * Eigen ::Matrix<double, 6, 6>::Identity()).ldlt().solve(-b);
 
@@ -55,6 +70,14 @@ struct GaussNewtonOptimizer {
       result.H = H;
       result.b = b;
       result.error = e;
+      if (record_history) {
+        record->delta = delta;
+        record->T_after = result.T_target_source.matrix();
+        record->reported_error = e;
+        record->lambda_after = lambda;
+        record->accepted = true;
+        result.history.push_back(std::move(*record));
+      }
     }
 
     result.num_inliers = std::count_if(factors.begin(), factors.end(), [](const auto& factor) { return factor.inlier(); });
@@ -62,6 +85,7 @@ struct GaussNewtonOptimizer {
     return result;
   }
 
+  bool record_history = false;  ///< Opt-in optimizer trace
   bool verbose;        ///< If true, print debug messages
   int max_iterations;  ///< Max number of optimization iterations
   double lambda;       ///< Damping factor (Increasing this makes optimization slow but stable)
@@ -102,6 +126,18 @@ struct LevenbergMarquardtOptimizer {
       auto [H, b, e] = reduction.linearize(target, source, target_tree, rejector, result.T_target_source, factors);
       general_factor.update_linearized_system(target, source, target_tree, result.T_target_source, &H, &b, &e);
 
+      std::optional<IterationRecord> record;
+      if (record_history) {
+        record.emplace();
+        record->iteration = static_cast<size_t>(i);
+        record->T_before = result.T_target_source.matrix();
+        record->H = H;
+        record->b = b;
+        record->linearized_error = e;
+        record->lambda_before = lambda;
+        record->num_inliers = std::count_if(factors.begin(), factors.end(), [](const auto& factor) { return factor.inlier(); });
+      }
+
       // Lambda iteration
       bool success = false;
       for (int j = 0; j < max_inner_iterations; j++) {
@@ -118,7 +154,22 @@ struct LevenbergMarquardtOptimizer {
                     << " dr=" << delta.head<3>().norm() << std::endl;
         }
 
+        if (record_history) {
+          OptimizationTrialRecord trial;
+          trial.trial = static_cast<size_t>(j);
+          trial.lambda = lambda;
+          trial.candidate_error = new_e;
+          trial.comparison_reference_error = e;
+          trial.delta = delta;
+          trial.T_candidate = new_T.matrix();
+          trial.accepted = (new_e <= e);
+          record->trials.push_back(trial);
+        }
+
         if (new_e <= e) {
+          if (record_history) {
+            record->delta = delta;  // Only an accepted LM step is applied.
+          }
           // Error decreased, decrease lambda
           result.converged = criteria.converged(delta);
           result.T_target_source = new_T;
@@ -137,6 +188,13 @@ struct LevenbergMarquardtOptimizer {
       result.H = H;
       result.b = b;
       result.error = e;
+      if (record_history) {
+        record->T_after = result.T_target_source.matrix();
+        record->reported_error = e;
+        record->lambda_after = lambda;
+        record->accepted = success;
+        result.history.push_back(std::move(*record));
+      }
 
       if (!success) {
         break;
@@ -148,6 +206,7 @@ struct LevenbergMarquardtOptimizer {
     return result;
   }
 
+  bool record_history = false;  ///< Opt-in optimizer trace
   bool verbose;              ///< If true, print debug messages
   int max_iterations;        ///< Max number of optimization iterations
   int max_inner_iterations;  ///< Max number of inner iterations (lambda-trial)

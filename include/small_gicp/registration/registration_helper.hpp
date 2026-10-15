@@ -52,6 +52,7 @@ struct RegistrationSetting {
   int num_threads = 4;                       ///< Number of threads
   int max_iterations = 20;                   ///< Maximum number of iterations
   bool verbose = false;                      ///< Verbose mode
+  bool record_history = false;               ///< Record optimizer history
 };
 
 /// @brief Align point clouds

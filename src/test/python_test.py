@@ -338,3 +338,29 @@ def test_set_colors_validation(load_points):
   # Nx4 colors are accepted as-is
   points.set_colors(numpy.concatenate([numpy.full((points_numpy.shape[0], 3), 0.25), numpy.zeros((points_numpy.shape[0], 1))], axis=1))
   assert numpy.allclose(points.color(0), [0.25, 0.25, 0.25, 0.0])
+
+# Trace must preserve the solution and record applied LM steps only.
+def test_optional_optimizer_history():
+  rng = numpy.random.default_rng(42)
+  source = rng.normal(size=(320, 3))
+  target = source + numpy.array([0.04, -0.03, 0.015])
+  for mode in ('ICP', 'PLANE_ICP', 'GICP', 'VGICP'):
+    opts = dict(registration_type=mode, num_threads=1, max_iterations=8,
+                downsampling_resolution=0.1, max_correspondence_distance=0.8)
+    regular = small_gicp.align(target, source, record_history=False, **opts)
+    traced = small_gicp.align(target, source, record_history=True, **opts)
+    assert not regular.history
+    assert 0 < len(traced.history) <= opts['max_iterations']
+    numpy.testing.assert_allclose(traced.T_target_source, regular.T_target_source, atol=1e-10)
+    assert traced.converged == regular.converged
+    assert traced.num_inliers == regular.num_inliers
+    numpy.testing.assert_allclose(traced.history[-1].T_after, traced.T_target_source)
+    for i, record in enumerate(traced.history):
+      assert record.iteration == i
+      assert record.trials
+      assert record.trials[-1].accepted == record.accepted
+      if record.accepted:
+        numpy.testing.assert_allclose(record.delta, record.trials[-1].delta)
+      else:
+        numpy.testing.assert_array_equal(record.delta, numpy.zeros(6))
+        numpy.testing.assert_allclose(record.T_before, record.T_after)

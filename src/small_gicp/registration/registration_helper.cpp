@@ -100,6 +100,7 @@ align(const PointCloud& target, const PointCloud& source, const KdTree<PointClou
       registration.criteria.translation_eps = setting.translation_eps;
       registration.optimizer.max_iterations = setting.max_iterations;
       registration.optimizer.verbose = setting.verbose;
+      registration.optimizer.record_history = setting.record_history;
       return registration.align(target, source, target_tree, init_T);
     }
     case RegistrationSetting::PLANE_ICP: {
@@ -110,6 +111,7 @@ align(const PointCloud& target, const PointCloud& source, const KdTree<PointClou
       registration.criteria.translation_eps = setting.translation_eps;
       registration.optimizer.max_iterations = setting.max_iterations;
       registration.optimizer.verbose = setting.verbose;
+      registration.optimizer.record_history = setting.record_history;
       return registration.align(target, source, target_tree, init_T);
     }
     case RegistrationSetting::GICP: {
@@ -120,6 +122,7 @@ align(const PointCloud& target, const PointCloud& source, const KdTree<PointClou
       registration.criteria.translation_eps = setting.translation_eps;
       registration.optimizer.max_iterations = setting.max_iterations;
       registration.optimizer.verbose = setting.verbose;
+      registration.optimizer.record_history = setting.record_history;
       return registration.align(target, source, target_tree, init_T);
     }
     case RegistrationSetting::VGICP: {
@@ -147,6 +150,7 @@ align(const PointCloud& target, const PointCloud& source, const KdTree<PointClou
       registration.criteria.translation_eps = setting.translation_eps;
       registration.optimizer.max_iterations = setting.max_iterations;
       registration.optimizer.verbose = setting.verbose;
+      registration.optimizer.record_history = setting.record_history;
       return registration.align(target, source, target_tree, init_T);
     }
   }
@@ -165,6 +169,7 @@ RegistrationResult align(const GaussianVoxelMap& target, const PointCloud& sourc
   registration.criteria.translation_eps = setting.translation_eps;
   registration.optimizer.max_iterations = setting.max_iterations;
   registration.optimizer.verbose = setting.verbose;
+  registration.optimizer.record_history = setting.record_history;
   return registration.align(target, source, target, init_T);
 }
 
