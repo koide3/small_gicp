@@ -402,6 +402,9 @@ open3d.visualization.draw_geometries([target_o3d, source_o3d])
 
 ### Cookbook
 
+- [Extract corresponding point indices after registration (synthetic Python example)](src/example/correspondences.py).
+  Uses the final source-to-target transform and a KD-tree distance threshold; indices refer to the supplied point clouds (after downsampling when preprocessing is used), and may differ from the optimizer's last linearization pairs.
+  Run `python3 src/example/correspondences.py` from the repository root.
 - [Scan-to-scan and scan-to-model GICP matching odometry on KITTI](src/example/kitti_odometry.py)
 
 ## Running examples
