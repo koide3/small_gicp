@@ -20,6 +20,14 @@ public:
 
 public:
   double epsilon = 0.0;  ///< Early termination threshold
+
+  /// @brief Maximum squared distance between the query and a neighbor.
+  ///        Neighbors farther than this are neither reported nor visited, which allows search structures
+  ///        to prune subtrees that cannot contain a valid neighbor (e.g., point cloud registration with a
+  ///        small maximum correspondence distance).
+  /// @note  Search structures that do not support this bound ignore it. Callers must therefore still
+  ///        reject correspondences by themselves (see small_gicp::DistanceRejector).
+  double max_dist_sq = std::numeric_limits<double>::max();
 };
 
 /// @brief Identity transform (alternative to std::identity in C++20).
@@ -38,7 +46,14 @@ public:
   /// @param indices        Buffer to store indices (must be larger than k=max(N, num_neighbors))
   /// @param distances      Buffer to store distances (must be larger than k=max(N, num_neighbors))
   /// @param num_neighbors  Number of neighbors to search (must be -1 for static case N > 0)
-  explicit KnnResult(size_t* indices, double* distances, int num_neighbors = -1, const IndexTransform& index_transform = identity_transform())
+  /// @param index_transform Index transformation applied to the found indices
+  /// @param max_dist_sq    Initial (and maximum) squared distance. Neighbors farther than this are not stored.
+  explicit KnnResult(
+    size_t* indices,
+    double* distances,
+    int num_neighbors = -1,
+    const IndexTransform& index_transform = identity_transform(),
+    double max_dist_sq = std::numeric_limits<double>::max())
   : index_transform(index_transform),
     capacity(num_neighbors),
     num_found_neighbors(0),
@@ -57,7 +72,7 @@ public:
     }
 
     std::fill(this->indices, this->indices + buffer_size(), INVALID);
-    std::fill(this->distances, this->distances + buffer_size(), std::numeric_limits<double>::max());
+    std::fill(this->distances, this->distances + buffer_size(), max_dist_sq);
   }
 
   /// @brief  Buffer size (i.e., Maximum number of neighbors)
