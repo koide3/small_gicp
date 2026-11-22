@@ -46,7 +46,7 @@ struct RegistrationSetting {
   RegistrationType type = GICP;              ///< Registration type
   double voxel_resolution = 1.0;             ///< Voxel resolution for VGICP
   double downsampling_resolution = 0.25;     ///< Downsample resolution (this will be used only in the Eigen-based interface)
-  double max_correspondence_distance = 1.0;  ///< Maximum correspondence distance
+  double max_correspondence_distance = 1.0;  ///< Maximum correspondence distance. Also used to bound the correspondence search.
   double rotation_eps = 0.1 * M_PI / 180.0;  ///< Rotation tolerance for convergence check [rad]
   double translation_eps = 1e-3;             ///< Translation tolerance for convergence check
   int num_threads = 4;                       ///< Number of threads

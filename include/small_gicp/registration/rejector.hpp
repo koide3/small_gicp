@@ -24,7 +24,10 @@ struct DistanceRejector {
     return sq_dist > max_dist_sq;
   }
 
-  double max_dist_sq;  ///< Maximum squared distance between corresponding points
+  /// @brief Maximum squared distance between corresponding points.
+  /// @note  This value is also passed to the nearest neighbor search as a search radius, which allows the
+  ///        search structure to skip subtrees that cannot contain a valid correspondence.
+  double max_dist_sq;
 };
 
 }  // namespace small_gicp

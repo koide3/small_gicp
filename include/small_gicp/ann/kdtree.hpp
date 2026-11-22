@@ -170,7 +170,7 @@ public:
   /// @param  setting     KNN search setting
   /// @return             Number of found neighbors
   size_t knn_search(const Eigen::Vector4d& query, int k, size_t* k_indices, double* k_sq_dists, const KnnSetting& setting = KnnSetting()) const {
-    KnnResult<-1> result(k_indices, k_sq_dists, k);
+    KnnResult<-1> result(k_indices, k_sq_dists, k, identity_transform(), setting.max_dist_sq);
     knn_search(query, root, result, setting);
     return result.num_found();
   }
@@ -183,7 +183,7 @@ public:
   /// @return            Number of found neighbors
   template <int N>
   size_t knn_search(const Eigen::Vector4d& query, size_t* k_indices, double* k_sq_dists, const KnnSetting& setting = KnnSetting()) const {
-    KnnResult<N> result(k_indices, k_sq_dists);
+    KnnResult<N> result(k_indices, k_sq_dists, -1, identity_transform(), setting.max_dist_sq);
     knn_search(query, root, result, setting);
     return result.num_found();
   }
@@ -285,8 +285,16 @@ struct Traits<UnsafeKdTree<PointCloud, Projection>> {
     return tree.nearest_neighbor_search(point, k_indices, k_sq_dists);
   }
 
+  static size_t nearest_neighbor_search(const UnsafeKdTree<PointCloud, Projection>& tree, const Eigen::Vector4d& point, size_t* k_indices, double* k_sq_dists, const KnnSetting& setting) {
+    return tree.nearest_neighbor_search(point, k_indices, k_sq_dists, setting);
+  }
+
   static size_t knn_search(const UnsafeKdTree<PointCloud, Projection>& tree, const Eigen::Vector4d& point, size_t k, size_t* k_indices, double* k_sq_dists) {
     return tree.knn_search(point, k, k_indices, k_sq_dists);
+  }
+
+  static size_t knn_search(const UnsafeKdTree<PointCloud, Projection>& tree, const Eigen::Vector4d& point, size_t k, size_t* k_indices, double* k_sq_dists, const KnnSetting& setting) {
+    return tree.knn_search(point, k, k_indices, k_sq_dists, setting);
   }
 };
 
@@ -296,8 +304,16 @@ struct Traits<KdTree<PointCloud, Projection>> {
     return tree.nearest_neighbor_search(point, k_indices, k_sq_dists);
   }
 
+  static size_t nearest_neighbor_search(const KdTree<PointCloud, Projection>& tree, const Eigen::Vector4d& point, size_t* k_indices, double* k_sq_dists, const KnnSetting& setting) {
+    return tree.nearest_neighbor_search(point, k_indices, k_sq_dists, setting);
+  }
+
   static size_t knn_search(const KdTree<PointCloud, Projection>& tree, const Eigen::Vector4d& point, size_t k, size_t* k_indices, double* k_sq_dists) {
     return tree.knn_search(point, k, k_indices, k_sq_dists);
+  }
+
+  static size_t knn_search(const KdTree<PointCloud, Projection>& tree, const Eigen::Vector4d& point, size_t k, size_t* k_indices, double* k_sq_dists, const KnnSetting& setting) {
+    return tree.knn_search(point, k, k_indices, k_sq_dists, setting);
   }
 };
 
